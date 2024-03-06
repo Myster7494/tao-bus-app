@@ -1,0 +1,25 @@
+name: Deploy Web
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: "3.10.5"
+          channel: "stable"
+          cache: true
+      - name: Build Web
+        run: |
+          flutter pub get
+          flutter build web --release --base-href=/tao-bus-app/
+      - name: Deploy to Github Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ github.token }}
+          publish_dir: ./build/web
