@@ -15,6 +15,7 @@ class RouteMapWebImage extends StatelessWidget {
       ImageElement imageElement = ImageElement(
         src: routeMapImage.url,
       );
+      imageElement.draggable = false;
       imageElement.style.width = "100%";
       imageElement.style.height = "100%";
       return imageElement;

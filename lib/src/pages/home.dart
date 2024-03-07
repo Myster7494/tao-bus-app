@@ -1,9 +1,10 @@
+import 'dart:math';
+
 import 'package:bus_app/src/tdx/bus_route.dart';
 import 'package:bus_app/src/tdx/bus_routes_loader.dart';
 import 'package:bus_app/src/web_image/web_image_other.dart'
     if (dart.library.js) 'package:bus_app/src/web_image/web_image_web.dart';
 import 'package:flutter/material.dart';
-import 'package:zoom_widget/zoom_widget.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -51,10 +52,7 @@ class RouteMapAlertDialog extends StatelessWidget {
       child: AlertDialog(
         title: Text(
             '${busRoute.routeName.zhTw}\n${busRoute.subRoutes.firstOrNull?.headsign ?? ""}'),
-        content:
-            // Zoom(
-            //     child:
-            RouteMapWebImage(
+        content: RouteMapWebImage(
           routeMapImage: busRoute.routeMapImage,
         ),
         actions: <Widget>[
@@ -74,35 +72,43 @@ class RouteMapAlertDialog extends StatelessWidget {
   }
 }
 
-class ZoomRouteMapImage extends StatelessWidget {
+class ZoomRouteMapImage extends StatefulWidget {
   final BusRoute busRoute;
 
   const ZoomRouteMapImage({super.key, required this.busRoute});
+
+  @override
+  State<ZoomRouteMapImage> createState() => _ZoomRouteMapImageState();
+}
+
+class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
+  int rotateTime = 0;
+
+  void rotate() {
+    rotateTime++;
+    rotateTime %= 4;
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
           title: Text(
-              '${busRoute.routeName.zhTw}\n${busRoute.subRoutes.firstOrNull?.headsign ?? ""}')),
+              '${widget.busRoute.routeName.zhTw}\n${widget.busRoute.subRoutes.firstOrNull?.headsign ?? ""}')),
       body: Column(
         children: [
           Expanded(
             child: LayoutBuilder(
-              builder: (context, constraints) => Zoom(
-                initScale: 1.0,
-                initTotalZoomOut: true,
-                child: FittedBox(
-                  fit: BoxFit.contain,
-                  child: SizedBox(
-                    width: constraints.maxWidth,
-                    height: constraints.maxHeight,
-                    child: Container(
-                      color: Colors.grey,
-                      padding: const EdgeInsets.all(10),
-                      child: RouteMapWebImage(
-                        routeMapImage: busRoute.routeMapImage,
-                      ),
+              builder: (context, constraints) => InteractiveViewer(
+                child: Container(
+                  width: constraints.maxWidth,
+                  height: constraints.maxHeight,
+                  color: Colors.grey,
+                  padding: const EdgeInsets.all(10),
+                  child: RotatedBox(
+                    quarterTurns: rotateTime,
+                    child: RouteMapWebImage(
+                      routeMapImage: widget.busRoute.routeMapImage,
                     ),
                   ),
                 ),
@@ -117,8 +123,12 @@ class ZoomRouteMapImage extends StatelessWidget {
                       onPressed: () => Navigator.of(context).pop(),
                       child: const Text("關閉"))),
               Expanded(
-                  child:
-                      TextButton(onPressed: () {}, child: const Text("旋轉90度")))
+                  child: TextButton(
+                      onPressed: () {
+                        rotate();
+                        setState(() {});
+                      },
+                      child: const Text("旋轉90度")))
             ],
           )
         ],
