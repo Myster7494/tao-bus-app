@@ -33,7 +33,7 @@ dependencies:
   json_annotation: ^4.8.1
   json_serializable: ^6.7.1
   cached_network_image: ^3.3.1
-  zoom_widget: ^2.0.1
+  provider: ^6.0.0
 
 
   # The following adds the Cupertino Icons font to your application.

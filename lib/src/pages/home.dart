@@ -5,6 +5,7 @@ import 'package:bus_app/src/tdx/bus_routes_loader.dart';
 import 'package:bus_app/src/web_image/web_image_other.dart'
     if (dart.library.js) 'package:bus_app/src/web_image/web_image_web.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -15,27 +16,71 @@ class MainPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text("TAO-Bus"),
       ),
-      body: ListView.separated(
-        itemCount: BusRoutesLoader.busRoutes.length,
-        itemBuilder: (context, index) => ListTile(
-            title: Text(BusRoutesLoader.busRoutes[index].routeName.zhTw),
-            subtitle: Text(BusRoutesLoader
-                    .busRoutes[index].subRoutes.firstOrNull?.headsign ??
-                ""),
-            trailing: PopupMenuButton(
-              itemBuilder: (BuildContext context) => [
-                PopupMenuItem(
-                  child: const Text("顯示路線簡圖"),
-                  onTap: () => showDialog(
-                    context: context,
-                    builder: (context) => RouteMapAlertDialog(
-                        busRoute: BusRoutesLoader.busRoutes[index]),
-                  ),
-                ),
-              ],
-            )),
-        separatorBuilder: (context, index) => const Divider(),
-      ),
+      body: const HomePageBody(),
+    );
+  }
+}
+
+class HomePageBody extends StatefulWidget {
+  const HomePageBody({super.key});
+
+  @override
+  State<HomePageBody> createState() => _HomePageBodyState();
+}
+
+class _HomePageBodyState extends State<HomePageBody> {
+  final TextEditingController textEditingController = TextEditingController();
+  List<BusRoute> busRoutes = BusRoutesLoader.busRoutes;
+  String inputText = "";
+
+  @override
+  void initState() {
+    super.initState();
+    textEditingController.addListener(() => setState(() => busRoutes =
+        BusRoutesLoader.busRoutes
+            .where((busRoute) =>
+                busRoute.routeName.zhTw.contains(textEditingController.text))
+            .toList()));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    textEditingController.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        TextField(
+          controller: textEditingController,
+          decoration: const InputDecoration(hintText: "搜尋路線名稱"),
+        ),
+        Expanded(
+          child: ListView.separated(
+            itemCount: BusRoutesLoader.busRoutes.length,
+            itemBuilder: (context, index) => ListTile(
+                title: Text(BusRoutesLoader.busRoutes[index].routeName.zhTw),
+                subtitle: Text(BusRoutesLoader
+                        .busRoutes[index].subRoutes.firstOrNull?.headsign ??
+                    ""),
+                trailing: PopupMenuButton(
+                  itemBuilder: (BuildContext context) => [
+                    PopupMenuItem(
+                      child: const Text("顯示路線簡圖"),
+                      onTap: () => showDialog(
+                        context: context,
+                        builder: (context) => RouteMapAlertDialog(
+                            busRoute: BusRoutesLoader.busRoutes[index]),
+                      ),
+                    ),
+                  ],
+                )),
+            separatorBuilder: (context, index) => const Divider(),
+          ),
+        ),
+      ],
     );
   }
 }
@@ -82,11 +127,15 @@ class ZoomRouteMapImage extends StatefulWidget {
 }
 
 class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
-  int rotateTime = 0;
+  int rotateQuarter = 0;
+  TransformationController transformationController =
+      TransformationController();
+  late BoxConstraints boxConstraints;
 
-  void rotate() {
-    rotateTime++;
-    rotateTime %= 4;
+  @override
+  void dispose() {
+    super.dispose();
+    transformationController.dispose();
   }
 
   @override
@@ -99,20 +148,25 @@ class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
         children: [
           Expanded(
             child: LayoutBuilder(
-              builder: (context, constraints) => InteractiveViewer(
-                child: Container(
-                  width: constraints.maxWidth,
-                  height: constraints.maxHeight,
-                  color: Colors.grey,
-                  padding: const EdgeInsets.all(10),
-                  child: RotatedBox(
-                    quarterTurns: rotateTime,
-                    child: RouteMapWebImage(
-                      routeMapImage: widget.busRoute.routeMapImage,
+              builder: (context, constraints) {
+                boxConstraints = constraints;
+                return InteractiveViewer(
+                  transformationController: transformationController,
+                  maxScale: 10.0,
+                  child: Container(
+                    width: constraints.maxWidth,
+                    height: constraints.maxHeight,
+                    color: Colors.grey,
+                    padding: const EdgeInsets.all(10),
+                    child: RotatedBox(
+                      quarterTurns: rotateQuarter,
+                      child: RouteMapWebImage(
+                        routeMapImage: widget.busRoute.routeMapImage,
+                      ),
                     ),
                   ),
-                ),
-              ),
+                );
+              },
             ),
           ),
           Row(
@@ -125,9 +179,15 @@ class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
               Expanded(
                   child: TextButton(
                       onPressed: () {
-                        rotate();
-                        setState(() {});
+                        transformationController.value = Matrix4.identity();
                       },
+                      child: const Text("重置縮放"))),
+              Expanded(
+                  child: TextButton(
+                      onPressed: () => setState(() {
+                            rotateQuarter++;
+                            rotateQuarter %= 4;
+                          }),
                       child: const Text("旋轉90度")))
             ],
           )
