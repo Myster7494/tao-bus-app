@@ -1,14 +1,11 @@
-import 'dart:math';
-
 import 'package:bus_app/src/tdx/bus_route.dart';
 import 'package:bus_app/src/tdx/bus_routes_loader.dart';
 import 'package:bus_app/src/web_image/web_image_other.dart'
     if (dart.library.js) 'package:bus_app/src/web_image/web_image_web.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 
-class MainPage extends StatelessWidget {
-  const MainPage({super.key});
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -39,16 +36,17 @@ class _HomePageBodyState extends State<HomePageBody> {
 
     textEditingController.addListener(() => setState(() => busRoutes =
         BusRoutesLoader.busRoutes
-           .where((busRoute) =>
+            .where((busRoute) =>
                 busRoute.routeName.zhTw.contains(textEditingController.text))
-           .toList()));
+            .toList()));
   }
 
-  void search(String input){
-    setState(() { busRoutes = 
-    BusRoutesLoader.busRoutes                         
-    .where((busRoute) =>
-                busRoute.routeName.zhTw.contains(input)).toList();});
+  void search(String input) {
+    setState(() {
+      busRoutes = BusRoutesLoader.busRoutes
+          .where((busRoute) => busRoute.routeName.zhTw.contains(input))
+          .toList();
+    });
   }
 
   @override
@@ -62,7 +60,7 @@ class _HomePageBodyState extends State<HomePageBody> {
     return Column(
       children: [
         TextField(
-	//onChanged:(value)=>search(value),
+          //onChanged:(value)=>search(value),
           controller: textEditingController,
           decoration: const InputDecoration(hintText: "搜尋路線名稱"),
         ),
@@ -71,16 +69,16 @@ class _HomePageBodyState extends State<HomePageBody> {
             itemCount: busRoutes.length,
             itemBuilder: (context, index) => ListTile(
                 title: Text(busRoutes[index].routeName.zhTw),
-                subtitle: Text(busRoutes[index].subRoutes.firstOrNull?.headsign ??
-                    ""),
+                subtitle: Text(
+                    busRoutes[index].subRoutes.firstOrNull?.headsign ?? ""),
                 trailing: PopupMenuButton(
                   itemBuilder: (BuildContext context) => [
                     PopupMenuItem(
                       child: const Text("顯示路線簡圖"),
                       onTap: () => showDialog(
                         context: context,
-                        builder: (context) => RouteMapAlertDialog(
-                            busRoute: busRoutes[index]),
+                        builder: (context) =>
+                            RouteMapAlertDialog(busRoute: busRoutes[index]),
                       ),
                     ),
                   ],
@@ -150,8 +148,9 @@ class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          title: Text(
-              '${widget.busRoute.routeName.zhTw}\n${widget.busRoute.subRoutes.firstOrNull?.headsign ?? ""}')),
+        title: Text(
+            '${widget.busRoute.routeName.zhTw}\n${widget.busRoute.subRoutes.firstOrNull?.headsign ?? ""}'),
+      ),
       body: Column(
         children: [
           Expanded(
@@ -177,6 +176,7 @@ class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
               },
             ),
           ),
+          const Text("使用滑鼠滾輪或雙指滑動以縮放圖片"),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -198,7 +198,7 @@ class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
                           }),
                       child: const Text("旋轉90度")))
             ],
-          )
+          ),
         ],
       ),
     );
