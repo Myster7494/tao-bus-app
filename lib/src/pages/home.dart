@@ -60,7 +60,7 @@ class _HomePageBodyState extends State<HomePageBody> {
     return Column(
       children: [
         TextField(
-	onChanged:(value)=>search(value);
+	onChanged:(value)=>search(value),
           controller: textEditingController,
           decoration: const InputDecoration(hintText: "搜尋路線名稱"),
         ),
