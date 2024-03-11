@@ -36,11 +36,17 @@ class _HomePageBodyState extends State<HomePageBody> {
   @override
   void initState() {
     super.initState();
-    textEditingController.addListener(() => setState(() => busRoutes =
-        BusRoutesLoader.busRoutes
-            .where((busRoute) =>
-                busRoute.routeName.zhTw.contains(textEditingController.text))
-            .toList()));
+
+    //textEditingController.addListener(() => setState(() => busRoutes =
+       // BusRoutesLoader.busRoutes
+         //   .where((busRoute) =>
+            //    busRoute.routeName.zhTw.contain//s(textEditingController.text))
+ //           .toList()));
+  }
+
+  void search(String input){
+    setState(() { busRoutes =                                BusRoutesLoader.busRoutes                          .where((busRoute) =>
+                busRoute.routeName.zhTw.contains(input)).toList();});
   }
 
   @override
@@ -54,6 +60,7 @@ class _HomePageBodyState extends State<HomePageBody> {
     return Column(
       children: [
         TextField(
+	onChanged:(value)=>search(value);
           controller: textEditingController,
           decoration: const InputDecoration(hintText: "搜尋路線名稱"),
         ),
