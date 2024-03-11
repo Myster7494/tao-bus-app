@@ -27,9 +27,9 @@ const RESOURCES = {"assets/assets/bus_routes.json": "97c9be55a1c5b2558cc4d9b4bb9
 "favicon.png": "5dcef449791fa27946b3d35ad8803796",
 "flutter.js": "7d69e653079438abfbb24b82a655b0a4",
 "manifest.json": "104c66597575b55fd9b8ecec1bc86717",
-"index.html": "f4898030bf3b276322bbc1f056c380a3",
-"/": "f4898030bf3b276322bbc1f056c380a3",
-"main.dart.js": "d31a78d5c411a15541cb9b73818070d8"};
+"index.html": "53f640fe980b6f1a10fa3bac343d269c",
+"/": "53f640fe980b6f1a10fa3bac343d269c",
+"main.dart.js": "25bf747435b5661388544352254a5031"};
 // The application shell files that are downloaded before a service worker can
 // start.
 const CORE = ["main.dart.js",
