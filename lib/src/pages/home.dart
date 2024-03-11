@@ -37,15 +37,17 @@ class _HomePageBodyState extends State<HomePageBody> {
   void initState() {
     super.initState();
 
-    //textEditingController.addListener(() => setState(() => busRoutes =
-       // BusRoutesLoader.busRoutes
-         //   .where((busRoute) =>
-            //    busRoute.routeName.zhTw.contain//s(textEditingController.text))
- //           .toList()));
+    textEditingController.addListener(() => setState(() => busRoutes =
+        BusRoutesLoader.busRoutes
+           .where((busRoute) =>
+                busRoute.routeName.zhTw.contains(textEditingController.text))
+           .toList()));
   }
 
   void search(String input){
-    setState(() { busRoutes =                                BusRoutesLoader.busRoutes                          .where((busRoute) =>
+    setState(() { busRoutes = 
+    BusRoutesLoader.busRoutes                         
+    .where((busRoute) =>
                 busRoute.routeName.zhTw.contains(input)).toList();});
   }
 
@@ -60,17 +62,16 @@ class _HomePageBodyState extends State<HomePageBody> {
     return Column(
       children: [
         TextField(
-	onChanged:(value)=>search(value),
+	//onChanged:(value)=>search(value),
           controller: textEditingController,
           decoration: const InputDecoration(hintText: "搜尋路線名稱"),
         ),
         Expanded(
           child: ListView.separated(
-            itemCount: BusRoutesLoader.busRoutes.length,
+            itemCount: busRoutes.length,
             itemBuilder: (context, index) => ListTile(
-                title: Text(BusRoutesLoader.busRoutes[index].routeName.zhTw),
-                subtitle: Text(BusRoutesLoader
-                        .busRoutes[index].subRoutes.firstOrNull?.headsign ??
+                title: Text(busRoutes[index].routeName.zhTw),
+                subtitle: Text(busRoutes[index].subRoutes.firstOrNull?.headsign ??
                     ""),
                 trailing: PopupMenuButton(
                   itemBuilder: (BuildContext context) => [
@@ -79,7 +80,7 @@ class _HomePageBodyState extends State<HomePageBody> {
                       onTap: () => showDialog(
                         context: context,
                         builder: (context) => RouteMapAlertDialog(
-                            busRoute: BusRoutesLoader.busRoutes[index]),
+                            busRoute: busRoutes[index]),
                       ),
                     ),
                   ],
