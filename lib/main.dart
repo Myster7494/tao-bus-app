@@ -84,6 +84,9 @@ class _HomePageState extends State<HomePage> {
       // we use the toLowerCase() method to make it case-insensitive
     }
 
+    setState((){
+        _foundUsers = results;
+    });
   }
 
   @override
