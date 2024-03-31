@@ -1,8 +1,7 @@
+import 'package:bus_app/src/pages/bus_state_page.dart';
 import 'package:bus_app/src/pages/zoom_route_map_image_page.dart';
 import 'package:bus_app/src/tdx/bus_route.dart';
 import 'package:bus_app/src/tdx/bus_routes_loader.dart';
-import 'package:bus_app/src/web_image/web_image_other.dart'
-    if (dart.library.js) 'package:bus_app/src/web_image/web_image_web.dart';
 import 'package:flutter/material.dart';
 
 class HomePage extends StatelessWidget {
@@ -75,49 +74,19 @@ class _HomePageBodyState extends State<HomePageBody> {
                 trailing: PopupMenuButton(
                   itemBuilder: (BuildContext context) => [
                     PopupMenuItem(
-                      child: const Text("顯示路線簡圖"),
-                      onTap: () => showDialog(
-                        context: context,
-                        builder: (context) =>
-                            RouteMapAlertDialog(busRoute: busRoutes[index]),
-                      ),
-                    ),
+                        child: const Text("顯示路線簡圖"),
+                        onTap: () => Navigator.of(context)
+                            .push(ZoomRouteMapImagePage(busRoutes[index]))),
+                    PopupMenuItem(
+                        child: const Text("顯示公車動態"),
+                        onTap: () => Navigator.of(context)
+                            .push(BusStatePage(busRoutes[index]))),
                   ],
                 )),
             separatorBuilder: (context, index) => const Divider(),
           ),
         ),
       ],
-    );
-  }
-}
-
-class RouteMapAlertDialog extends StatelessWidget {
-  final BusRoute busRoute;
-
-  const RouteMapAlertDialog({super.key, required this.busRoute});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: const EdgeInsets.all(5),
-      child: AlertDialog(
-        title: Text(
-            '${busRoute.routeName.zhTw}\n${busRoute.subRoutes.firstOrNull?.headsign ?? ""}'),
-        content: RouteMapWebImage(
-          routeMapImage: busRoute.routeMapImage,
-        ),
-        actions: <Widget>[
-          TextButton(
-              child: const Text("放大圖片"),
-              onPressed: () => Navigator.of(context)
-                  .push(ZoomRouteMapImagePage.build(busRoute))),
-          TextButton(
-            child: const Text("關閉圖片"),
-            onPressed: () => Navigator.of(context).pop(),
-          ),
-        ],
-      ),
     );
   }
 }

@@ -5,13 +5,15 @@ import 'package:bus_app/src/tdx/bus_route.dart';
 import 'package:bus_app/src/web_image/web_image_other.dart'
     if (dart.library.js) 'package:bus_app/src/web_image/web_image_web.dart';
 
-class BusStatePage {
-  static MaterialPageRoute build(final BusRoute busRoute) {
-    return MaterialPageRoute(
-        builder: (context) => ZoomRouteMapImage(
-              busRoute: busRoute,
-            ));
-  }
+class BusStatePage extends MaterialPageRoute {
+  final BusRoute busRoute;
+
+  BusStatePage(
+    this.busRoute,
+  ) : super(
+            builder: (context) => ZoomRouteMapImage(
+                  busRoute: busRoute,
+                ));
 }
 
 class ZoomRouteMapImage extends StatefulWidget {
