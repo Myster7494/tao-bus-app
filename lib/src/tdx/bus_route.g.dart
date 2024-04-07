@@ -172,6 +172,9 @@ SubRoute _$SubRouteFromJson(Map<String, dynamic> json) => SubRoute(
           RouteName.fromJson(json['SubRouteName'] as Map<String, dynamic>),
       headsign: json['Headsign'] as String,
       direction: json['Direction'] as int,
+      stops: (json['Stops'] as List<dynamic>)
+          .map((e) => Stop.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$SubRouteToJson(SubRoute instance) => <String, dynamic>{
@@ -181,6 +184,7 @@ Map<String, dynamic> _$SubRouteToJson(SubRoute instance) => <String, dynamic>{
       'SubRouteName': instance.subRouteName,
       'Headsign': instance.headsign,
       'Direction': instance.direction,
+      'Stops': instance.stops,
     };
 
 RouteMapImage _$RouteMapImageFromJson(Map<String, dynamic> json) =>
@@ -195,4 +199,53 @@ Map<String, dynamic> _$RouteMapImageToJson(RouteMapImage instance) =>
       'Url': instance.url,
       'Width': instance.width,
       'Height': instance.height,
+    };
+
+Stop _$StopFromJson(Map<String, dynamic> json) => Stop(
+      stopUid: json['StopUID'] as String?,
+      stopId: json['StopID'] as String?,
+      stopName: json['StopName'] == null
+          ? null
+          : StopName.fromJson(json['StopName'] as Map<String, dynamic>),
+      stopBoarding: json['StopBoarding'] as int?,
+      stopSequence: json['StopSequence'] as int?,
+      stopPosition: json['StopPosition'] == null
+          ? null
+          : StopPosition.fromJson(json['StopPosition'] as Map<String, dynamic>),
+      stationId: json['StationID'] as String?,
+      locationCityCode: json['LocationCityCode'] as String?,
+    );
+
+Map<String, dynamic> _$StopToJson(Stop instance) => <String, dynamic>{
+      'StopUID': instance.stopUid,
+      'StopID': instance.stopId,
+      'StopName': instance.stopName,
+      'StopBoarding': instance.stopBoarding,
+      'StopSequence': instance.stopSequence,
+      'StopPosition': instance.stopPosition,
+      'StationID': instance.stationId,
+      'LocationCityCode': instance.locationCityCode,
+    };
+
+StopName _$StopNameFromJson(Map<String, dynamic> json) => StopName(
+      zhTw: json['Zh_tw'] as String?,
+      en: json['En'] as String?,
+    );
+
+Map<String, dynamic> _$StopNameToJson(StopName instance) => <String, dynamic>{
+      'Zh_tw': instance.zhTw,
+      'En': instance.en,
+    };
+
+StopPosition _$StopPositionFromJson(Map<String, dynamic> json) => StopPosition(
+      positionLon: (json['PositionLon'] as num?)?.toDouble(),
+      positionLat: (json['PositionLat'] as num?)?.toDouble(),
+      geoHash: json['GeoHash'] as String?,
+    );
+
+Map<String, dynamic> _$StopPositionToJson(StopPosition instance) =>
+    <String, dynamic>{
+      'PositionLon': instance.positionLon,
+      'PositionLat': instance.positionLat,
+      'GeoHash': instance.geoHash,
     };

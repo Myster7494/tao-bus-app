@@ -11,32 +11,21 @@ class BusStatePage extends MaterialPageRoute {
   BusStatePage(
     this.busRoute,
   ) : super(
-            builder: (context) => ZoomRouteMapImage(
+            builder: (context) => BusStatePageWidget(
                   busRoute: busRoute,
                 ));
 }
 
-class ZoomRouteMapImage extends StatefulWidget {
+class BusStatePageWidget extends StatefulWidget {
   final BusRoute busRoute;
 
-  const ZoomRouteMapImage({super.key, required this.busRoute});
+  const BusStatePageWidget({super.key, required this.busRoute});
 
   @override
-  State<ZoomRouteMapImage> createState() => _ZoomRouteMapImageState();
+  State<BusStatePageWidget> createState() => _BusStatePageWidgetState();
 }
 
-class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
-  int rotateQuarter = 0;
-  TransformationController transformationController =
-      TransformationController();
-  late BoxConstraints boxConstraints;
-
-  @override
-  void dispose() {
-    super.dispose();
-    transformationController.dispose();
-  }
-
+class _BusStatePageWidgetState extends State<BusStatePageWidget> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,55 +33,15 @@ class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
         title: Text(
             '${widget.busRoute.routeName.zhTw}\n${widget.busRoute.subRoutes.firstOrNull?.headsign ?? ""}'),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: LayoutBuilder(
-              builder: (context, constraints) {
-                boxConstraints = constraints;
-                return InteractiveViewer(
-                  transformationController: transformationController,
-                  maxScale: 10.0,
-                  child: Container(
-                    width: constraints.maxWidth,
-                    height: constraints.maxHeight,
-                    color: Colors.grey,
-                    padding: const EdgeInsets.all(10),
-                    child: RotatedBox(
-                      quarterTurns: rotateQuarter,
-                      child: RouteMapWebImage(
-                        routeMapImage: widget.busRoute.routeMapImage,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-          const Text("使用滑鼠滾輪或雙指滑動以縮放圖片"),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Expanded(
-                  child: TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text("關閉"))),
-              Expanded(
-                  child: TextButton(
-                      onPressed: () {
-                        transformationController.value = Matrix4.identity();
-                      },
-                      child: const Text("重置縮放"))),
-              Expanded(
-                  child: TextButton(
-                      onPressed: () => setState(() {
-                            rotateQuarter++;
-                            rotateQuarter %= 4;
-                          }),
-                      child: const Text("旋轉90度")))
-            ],
-          ),
-        ],
+      body: ListView.builder(
+        itemCount: widget.busRoute.subRoutes[0].stops.length,
+        itemBuilder: (context, index) {
+          final stops = widget.busRoute.subRoutes[0].stops;
+          return ListTile(
+            title: Text(widget.busRoute.subRoute[0].headsign),
+            subtitle: Text(),
+          );
+        },
       ),
     );
   }

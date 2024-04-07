@@ -404,6 +404,8 @@ class SubRoute {
   final String headsign;
   @JsonKey(name: "Direction")
   final int direction;
+  @JsonKey(name: "Stops")
+  final List<Stop> stops;
 
   SubRoute({
     required this.subRouteUid,
@@ -412,6 +414,7 @@ class SubRoute {
     required this.subRouteName,
     required this.headsign,
     required this.direction,
+    required this.stops,
   });
 
   factory SubRoute.fromJson(Map<String, dynamic> json) =>
@@ -447,4 +450,78 @@ class EnumValues<T> {
     reverseMap = map.map((k, v) => MapEntry(v, k));
     return reverseMap;
   }
+}
+
+@JsonSerializable()
+class Stop {
+  @JsonKey(name: "StopUID")
+  final String? stopUid;
+  @JsonKey(name: "StopID")
+  final String? stopId;
+  @JsonKey(name: "StopName")
+  final StopName? stopName;
+  @JsonKey(name: "StopBoarding")
+  final int? stopBoarding;
+  @JsonKey(name: "StopSequence")
+  final int? stopSequence;
+  @JsonKey(name: "StopPosition")
+  final StopPosition? stopPosition;
+  @JsonKey(name: "StationID")
+  final String? stationId;
+  @JsonKey(name: "LocationCityCode")
+  final String? locationCityCode;
+
+  Stop({
+    this.stopUid,
+    this.stopId,
+    this.stopName,
+    this.stopBoarding,
+    this.stopSequence,
+    this.stopPosition,
+    this.stationId,
+    this.locationCityCode,
+  });
+
+  factory Stop.fromJson(Map<String, dynamic> json) => _$StopFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StopToJson(this);
+}
+
+@JsonSerializable()
+class StopName {
+  @JsonKey(name: "Zh_tw")
+  final String? zhTw;
+  @JsonKey(name: "En")
+  final String? en;
+
+  StopName({
+    this.zhTw,
+    this.en,
+  });
+
+  factory StopName.fromJson(Map<String, dynamic> json) =>
+      _$StopNameFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StopNameToJson(this);
+}
+
+@JsonSerializable()
+class StopPosition {
+  @JsonKey(name: "PositionLon")
+  final double? positionLon;
+  @JsonKey(name: "PositionLat")
+  final double? positionLat;
+  @JsonKey(name: "GeoHash")
+  final String? geoHash;
+
+  StopPosition({
+    this.positionLon,
+    this.positionLat,
+    this.geoHash,
+  });
+
+  factory StopPosition.fromJson(Map<String, dynamic> json) =>
+      _$StopPositionFromJson(json);
+
+  Map<String, dynamic> toJson() => _$StopPositionToJson(this);
 }
