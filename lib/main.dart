@@ -1,10 +1,14 @@
 import 'package:bus_app/src/pages/home.dart';
-import 'package:bus_app/src/tdx/bus_routes_loader.dart';
+import 'package:bus_app/src/tdx/loader.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await BusRoutesLoader.loadBusRoutes();
+  await Loader.loadBusRoutes();
+  await Loader.loadBusStops();
+  await Loader.loadRouteStops();
+  await Loader.loadBusStations();
+  await Loader.loadEstimatedTime();
   runApp(const App());
 }
 

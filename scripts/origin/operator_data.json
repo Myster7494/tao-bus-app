@@ -1,0 +1,246 @@
+[
+  {
+    "ProviderID": "006",
+    "OperatorID": "1",
+    "OperatorName": {
+      "Zh_tw": "桃園客運",
+      "En": "Taoyuan Bus Co., Ltd."
+    },
+    "OperatorPhone": "0800-053808",
+    "OperatorEmail": "tybus＠ms18.hinet.net",
+    "OperatorUrl": "http://www.tybus.com.tw",
+    "OperatorCode": "TaoyuanBus",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "1002",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  },
+  {
+    "ProviderID": "006",
+    "OperatorID": "10",
+    "OperatorName": {
+      "Zh_tw": "捷順交通"
+    },
+    "OperatorPhone": "03-3873645",
+    "OperatorEmail": "",
+    "OperatorUrl": "http://www.jasunbus.com",
+    "OperatorCode": "JasunBus",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "1103",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  },
+  {
+    "ProviderID": "006",
+    "OperatorID": "2",
+    "OperatorName": {
+      "Zh_tw": "中壢客運",
+      "En": "Chungli Bus Co., Ltd."
+    },
+    "OperatorPhone": "0800-255722",
+    "OperatorEmail": "cl.bus@msa.hinet.net",
+    "OperatorUrl": "http://www.chunglibus.com.tw",
+    "OperatorCode": "ChungliBus",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "0404",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  },
+  {
+    "ProviderID": "006",
+    "OperatorID": "23",
+    "OperatorName": {
+      "Zh_tw": "台灣真好小客車租賃",
+      "En": "Nice Taiwan car rental corporation"
+    },
+    "OperatorPhone": "03-4516459",
+    "OperatorUrl": "https://www.nrenta.com.tw/",
+    "OperatorCode": "",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "0509",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  },
+  {
+    "ProviderID": "006",
+    "OperatorID": "24",
+    "OperatorName": {
+      "Zh_tw": "勁揚通運"
+    },
+    "OperatorPhone": "0800-016161",
+    "OperatorUrl": "",
+    "OperatorCode": "",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "0915",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  },
+  {
+    "ProviderID": "006",
+    "OperatorID": "3",
+    "OperatorName": {
+      "Zh_tw": "指南客運"
+    },
+    "OperatorPhone": "02-28092111",
+    "OperatorEmail": "info@csgroup-bus.com.tw",
+    "OperatorUrl": "http://www.csgroup-bus.com.tw",
+    "OperatorCode": "ZhinanBus",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "0907",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  },
+  {
+    "ProviderID": "006",
+    "OperatorID": "4",
+    "OperatorName": {
+      "Zh_tw": "統聯客運",
+      "En": "United Highway Bus Co., Ltd."
+    },
+    "OperatorPhone": "0800-676676",
+    "OperatorUrl": "http://www.ubus.com.tw",
+    "ReservationUrl": "http://ordertickets.ubus.com.tw/",
+    "ReservationPhone": "0800-241560",
+    "OperatorCode": "UnitedHighwayBus",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "1201",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  },
+  {
+    "ProviderID": "006",
+    "OperatorID": "5",
+    "OperatorName": {
+      "Zh_tw": "新竹客運",
+      "En": "Hsinchu Bus Co., Ltd."
+    },
+    "OperatorPhone": "0800-035800",
+    "OperatorEmail": "business@hcbus.com.tw",
+    "OperatorUrl": "http://www.hcbus.com.tw",
+    "OperatorCode": "HsinchuBus",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "1303",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  },
+  {
+    "ProviderID": "006",
+    "OperatorID": "6",
+    "OperatorName": {
+      "Zh_tw": "亞通客運",
+      "En": "Yatung Bus Co., Ltd."
+    },
+    "OperatorPhone": "0800-889-116",
+    "OperatorEmail": "orange.bus@msa.hinet.net",
+    "OperatorUrl": "http://www.orangebus.com.tw",
+    "OperatorCode": "YatungBus",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "0702",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  },
+  {
+    "ProviderID": "006",
+    "OperatorID": "8",
+    "OperatorName": {
+      "Zh_tw": "金台通運",
+      "En": "Jintai Transport Co., Ltd."
+    },
+    "OperatorPhone": "03-5538321",
+    "OperatorEmail": "jstour@ms48.hinet",
+    "OperatorUrl": "http://www.nabt.com.tw/?p=zshow&id=2416",
+    "OperatorCode": "JintaiTransport",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "0806",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  },
+  {
+    "ProviderID": "006",
+    "OperatorID": "9",
+    "OperatorName": {
+      "Zh_tw": "三重客運",
+      "En": "San Chung Bus Co., Ltd."
+    },
+    "OperatorPhone": "0800-090-607",
+    "OperatorEmail": "scbus@sanchung-bus.com.tw",
+    "OperatorUrl": "http://www.sanchung-bus.com.tw",
+    "OperatorCode": "SanChungBus",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "0301",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  },
+  {
+    "ProviderID": "006",
+    "OperatorID": "925",
+    "OperatorName": {
+      "Zh_tw": "亞盛通運"
+    },
+    "OperatorPhone": "02-2712-8795",
+    "OperatorUrl": "http://www.orangebus.com.tw/about.php",
+    "OperatorCode": "",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "0704",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  },
+  {
+    "ProviderID": "006",
+    "OperatorID": "XB_16176",
+    "OperatorName": {
+      "Zh_tw": "臺北客運-16176"
+    },
+    "OperatorPhone": "(02)2982-2886、0800-003-307",
+    "OperatorEmail": "",
+    "OperatorUrl": "http://www.tpebus.com.tw",
+    "OperatorCode": "TaipeiBus",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "1407",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  },
+  {
+    "ProviderID": "006",
+    "OperatorID": "XB_16177",
+    "OperatorName": {
+      "Zh_tw": "首都客運-16177"
+    },
+    "OperatorPhone": "0800-000-866",
+    "OperatorEmail": "",
+    "OperatorUrl": "http://www.capital-bus.com.tw",
+    "OperatorCode": "CapitalBus",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "0913",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  },
+  {
+    "ProviderID": "006",
+    "OperatorID": "XB_16179",
+    "OperatorName": {
+      "Zh_tw": "三重客運."
+    },
+    "OperatorPhone": "0800-090-607",
+    "OperatorEmail": "scbus@sanchung-bus.com.tw",
+    "OperatorUrl": "http://www.sanchung-bus.com.tw",
+    "OperatorCode": "SanChungBus",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "0301",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  },
+  {
+    "ProviderID": "006",
+    "OperatorID": "XB_16182",
+    "OperatorName": {
+      "Zh_tw": "大都會客運-16182"
+    },
+    "OperatorPhone": "0800-053434",
+    "OperatorEmail": "service11@mtcbus.com.tw",
+    "OperatorUrl": "http://www.mtcbus.com.tw",
+    "OperatorCode": "MetropolitanBus",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "0303",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  },
+  {
+    "ProviderID": "006",
+    "OperatorID": "XB_16278",
+    "OperatorName": {
+      "Zh_tw": "桃園客運-16278"
+    },
+    "OperatorPhone": "(03)375-3711、0800-053808",
+    "OperatorEmail": "tybus＠ms18.hinet.net",
+    "OperatorUrl": "http://www.tybus.com.tw",
+    "OperatorCode": "TaoyuanBus",
+    "AuthorityCode": "TAO",
+    "OperatorNo": "1002",
+    "UpdateTime": "2024-04-21T06:52:18+08:00"
+  }
+]

@@ -7,42 +7,31 @@ part of 'bus.dart';
 // **************************************************************************
 
 Bus _$BusFromJson(Map<String, dynamic> json) => Bus(
-      plateNumb: json['PlateNumb'] as String?,
-      operatorId: $enumDecodeNullable(_$OperatorIdEnumMap, json['OperatorID']),
-      operatorNo: $enumDecodeNullable(_$OperatorNoEnumMap, json['OperatorNo']),
-      routeUid: json['RouteUID'] as String?,
-      routeId: json['RouteID'] as String?,
-      routeName: json['RouteName'] == null
-          ? null
-          : RouteName.fromJson(json['RouteName'] as Map<String, dynamic>),
-      subRouteUid: json['SubRouteUID'] as String?,
-      subRouteId: json['SubRouteID'] as String?,
-      subRouteName: json['SubRouteName'] == null
-          ? null
-          : RouteName.fromJson(json['SubRouteName'] as Map<String, dynamic>),
-      direction: json['Direction'] as int?,
-      busPosition: json['BusPosition'] == null
-          ? null
-          : BusPosition.fromJson(json['BusPosition'] as Map<String, dynamic>),
-      speed: json['Speed'] as int?,
-      azimuth: json['Azimuth'] as int?,
-      dutyStatus: json['DutyStatus'] as int?,
-      busStatus: json['BusStatus'] as int?,
-      gpsTime: json['GPSTime'] == null
-          ? null
-          : DateTime.parse(json['GPSTime'] as String),
-      srcUpdateTime: json['SrcUpdateTime'] == null
-          ? null
-          : DateTime.parse(json['SrcUpdateTime'] as String),
-      updateTime: json['UpdateTime'] == null
-          ? null
-          : DateTime.parse(json['UpdateTime'] as String),
+      plateNumb: json['PlateNumb'] as String,
+      operatorId: $enumDecode(_$OperatorIdEnumMap, json['OperatorID']),
+      operatorNo: $enumDecode(_$OperatorNoEnumMap, json['OperatorNo']),
+      routeUid: json['RouteUID'] as String,
+      routeId: json['RouteID'] as String,
+      routeName: Name.fromJson(json['RouteName'] as Map<String, dynamic>),
+      subRouteUid: json['SubRouteUID'] as String,
+      subRouteId: json['SubRouteID'] as String,
+      subRouteName: Name.fromJson(json['SubRouteName'] as Map<String, dynamic>),
+      direction: json['Direction'] as int,
+      busPosition:
+          BusPosition.fromJson(json['BusPosition'] as Map<String, dynamic>),
+      speed: json['Speed'] as int,
+      azimuth: json['Azimuth'] as int,
+      dutyStatus: json['DutyStatus'] as int,
+      busStatus: json['BusStatus'] as int,
+      gpsTime: DateTime.parse(json['GPSTime'] as String),
+      srcUpdateTime: DateTime.parse(json['SrcUpdateTime'] as String),
+      updateTime: DateTime.parse(json['UpdateTime'] as String),
     );
 
 Map<String, dynamic> _$BusToJson(Bus instance) => <String, dynamic>{
       'PlateNumb': instance.plateNumb,
-      'OperatorID': _$OperatorIdEnumMap[instance.operatorId],
-      'OperatorNo': _$OperatorNoEnumMap[instance.operatorNo],
+      'OperatorID': _$OperatorIdEnumMap[instance.operatorId]!,
+      'OperatorNo': _$OperatorNoEnumMap[instance.operatorNo]!,
       'RouteUID': instance.routeUid,
       'RouteID': instance.routeId,
       'RouteName': instance.routeName,
@@ -55,9 +44,9 @@ Map<String, dynamic> _$BusToJson(Bus instance) => <String, dynamic>{
       'Azimuth': instance.azimuth,
       'DutyStatus': instance.dutyStatus,
       'BusStatus': instance.busStatus,
-      'GPSTime': instance.gpsTime?.toIso8601String(),
-      'SrcUpdateTime': instance.srcUpdateTime?.toIso8601String(),
-      'UpdateTime': instance.updateTime?.toIso8601String(),
+      'GPSTime': instance.gpsTime.toIso8601String(),
+      'SrcUpdateTime': instance.srcUpdateTime.toIso8601String(),
+      'UpdateTime': instance.updateTime.toIso8601String(),
     };
 
 const _$OperatorIdEnumMap = {

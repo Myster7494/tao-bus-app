@@ -1,3 +1,4 @@
+import 'package:bus_app/src/tdx/loader.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bus_app/src/tdx/bus_route.dart';
@@ -6,20 +7,20 @@ import 'package:bus_app/src/web_image/web_image_other.dart'
     if (dart.library.js) 'package:bus_app/src/web_image/web_image_web.dart';
 
 class ZoomRouteMapImagePage extends MaterialPageRoute {
-  final BusRoute busRoute;
+  final String busRouteUID;
 
   ZoomRouteMapImagePage(
-    this.busRoute,
+    this.busRouteUID,
   ) : super(
             builder: (context) => ZoomRouteMapImage(
-                  busRoute: busRoute,
+                  busRouteUID: busRouteUID,
                 ));
 }
 
 class ZoomRouteMapImage extends StatefulWidget {
-  final BusRoute busRoute;
+  final String busRouteUID;
 
-  const ZoomRouteMapImage({super.key, required this.busRoute});
+  const ZoomRouteMapImage({super.key, required this.busRouteUID});
 
   @override
   State<ZoomRouteMapImage> createState() => _ZoomRouteMapImageState();
@@ -39,10 +40,10 @@ class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
 
   @override
   Widget build(BuildContext context) {
+    BusRoute busRoute = Loader.busRoutes[widget.busRouteUID]!;
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-            '${widget.busRoute.routeName.zhTw}\n${widget.busRoute.subRoutes.firstOrNull?.headsign ?? ""}'),
+        title: Text('${busRoute.routeName.zhTw}\n${busRoute.headsign}'),
       ),
       body: Column(
         children: [
@@ -61,7 +62,7 @@ class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
                     child: RotatedBox(
                       quarterTurns: rotateQuarter,
                       child: RouteMapWebImage(
-                        routeMapImage: widget.busRoute.routeMapImage,
+                        routeMapImage: busRoute.routeMapImage,
                       ),
                     ),
                   ),
