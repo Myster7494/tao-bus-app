@@ -48,7 +48,9 @@ class _BusStatePageWidgetState extends State<BusStatePageWidget> {
                 onPressed: () => setState(
                     () => direction = busRoute.subRoutes[index].direction),
                 child: Text(
-                    "往 ${index == 0 ? busRoute.destinationStopNameZh : busRoute.departureStopNameZh}"),
+                  "往 ${index == 0 ? busRoute.destinationStopNameZh : busRoute.departureStopNameZh}",
+                  style: const TextStyle(fontSize: 20),
+                ),
               ),
             ),
           ),
@@ -59,56 +61,78 @@ class _BusStatePageWidgetState extends State<BusStatePageWidget> {
                   Loader.getStopsByDirection(widget.busRouteUID, direction)
                       .length,
               itemBuilder: (context, index) {
-                estimatedTimeData =
-                    Loader.estimatedTime.data[widget.busRouteUID]![direction]![
-                        Loader.getStopsByDirection(
-                                widget.busRouteUID, direction)[index]
-                            .stopUid]!;
+                String stopUid = Loader.getStopsByDirection(
+                        widget.busRouteUID, direction)[index]
+                    .stopUid;
+                debugPrint(stopUid);
+                estimatedTimeData = Loader.estimatedTime
+                        .data[widget.busRouteUID]![direction]![stopUid] ??
+                    (Loader.estimatedTime.data[widget.busRouteUID]![direction]!
+                            .values)
+                        .where((element) =>
+                            element.stopSequence ==
+                            Loader.getStopsByDirection(
+                                    widget.busRouteUID, direction)[index]
+                                .stopSequence)
+                        .first;
                 return ListTile(
-                  title: Text(Loader
-                      .busStops[Loader.getStopsByDirection(
-                              widget.busRouteUID, direction)[index]
-                          .stopUid]!
-                      .stopName
-                      .zhTw),
+                  title: Text(
+                    Loader.busStops[stopUid]!.stopName.zhTw,
+                    style: const TextStyle(
+                      fontSize: 18,
+                    ),
+                  ),
                   trailing: Builder(
                     builder: (context) {
-                      String showText = "";
-                      if (estimatedTimeData.estimatedTime != null) {
-                        if (estimatedTimeData.isClosestStop) {
-                          showText += '${estimatedTimeData.plateNumb} | ';
-                        }
-                        showText += estimatedTimeData.estimatedTime! / 60 == 0
-                            ? "進站中"
-                            : "${estimatedTimeData.estimatedTime! / 60} 分";
-                      } else {
-                        switch (estimatedTimeData.stopStatus) {
-                          case 1:
-                            showText = estimatedTimeData.nextBusTime != null
+                      if (estimatedTimeData.estimatedTime == null ||
+                          estimatedTimeData.estimatedTime! < 0) {
+                        return Text(
+                          switch (estimatedTimeData.stopStatus) {
+                            1 => estimatedTimeData.nextBusTime != null
                                 ? DateFormat.Hm().format(
                                     estimatedTimeData.nextBusTime!.toLocal())
-                                : '今日未營運';
-                            break;
-                          case 2:
-                            showText = '交管不停靠';
-                            break;
-                          case 3:
-                            showText = '末班車已過';
-                            break;
-                          case 4:
-                            showText = '今日未營運';
-                            break;
-                          default:
-                            showText = '未知狀態';
+                                : '今日未營運',
+                            2 => '交管不停靠',
+                            3 => '末班車已過',
+                            4 => '今日未營運',
+                            _ => '未知狀態',
+                          },
+                          style: const TextStyle(
+                            fontSize: 18,
+                          ),
+                        );
+                      }
+                      String showText = "";
+                      Color color = Colors.black;
+                      if (estimatedTimeData.isClosestStop) {
+                        showText += '${estimatedTimeData.plateNumb} | ';
+                      }
+                      int estimatedMinutes =
+                          estimatedTimeData.estimatedTime! ~/ 60;
+                      if (estimatedMinutes <= 1) {
+                        showText += "進站中";
+                        color = Colors.red;
+                      } else {
+                        showText += "$estimatedMinutes 分";
+                        if (estimatedMinutes <= 3) {
+                          color = Colors.orange;
                         }
                       }
-                      return Text(showText);
+                      return Text(
+                        showText,
+                        style: TextStyle(
+                          fontSize: 18,
+                          color: color,
+                        ),
+                      );
                     },
                   ),
                 );
               },
               separatorBuilder: (BuildContext context, int index) =>
-                  const Divider(),
+                  const Divider(
+                height: 5,
+              ),
             ),
           )
         ],

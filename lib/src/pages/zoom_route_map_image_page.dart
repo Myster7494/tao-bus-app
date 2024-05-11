@@ -70,27 +70,51 @@ class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
               },
             ),
           ),
-          const Text("使用滑鼠滾輪或雙指滑動以縮放圖片"),
+          const Text(
+            "使用滑鼠滾輪或雙指滑動以縮放圖片",
+            style: TextStyle(fontSize: 18),
+          ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Expanded(
-                  child: TextButton(
-                      onPressed: () => Navigator.of(context).pop(),
-                      child: const Text("關閉"))),
-              Expanded(
-                  child: TextButton(
-                      onPressed: () {
-                        transformationController.value = Matrix4.identity();
-                      },
-                      child: const Text("重置縮放"))),
-              Expanded(
-                  child: TextButton(
-                      onPressed: () => setState(() {
-                            rotateQuarter++;
-                            rotateQuarter %= 4;
-                          }),
-                      child: const Text("旋轉90度")))
+              Container(
+                padding: const EdgeInsets.all(5),
+                child: FilledButton.icon(
+                  icon: const Icon(Icons.close),
+                  onPressed: () => Navigator.of(context).pop(),
+                  label: const Text(
+                    "關閉",
+                    style: TextStyle(fontSize: 15),
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(10),
+                child: FilledButton.icon(
+                  icon: const Icon(Icons.zoom_out_map),
+                  onPressed: () {
+                    transformationController.value = Matrix4.identity();
+                  },
+                  label: const Text(
+                    "重置縮放",
+                    style: TextStyle(fontSize: 15),
+                  ),
+                ),
+              ),
+              Container(
+                padding: const EdgeInsets.all(10),
+                child: FilledButton.icon(
+                  icon: const Icon(Icons.rotate_right),
+                  onPressed: () => setState(() {
+                    rotateQuarter++;
+                    rotateQuarter %= 4;
+                  }),
+                  label: const Text(
+                    "旋轉90度",
+                    style: TextStyle(fontSize: 15),
+                  ),
+                ),
+              ),
             ],
           ),
         ],
