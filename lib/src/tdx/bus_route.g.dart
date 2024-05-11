@@ -39,8 +39,8 @@ Map<String, dynamic> _$BusRouteToJson(BusRoute instance) => <String, dynamic>{
 RouteMapImage _$RouteMapImageFromJson(Map<String, dynamic> json) =>
     RouteMapImage(
       url: json['Url'] as String,
-      width: json['Width'] as int,
-      height: json['Height'] as int,
+      width: (json['Width'] as num).toInt(),
+      height: (json['Height'] as num).toInt(),
     );
 
 Map<String, dynamic> _$RouteMapImageToJson(RouteMapImage instance) =>
@@ -51,7 +51,7 @@ Map<String, dynamic> _$RouteMapImageToJson(RouteMapImage instance) =>
     };
 
 SubRoute _$SubRouteFromJson(Map<String, dynamic> json) => SubRoute(
-      direction: json['Direction'] as int,
+      direction: (json['Direction'] as num).toInt(),
     );
 
 Map<String, dynamic> _$SubRouteToJson(SubRoute instance) => <String, dynamic>{

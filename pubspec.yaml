@@ -30,10 +30,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  json_annotation: ^4.8.1
-  json_serializable: ^6.7.1
+  json_annotation: ^4.9.0
+  json_serializable: ^6.8.0
   cached_network_image: ^3.3.1
-  provider: ^6.0.0
   intl: ^0.19.0
 
 
@@ -44,7 +43,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.3.3
+  build_runner: ^2.4.9
 
 
   # The "flutter_lints" package below contains a set of recommended lints to
@@ -52,7 +51,7 @@ dev_dependencies:
   # activated in the `analysis_options.yaml` file located at the root of your
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
-  flutter_lints: ^2.0.0
+  flutter_lints: ^4.0.0
 
 
 # For information on the generic Dart part of this file, see the
@@ -78,7 +77,7 @@ flutter:
     - assets/bus_stations.json
     - assets/operator_data.json
     - assets/estimated_time.json
-    #https://tdx.transportdata.tw/api/basic/v2/Bus/EstimatedTimeOfArrival/City/Taoyuan?%24select=PlateNumb%2CStopUID%2CRouteUID%2CDirection%2CEstimateTime%2CStopSequence%2CStopStatus%2CNextBusTime%2CSrcUpdateTime&%24orderby=RouteUID%20asc%2CDirection%20asc%2CStopSequence%20asc&%24filter=RouteUID%20eq%20%27{RouteUID}%27&%24format=JSON
+  #https://tdx.transportdata.tw/api/basic/v2/Bus/EstimatedTimeOfArrival/City/Taoyuan?%24select=PlateNumb%2CStopUID%2CRouteUID%2CDirection%2CEstimateTime%2CStopSequence%2CStopStatus%2CNextBusTime%2CSrcUpdateTime&%24orderby=RouteUID%20asc%2CDirection%20asc%2CStopSequence%20asc&%24filter=RouteUID%20eq%20%27{RouteUID}%27&%24format=JSON
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware

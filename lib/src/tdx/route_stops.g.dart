@@ -8,7 +8,7 @@ part of 'route_stops.dart';
 
 RouteStops _$RouteStopsFromJson(Map<String, dynamic> json) => RouteStops(
       routeUid: json['RouteUID'] as String,
-      direction: json['Direction'] as int,
+      direction: (json['Direction'] as num).toInt(),
       stops: (json['Stops'] as List<dynamic>)
           .map((e) => RouteStop.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -23,7 +23,7 @@ Map<String, dynamic> _$RouteStopsToJson(RouteStops instance) =>
 
 RouteStop _$RouteStopFromJson(Map<String, dynamic> json) => RouteStop(
       stopUid: json['StopUID'] as String,
-      stopSequence: json['StopSequence'] as int,
+      stopSequence: (json['StopSequence'] as num).toInt(),
     );
 
 Map<String, dynamic> _$RouteStopToJson(RouteStop instance) => <String, dynamic>{

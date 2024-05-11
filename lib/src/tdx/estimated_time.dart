@@ -52,10 +52,12 @@ class EstimatedTimeData {
   final DateTime? nextBusTime;
   final DateTime srcUpdateTime;
   final DateTime updateTime;
+  final bool isClosestStop;
 
   EstimatedTimeData({
     required this.plateNumb,
     this.estimatedTime,
+    required this.isClosestStop,
     required this.stopSequence,
     required this.stopStatus,
     this.nextBusTime,
@@ -71,16 +73,23 @@ class EstimatedTime {
 
   factory EstimatedTime.fromJsonList(List<EstimatedTimeJson> json) {
     final data = <String, Map<int, Map<String, EstimatedTimeData>>>{};
+    String plateNumb = "";
     for (final item in json) {
+      bool isClosestStop = false;
       if (!data.containsKey(item.routeUid)) {
         data[item.routeUid] = {};
       }
       if (!data[item.routeUid]!.containsKey(item.direction)) {
         data[item.routeUid]![item.direction] = {};
       }
+      if (item.plateNumb != plateNumb && item.plateNumb != "") {
+        plateNumb = item.plateNumb;
+        isClosestStop = true;
+      }
       data[item.routeUid]![item.direction]![item.stopUid] = EstimatedTimeData(
         plateNumb: item.plateNumb,
         estimatedTime: item.estimateTime,
+        isClosestStop: isClosestStop,
         stopSequence: item.stopSequence,
         stopStatus: item.stopStatus,
         nextBusTime: item.nextBusTime,

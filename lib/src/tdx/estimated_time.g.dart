@@ -11,10 +11,10 @@ EstimatedTimeJson _$EstimatedTimeJsonFromJson(Map<String, dynamic> json) =>
       plateNumb: json['PlateNumb'] as String,
       stopUid: json['StopUID'] as String,
       routeUid: json['RouteUID'] as String,
-      direction: json['Direction'] as int,
-      estimateTime: json['EstimateTime'] as int?,
-      stopSequence: json['StopSequence'] as int,
-      stopStatus: json['StopStatus'] as int,
+      direction: (json['Direction'] as num).toInt(),
+      estimateTime: (json['EstimateTime'] as num?)?.toInt(),
+      stopSequence: (json['StopSequence'] as num).toInt(),
+      stopStatus: (json['StopStatus'] as num).toInt(),
       nextBusTime: json['NextBusTime'] == null
           ? null
           : DateTime.parse(json['NextBusTime'] as String),
