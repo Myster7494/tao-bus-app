@@ -45,7 +45,7 @@ class Bus {
   @JsonKey(name: "UpdateTime")
   final DateTime updateTime;
 
-  Bus({
+  const Bus({
     required this.plateNumb,
     required this.operatorId,
     required this.operatorNo,
@@ -80,7 +80,7 @@ class BusPosition {
   @JsonKey(name: "GeoHash")
   final String? geoHash;
 
-  BusPosition({
+  const BusPosition({
     this.positionLon,
     this.positionLat,
     this.geoHash,

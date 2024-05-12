@@ -25,7 +25,7 @@ class EstimatedTimeJson {
   @JsonKey(name: "UpdateTime")
   final DateTime updateTime;
 
-  EstimatedTimeJson({
+  const EstimatedTimeJson({
     required this.plateNumb,
     required this.stopUid,
     required this.routeUid,
@@ -54,7 +54,7 @@ class EstimatedTimeData {
   final DateTime updateTime;
   final bool isClosestStop;
 
-  EstimatedTimeData({
+  const EstimatedTimeData({
     required this.plateNumb,
     this.estimatedTime,
     required this.isClosestStop,
@@ -63,6 +63,18 @@ class EstimatedTimeData {
     this.nextBusTime,
     required this.srcUpdateTime,
     required this.updateTime,
+  });
+}
+
+class OtherEstimatedData {
+  final EstimatedTimeData estimatedTimeData;
+  final List<int> closestStops;
+  final String srcUpdateTime;
+
+  const OtherEstimatedData({
+    required this.estimatedTimeData,
+    required this.closestStops,
+    required this.srcUpdateTime,
   });
 }
 

@@ -13,7 +13,7 @@ class BusStation {
   @JsonKey(name: "Stops")
   final List<String> stops;
 
-  BusStation({
+  const BusStation({
     required this.stationName,
     required this.stationPosition,
     required this.stops,

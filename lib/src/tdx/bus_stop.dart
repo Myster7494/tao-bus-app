@@ -15,7 +15,7 @@ class BusStop {
   @JsonKey(name: "StopName")
   final Name stopName;
 
-  BusStop({
+  const BusStop({
     required this.stopUid,
     required this.stopPosition,
     required this.stationUid,

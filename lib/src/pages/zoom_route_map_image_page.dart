@@ -42,11 +42,19 @@ class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
   Widget build(BuildContext context) {
     BusRoute busRoute = Loader.busRoutes[widget.busRouteUID]!;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('${busRoute.routeName.zhTw}\n${busRoute.headsign}'),
-      ),
+      appBar: AppBar(title: const Text("路線簡圖")),
       body: Column(
         children: [
+          Container(
+            padding: const EdgeInsets.only(bottom: 10),
+            child: Text(
+              '${busRoute.routeName.zhTw}  |  ${busRoute.headsign}',
+              softWrap: true,
+              maxLines: 10,
+              textAlign: TextAlign.center,
+              style: const TextStyle(fontSize: 20),
+            ),
+          ),
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -70,15 +78,19 @@ class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
               },
             ),
           ),
-          const Text(
-            "使用滑鼠滾輪或雙指滑動以縮放圖片",
-            style: TextStyle(fontSize: 18),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10),
+            child: const Text(
+              "使用滑鼠滾輪或雙指滑動以縮放圖片",
+              textAlign: TextAlign.center,
+              style: TextStyle(fontSize: 18),
+            ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Wrap(
+            alignment: WrapAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(5),
+                padding: const EdgeInsets.all(10),
                 child: FilledButton.icon(
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.of(context).pop(),

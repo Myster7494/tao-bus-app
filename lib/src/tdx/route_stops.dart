@@ -11,7 +11,7 @@ class RouteStops {
   @JsonKey(name: "Stops")
   final List<RouteStop> stops;
 
-  RouteStops({
+  const RouteStops({
     required this.routeUid,
     required this.direction,
     required this.stops,
@@ -30,7 +30,7 @@ class RouteStop {
   @JsonKey(name: "StopSequence")
   final int stopSequence;
 
-  RouteStop({
+  const RouteStop({
     required this.stopUid,
     required this.stopSequence,
   });

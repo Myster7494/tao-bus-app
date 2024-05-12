@@ -27,7 +27,7 @@ class BusRoute {
   @JsonKey(name: "RouteMapImage")
   final RouteMapImage routeMapImage;
 
-  BusRoute({
+  const BusRoute({
     required this.routeUid,
     required this.operators,
     required this.subRoutes,
@@ -55,7 +55,7 @@ class RouteMapImage {
   @JsonKey(name: "Height")
   final int height;
 
-  RouteMapImage({
+  const RouteMapImage({
     required this.url,
     required this.width,
     required this.height,
@@ -72,7 +72,7 @@ class SubRoute {
   @JsonKey(name: "Direction")
   final int direction;
 
-  SubRoute({
+  const SubRoute({
     required this.direction,
   });
 

@@ -1,4 +1,5 @@
 import 'package:bus_app/src/tdx/estimated_time.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bus_app/src/tdx/bus_route.dart';
@@ -35,21 +36,29 @@ class _BusStatePageWidgetState extends State<BusStatePageWidget> {
     BusRoute busRoute = Loader.busRoutes[widget.busRouteUID]!;
     late EstimatedTimeData estimatedTimeData;
     return Scaffold(
-      appBar: AppBar(
-        title: Text('${busRoute.routeName.zhTw}\n${busRoute.headsign}'),
-      ),
+      appBar: AppBar(title: const Text('公車動態')),
       body: Column(
         children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+          Text(
+            '${busRoute.routeName.zhTw}  |  ${busRoute.headsign}',
+            softWrap: true,
+            maxLines: 10,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 20),
+          ),
+          Wrap(
+            alignment: WrapAlignment.center,
             children: List.generate(
               busRoute.subRoutes.length,
-              (index) => TextButton(
-                onPressed: () => setState(
-                    () => direction = busRoute.subRoutes[index].direction),
-                child: Text(
-                  "往 ${index == 0 ? busRoute.destinationStopNameZh : busRoute.departureStopNameZh}",
-                  style: const TextStyle(fontSize: 20),
+              (index) => Container(
+                padding: const EdgeInsets.all(10),
+                child: FilledButton(
+                  onPressed: () => setState(
+                      () => direction = busRoute.subRoutes[index].direction),
+                  child: Text(
+                    "往 ${index == 0 ? busRoute.destinationStopNameZh : busRoute.departureStopNameZh}",
+                    style: const TextStyle(fontSize: 20),
+                  ),
                 ),
               ),
             ),
@@ -64,7 +73,6 @@ class _BusStatePageWidgetState extends State<BusStatePageWidget> {
                 String stopUid = Loader.getStopsByDirection(
                         widget.busRouteUID, direction)[index]
                     .stopUid;
-                debugPrint(stopUid);
                 estimatedTimeData = Loader.estimatedTime
                         .data[widget.busRouteUID]![direction]![stopUid] ??
                     (Loader.estimatedTime.data[widget.busRouteUID]![direction]!

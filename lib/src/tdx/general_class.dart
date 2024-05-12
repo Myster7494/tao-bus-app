@@ -9,7 +9,7 @@ class Name {
   @JsonKey(name: "En")
   final String? en;
 
-  Name({
+  const Name({
     required this.zhTw,
     this.en,
   });
@@ -28,7 +28,7 @@ class Position {
   @JsonKey(name: "GeoHash")
   final String geoHash;
 
-  Position({
+  const Position({
     required this.positionLon,
     required this.positionLat,
     required this.geoHash,
