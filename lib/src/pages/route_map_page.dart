@@ -1,4 +1,4 @@
-import 'package:bus_app/src/tdx/loader.dart';
+import 'package:bus_app/src/util/assets_loader.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bus_app/src/tdx/bus_route.dart';
@@ -40,7 +40,7 @@ class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
 
   @override
   Widget build(BuildContext context) {
-    BusRoute busRoute = Loader.busRoutes[widget.busRouteUID]!;
+    BusRoute busRoute = AssetsLoader.busRoutes[widget.busRouteUID]!;
     return Scaffold(
       appBar: AppBar(title: const Text("路線簡圖")),
       body: Column(

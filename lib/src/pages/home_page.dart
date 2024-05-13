@@ -1,31 +1,17 @@
 import 'package:bus_app/src/pages/bus_state_page.dart';
-import 'package:bus_app/src/pages/zoom_route_map_image_page.dart';
+import 'package:bus_app/src/pages/route_map_page.dart';
 import 'package:bus_app/src/tdx/bus_route.dart';
-import 'package:bus_app/src/tdx/loader.dart';
+import 'package:bus_app/src/util/assets_loader.dart';
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   const HomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text("桃園公車-自主學習"),
-      ),
-      body: const HomePageBody(),
-    );
-  }
+  State<HomePage> createState() => _HomePageState();
 }
 
-class HomePageBody extends StatefulWidget {
-  const HomePageBody({super.key});
-
-  @override
-  State<HomePageBody> createState() => _HomePageBodyState();
-}
-
-class _HomePageBodyState extends State<HomePageBody> {
+class _HomePageState extends State<HomePage> {
   final TextEditingController textEditingController = TextEditingController();
   final ScrollController scrollController =
       ScrollController(keepScrollOffset: false);
@@ -45,7 +31,7 @@ class _HomePageBodyState extends State<HomePageBody> {
   }
 
   void modifyRoutes() {
-    setState(() => busRoutes = Loader.busRoutes.values
+    setState(() => busRoutes = AssetsLoader.busRoutes.values
         .toList()
         .where((busRoute) => textEditingController.text.split(' ').every(
             (element) =>

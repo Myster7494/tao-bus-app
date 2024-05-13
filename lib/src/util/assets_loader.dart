@@ -1,19 +1,16 @@
 import 'dart:convert';
-
 import 'package:bus_app/src/tdx/bus_station.dart';
 import 'package:bus_app/src/tdx/bus_stop.dart';
 import 'package:bus_app/src/tdx/estimated_time.dart';
 import 'package:bus_app/src/tdx/route_stops.dart';
-
-import 'bus_route.dart';
+import '../tdx/bus_route.dart';
 import 'package:flutter/services.dart';
 
-abstract class Loader {
+abstract class AssetsLoader {
   static late final Map<String, BusRoute> busRoutes;
   static late final Map<String, BusStop> busStops;
   static late final Map<String, List<RouteStops>> routeStops;
   static late final Map<String, BusStation> busStations;
-
   static late final EstimatedTime estimatedTime;
 
   static Future<void> loadBusRoutes() async {
@@ -54,12 +51,5 @@ abstract class Loader {
     estimatedTime = EstimatedTime.fromJsonList(jsonObjects
         .map((jsonObject) => EstimatedTimeJson.fromJson(jsonObject))
         .toList());
-  }
-
-  static List<RouteStop> getStopsByDirection(String routeUid, int direction) {
-    return routeStops[routeUid]!
-        .where((element) => element.direction == direction)
-        .first
-        .stops;
   }
 }

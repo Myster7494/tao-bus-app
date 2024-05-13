@@ -1,11 +1,11 @@
 import 'package:bus_app/src/tdx/estimated_time.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import 'package:bus_app/src/tdx/bus_route.dart';
 import 'package:intl/intl.dart';
 
-import '../tdx/loader.dart' show Loader;
+import '../util/assets_loader.dart' show AssetsLoader;
+import '../util/util.dart';
 
 class BusStatePage extends MaterialPageRoute {
   final String busRouteUID;
@@ -33,7 +33,7 @@ class _BusStatePageWidgetState extends State<BusStatePageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    BusRoute busRoute = Loader.busRoutes[widget.busRouteUID]!;
+    BusRoute busRoute = AssetsLoader.busRoutes[widget.busRouteUID]!;
     late EstimatedTimeData estimatedTimeData;
     return Scaffold(
       appBar: AppBar(title: const Text('公車動態')),
@@ -66,26 +66,25 @@ class _BusStatePageWidgetState extends State<BusStatePageWidget> {
           Expanded(
             child: ListView.separated(
               key: PageStorageKey(direction),
-              itemCount:
-                  Loader.getStopsByDirection(widget.busRouteUID, direction)
-                      .length,
+              itemCount: Util.getStopsByDirection(widget.busRouteUID, direction)
+                  .length,
               itemBuilder: (context, index) {
-                String stopUid = Loader.getStopsByDirection(
+                String stopUid = Util.getStopsByDirection(
                         widget.busRouteUID, direction)[index]
                     .stopUid;
-                estimatedTimeData = Loader.estimatedTime
+                estimatedTimeData = AssetsLoader.estimatedTime
                         .data[widget.busRouteUID]![direction]![stopUid] ??
-                    (Loader.estimatedTime.data[widget.busRouteUID]![direction]!
-                            .values)
+                    (AssetsLoader.estimatedTime
+                            .data[widget.busRouteUID]![direction]!.values)
                         .where((element) =>
                             element.stopSequence ==
-                            Loader.getStopsByDirection(
+                            Util.getStopsByDirection(
                                     widget.busRouteUID, direction)[index]
                                 .stopSequence)
                         .first;
                 return ListTile(
                   title: Text(
-                    Loader.busStops[stopUid]!.stopName.zhTw,
+                    AssetsLoader.busStops[stopUid]!.stopName.zhTw,
                     style: const TextStyle(
                       fontSize: 18,
                     ),

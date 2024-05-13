@@ -1,14 +1,16 @@
-import 'package:bus_app/src/pages/home.dart';
-import 'package:bus_app/src/tdx/loader.dart';
+import 'package:bus_app/src/pages/main_page.dart';
+import 'package:bus_app/src/util/assets_loader.dart';
+import 'package:bus_app/src/util/data_helper.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Loader.loadBusRoutes();
-  await Loader.loadBusStops();
-  await Loader.loadRouteStops();
-  await Loader.loadBusStations();
-  await Loader.loadEstimatedTime();
+  await AssetsLoader.loadBusRoutes();
+  await AssetsLoader.loadBusStops();
+  await AssetsLoader.loadRouteStops();
+  await AssetsLoader.loadBusStations();
+  await AssetsLoader.loadEstimatedTime();
+  await DataHelper.loadData();
   runApp(const App());
 }
 
@@ -19,7 +21,7 @@ class App extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Tao-Bus-App',
+      title: '桃園公車-自主學習',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -39,7 +41,7 @@ class App extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const HomePage(),
+      home: const MainPage(),
     );
   }
 }
