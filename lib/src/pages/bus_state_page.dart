@@ -1,11 +1,8 @@
-import 'package:bus_app/src/tdx/estimated_time.dart';
 import 'package:flutter/material.dart';
-
-import 'package:bus_app/src/tdx/bus_route.dart';
 import 'package:intl/intl.dart';
-
-import '../util/assets_loader.dart' show AssetsLoader;
-import '../util/util.dart';
+import '../bus_data/bus_data_loader.dart';
+import '../bus_data/bus_route.dart';
+import '../bus_data/estimated_time.dart';
 
 class BusStatePage extends MaterialPageRoute {
   final String busRouteUID;
@@ -33,7 +30,7 @@ class _BusStatePageWidgetState extends State<BusStatePageWidget> {
 
   @override
   Widget build(BuildContext context) {
-    BusRoute busRoute = AssetsLoader.busRoutes[widget.busRouteUID]!;
+    BusRoute busRoute = BusDataLoader.getBusRoute(widget.busRouteUID)!;
     late EstimatedTimeData estimatedTimeData;
     return Scaffold(
       appBar: AppBar(title: const Text('公車動態')),
@@ -66,73 +63,90 @@ class _BusStatePageWidgetState extends State<BusStatePageWidget> {
           Expanded(
             child: ListView.separated(
               key: PageStorageKey(direction),
-              itemCount: Util.getStopsByDirection(widget.busRouteUID, direction)
+              itemCount: BusDataLoader.getStopsByDirection(
+                      widget.busRouteUID, direction)
                   .length,
               itemBuilder: (context, index) {
-                String stopUid = Util.getStopsByDirection(
+                String stopUid = BusDataLoader.getStopsByDirection(
                         widget.busRouteUID, direction)[index]
                     .stopUid;
-                estimatedTimeData = AssetsLoader.estimatedTime
-                        .data[widget.busRouteUID]![direction]![stopUid] ??
-                    (AssetsLoader.estimatedTime
-                            .data[widget.busRouteUID]![direction]!.values)
-                        .where((element) =>
-                            element.stopSequence ==
-                            Util.getStopsByDirection(
-                                    widget.busRouteUID, direction)[index]
-                                .stopSequence)
-                        .first;
+                estimatedTimeData = BusDataLoader.allEstimatedTime
+                        .getEstimatedTimeData(widget.busRouteUID, direction,
+                            stopUid: stopUid) ??
+                    BusDataLoader.allEstimatedTime.getEstimatedTimeData(
+                        widget.busRouteUID, direction,
+                        stopSequence: index) ??
+                    EstimatedTimeData.noData();
                 return ListTile(
                   title: Text(
-                    AssetsLoader.busStops[stopUid]!.stopName.zhTw,
+                    BusDataLoader.getBusStop(stopUid)!.stopName.zhTw,
                     style: const TextStyle(
                       fontSize: 18,
                     ),
                   ),
-                  trailing: Builder(
-                    builder: (context) {
-                      if (estimatedTimeData.estimatedTime == null ||
-                          estimatedTimeData.estimatedTime! < 0) {
-                        return Text(
-                          switch (estimatedTimeData.stopStatus) {
-                            1 => estimatedTimeData.nextBusTime != null
-                                ? DateFormat.Hm().format(
-                                    estimatedTimeData.nextBusTime!.toLocal())
-                                : '今日未營運',
-                            2 => '交管不停靠',
-                            3 => '末班車已過',
-                            4 => '今日未營運',
-                            _ => '未知狀態',
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Builder(
+                        builder: (context) {
+                          if (estimatedTimeData.estimatedTime == null ||
+                              estimatedTimeData.estimatedTime! < 0) {
+                            return Text(
+                              switch (estimatedTimeData.stopStatus) {
+                                1 => estimatedTimeData.nextBusTime != null
+                                    ? DateFormat.Hm().format(estimatedTimeData
+                                        .nextBusTime!
+                                        .toLocal())
+                                    : '今日未營運',
+                                2 => '交管不停靠',
+                                3 => '末班車已過',
+                                4 => '今日未營運',
+                                999 => '無資料',
+                                _ => '未知狀態',
+                              },
+                              style: const TextStyle(
+                                fontSize: 18,
+                              ),
+                            );
+                          }
+                          String showText = "";
+                          Color color = Colors.black;
+                          double fontSize = 18;
+                          if (estimatedTimeData.isClosestStop) {
+                            showText += '${estimatedTimeData.plateNumb}\n';
+                            fontSize = 16;
+                          }
+                          int estimatedMinutes =
+                              estimatedTimeData.estimatedTime! ~/ 60;
+                          if (estimatedMinutes <= 1) {
+                            showText += "進站中";
+                            color = Colors.red;
+                          } else {
+                            showText += "$estimatedMinutes 分";
+                            if (estimatedMinutes <= 3) {
+                              color = Colors.orange;
+                            }
+                          }
+                          return Text(
+                            showText,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: fontSize,
+                              color: color,
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 10),
+                      Builder(builder: (context) {
+                        return IconButton(
+                          icon: const Icon(Icons.bookmark_border),
+                          onPressed: () {
+                            setState(() {});
                           },
-                          style: const TextStyle(
-                            fontSize: 18,
-                          ),
                         );
-                      }
-                      String showText = "";
-                      Color color = Colors.black;
-                      if (estimatedTimeData.isClosestStop) {
-                        showText += '${estimatedTimeData.plateNumb} | ';
-                      }
-                      int estimatedMinutes =
-                          estimatedTimeData.estimatedTime! ~/ 60;
-                      if (estimatedMinutes <= 1) {
-                        showText += "進站中";
-                        color = Colors.red;
-                      } else {
-                        showText += "$estimatedMinutes 分";
-                        if (estimatedMinutes <= 3) {
-                          color = Colors.orange;
-                        }
-                      }
-                      return Text(
-                        showText,
-                        style: TextStyle(
-                          fontSize: 18,
-                          color: color,
-                        ),
-                      );
-                    },
+                      }),
+                    ],
                   ),
                 );
               },

@@ -1,8 +1,9 @@
 import 'package:bus_app/src/pages/bus_state_page.dart';
 import 'package:bus_app/src/pages/route_map_page.dart';
-import 'package:bus_app/src/tdx/bus_route.dart';
-import 'package:bus_app/src/util/assets_loader.dart';
+import 'package:bus_app/src/bus_data/bus_data_loader.dart';
 import 'package:flutter/material.dart';
+
+import '../bus_data/bus_route.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -31,8 +32,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   void modifyRoutes() {
-    setState(() => busRoutes = AssetsLoader.busRoutes.values
-        .toList()
+    setState(() => busRoutes = BusDataLoader.getAllBusRoutes()
         .where((busRoute) => textEditingController.text.split(' ').every(
             (element) =>
                 busRoute.routeName.zhTw.contains(element) ||

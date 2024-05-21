@@ -1,17 +1,17 @@
 import 'dart:convert';
-import 'package:bus_app/src/tdx/bus_station.dart';
-import 'package:bus_app/src/tdx/bus_stop.dart';
-import 'package:bus_app/src/tdx/estimated_time.dart';
-import 'package:bus_app/src/tdx/route_stops.dart';
-import '../tdx/bus_route.dart';
+import 'package:bus_app/src/bus_data/route_stops.dart';
 import 'package:flutter/services.dart';
+import 'bus_route.dart';
+import 'bus_station.dart';
+import 'bus_stop.dart';
+import 'estimated_time.dart';
 
-abstract class AssetsLoader {
+abstract class BusDataLoader {
   static late final Map<String, BusRoute> busRoutes;
   static late final Map<String, BusStop> busStops;
   static late final Map<String, List<RouteStops>> routeStops;
   static late final Map<String, BusStation> busStations;
-  static late final EstimatedTime estimatedTime;
+  static late final AllEstimatedTime allEstimatedTime;
 
   static Future<void> loadBusRoutes() async {
     final jsonString = await rootBundle.loadString('assets/bus_routes.json');
@@ -48,8 +48,35 @@ abstract class AssetsLoader {
     final jsonString =
         await rootBundle.loadString('assets/estimated_time.json');
     final List jsonObjects = jsonDecode(jsonString);
-    estimatedTime = EstimatedTime.fromJsonList(jsonObjects
+    allEstimatedTime = AllEstimatedTime.fromJsonList(jsonObjects
         .map((jsonObject) => EstimatedTimeJson.fromJson(jsonObject))
         .toList());
+  }
+
+  static Future<void> loadAllData() async {
+    await loadBusRoutes();
+    await loadBusStops();
+    await loadRouteStops();
+    await loadBusStations();
+    await loadEstimatedTime();
+  }
+
+  static BusRoute? getBusRoute(String routeUid) {
+    return busRoutes[routeUid];
+  }
+
+  static List<BusRoute> getAllBusRoutes() {
+    return busRoutes.values.toList();
+  }
+
+  static BusStop? getBusStop(String stopUid) {
+    return busStops[stopUid];
+  }
+
+  static List<RouteStop> getStopsByDirection(String routeUid, int direction) {
+    return BusDataLoader.routeStops[routeUid]!
+        .where((element) => element.direction == direction)
+        .first
+        .stops;
   }
 }

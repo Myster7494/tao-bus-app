@@ -21,7 +21,7 @@ for route in routes:
     if route['RouteUID'] + '.png' not in img_list:
         wget.download(url, out='images/' + route['RouteUID'] + '.png')
     image = Image.open('images/' + route['RouteUID'] + '.png', 'r')
-    new_route['RouteMapImage'] = {'Url': url, 'Width': image.width, 'Height': image.height}
+    new_route['RouteMapImageData'] = {'Url': url, 'Width': image.width, 'Height': image.height}
     new_route['SubRoutes'] = [{key: sub_route[key] for key in sub_route.keys() if key == 'Direction'}
                               for sub_route in route['SubRoutes']]
     new_routes[route['RouteUID']] = new_route

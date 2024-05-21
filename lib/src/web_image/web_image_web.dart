@@ -1,20 +1,19 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 import 'dart:ui_web';
-
-import 'package:bus_app/src/tdx/bus_route.dart';
+import 'package:bus_app/src/web_image/web_image_data.dart';
 import 'package:flutter/cupertino.dart';
 
-class RouteMapWebImage extends StatelessWidget {
-  final RouteMapImage routeMapImage;
+class WebImage extends StatelessWidget {
+  final WebImageData webImageData;
 
-  const RouteMapWebImage({super.key, required this.routeMapImage});
+  const WebImage({super.key, required this.webImageData});
 
   @override
   Widget build(BuildContext context) {
-    platformViewRegistry.registerViewFactory(routeMapImage.url, (viewId) {
+    platformViewRegistry.registerViewFactory(webImageData.url, (viewId) {
       ImageElement imageElement = ImageElement(
-        src: routeMapImage.url,
+        src: webImageData.url,
       );
       imageElement.draggable = false;
       imageElement.style.width = "100%";
@@ -24,9 +23,9 @@ class RouteMapWebImage extends StatelessWidget {
     return FittedBox(
         fit: BoxFit.contain,
         child: SizedBox(
-          width: routeMapImage.width as double,
-          height: routeMapImage.height as double,
-          child: HtmlElementView(viewType: routeMapImage.url),
+          width: webImageData.width as double,
+          height: webImageData.height as double,
+          child: HtmlElementView(viewType: webImageData.url),
         ));
   }
 }

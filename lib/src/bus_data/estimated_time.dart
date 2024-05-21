@@ -64,6 +64,17 @@ class EstimatedTimeData {
     required this.srcUpdateTime,
     required this.updateTime,
   });
+
+  factory EstimatedTimeData.noData() {
+    return EstimatedTimeData(
+      plateNumb: "",
+      isClosestStop: false,
+      stopSequence: -1,
+      stopStatus: 999,
+      srcUpdateTime: DateTime.now(),
+      updateTime: DateTime.now(),
+    );
+  }
 }
 
 class OtherEstimatedData {
@@ -78,12 +89,12 @@ class OtherEstimatedData {
   });
 }
 
-class EstimatedTime {
+class AllEstimatedTime {
   final Map<String, Map<int, Map<String, EstimatedTimeData>>> data;
 
-  EstimatedTime({required this.data});
+  AllEstimatedTime({required this.data});
 
-  factory EstimatedTime.fromJsonList(List<EstimatedTimeJson> json) {
+  factory AllEstimatedTime.fromJsonList(List<EstimatedTimeJson> json) {
     final data = <String, Map<int, Map<String, EstimatedTimeData>>>{};
     String plateNumb = "";
     for (final item in json) {
@@ -109,6 +120,19 @@ class EstimatedTime {
         updateTime: item.updateTime,
       );
     }
-    return EstimatedTime(data: data);
+    return AllEstimatedTime(data: data);
+  }
+
+  EstimatedTimeData? getEstimatedTimeData(String routeUid, int direction,
+      {String? stopUid, int? stopSequence}) {
+    if (stopUid == null) {
+      if (stopSequence == null) {
+        return null;
+      }
+      return data[routeUid]?[direction]
+          ?.values
+          .firstWhere((element) => element.stopSequence == stopSequence);
+    }
+    return data[routeUid]?[direction]?[stopUid];
   }
 }

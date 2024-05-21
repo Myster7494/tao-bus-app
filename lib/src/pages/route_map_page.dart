@@ -1,10 +1,7 @@
-import 'package:bus_app/src/util/assets_loader.dart';
+import 'package:bus_app/src/bus_data/bus_data_loader.dart';
 import 'package:flutter/material.dart';
-
-import 'package:bus_app/src/tdx/bus_route.dart';
-
-import 'package:bus_app/src/web_image/web_image_other.dart'
-    if (dart.library.js) 'package:bus_app/src/web_image/web_image_web.dart';
+import '../bus_data/bus_route.dart';
+import '../web_image/web_image.dart';
 
 class ZoomRouteMapImagePage extends MaterialPageRoute {
   final String busRouteUID;
@@ -40,7 +37,7 @@ class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
 
   @override
   Widget build(BuildContext context) {
-    BusRoute busRoute = AssetsLoader.busRoutes[widget.busRouteUID]!;
+    BusRoute busRoute = BusDataLoader.getBusRoute(widget.busRouteUID)!;
     return Scaffold(
       appBar: AppBar(title: const Text("路線簡圖")),
       body: Column(
@@ -69,8 +66,8 @@ class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
                     padding: const EdgeInsets.all(10),
                     child: RotatedBox(
                       quarterTurns: rotateQuarter,
-                      child: RouteMapWebImage(
-                        routeMapImage: busRoute.routeMapImage,
+                      child: WebImage(
+                        webImageData: busRoute.routeMapImageData,
                       ),
                     ),
                   ),

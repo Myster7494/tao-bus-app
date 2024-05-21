@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import '../web_image/web_image_data.dart';
 import 'general_class.dart';
 
 part 'bus_route.g.dart';
@@ -24,8 +25,8 @@ class BusRoute {
   final String destinationStopNameEn;
   @JsonKey(name: "Headsign")
   final String headsign;
-  @JsonKey(name: "RouteMapImage")
-  final RouteMapImage routeMapImage;
+  @JsonKey(name: "RouteMapImageData")
+  final WebImageData routeMapImageData;
 
   const BusRoute({
     required this.routeUid,
@@ -37,34 +38,13 @@ class BusRoute {
     required this.destinationStopNameZh,
     required this.destinationStopNameEn,
     required this.headsign,
-    required this.routeMapImage,
+    required this.routeMapImageData,
   });
 
   factory BusRoute.fromJson(Map<String, dynamic> json) =>
       _$BusRouteFromJson(json);
 
   Map<String, dynamic> toJson() => _$BusRouteToJson(this);
-}
-
-@JsonSerializable()
-class RouteMapImage {
-  @JsonKey(name: "Url")
-  final String url;
-  @JsonKey(name: "Width")
-  final int width;
-  @JsonKey(name: "Height")
-  final int height;
-
-  const RouteMapImage({
-    required this.url,
-    required this.width,
-    required this.height,
-  });
-
-  factory RouteMapImage.fromJson(Map<String, dynamic> json) =>
-      _$RouteMapImageFromJson(json);
-
-  Map<String, dynamic> toJson() => _$RouteMapImageToJson(this);
 }
 
 @JsonSerializable()

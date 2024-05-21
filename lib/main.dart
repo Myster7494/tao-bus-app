@@ -1,16 +1,12 @@
 import 'package:bus_app/src/pages/main_page.dart';
-import 'package:bus_app/src/util/assets_loader.dart';
-import 'package:bus_app/src/util/data_helper.dart';
+import 'package:bus_app/src/storage/storage.dart';
+import 'package:bus_app/src/bus_data/bus_data_loader.dart';
 import 'package:flutter/material.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await AssetsLoader.loadBusRoutes();
-  await AssetsLoader.loadBusStops();
-  await AssetsLoader.loadRouteStops();
-  await AssetsLoader.loadBusStations();
-  await AssetsLoader.loadEstimatedTime();
-  await DataHelper.loadData();
+  await BusDataLoader.loadAllData();
+  await StorageHelper.init();
   runApp(const App());
 }
 

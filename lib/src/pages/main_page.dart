@@ -18,6 +18,15 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("桃園公車-自主學習"),
+        // actions: [
+        //   IconButton(
+        //     icon: const Icon(Icons.clear),
+        //     onPressed: () => DataHelper.clear(),
+        //   ),
+        //   IconButton(
+        //       onPressed: () => DataHelper.print(),
+        //       icon: const Icon(Icons.print)),
+        // ],
       ),
       body: switch (selectedIndex) {
         0 => const HomePage(),
