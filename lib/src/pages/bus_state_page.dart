@@ -1,37 +1,26 @@
+import 'package:bus_app/src/widgets/estimated_time_text.dart';
+import 'package:bus_app/src/widgets/favorite_stop_button.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+
 import '../bus_data/bus_data_loader.dart';
 import '../bus_data/bus_route.dart';
-import '../bus_data/estimated_time.dart';
 
-class BusStatePage extends MaterialPageRoute {
-  final String busRouteUID;
+class BusStatePage extends StatefulWidget {
+  final String routeUid;
 
-  BusStatePage(
-    this.busRouteUID,
-  ) : super(
-          builder: (context) => BusStatePageWidget(
-            busRouteUID: busRouteUID,
-          ),
-        );
-}
-
-class BusStatePageWidget extends StatefulWidget {
-  final String busRouteUID;
-
-  const BusStatePageWidget({super.key, required this.busRouteUID});
+  const BusStatePage({super.key, required this.routeUid});
 
   @override
-  State<BusStatePageWidget> createState() => _BusStatePageWidgetState();
+  State<BusStatePage> createState() => _BusStatePageState();
 }
 
-class _BusStatePageWidgetState extends State<BusStatePageWidget> {
+class _BusStatePageState extends State<BusStatePage> {
   int direction = 0;
 
   @override
   Widget build(BuildContext context) {
-    BusRoute busRoute = BusDataLoader.getBusRoute(widget.busRouteUID)!;
-    late EstimatedTimeData estimatedTimeData;
+    BusRoute busRoute = BusDataLoader.getBusRoute(widget.routeUid)!;
+    ColorScheme colorScheme = Theme.of(context).colorScheme;
     return Scaffold(
       appBar: AppBar(title: const Text('公車動態')),
       body: Column(
@@ -49,12 +38,20 @@ class _BusStatePageWidgetState extends State<BusStatePageWidget> {
               busRoute.subRoutes.length,
               (index) => Container(
                 padding: const EdgeInsets.all(10),
-                child: FilledButton(
+                child: OutlinedButton(
+                  style: OutlinedButton.styleFrom(
+                    side: BorderSide(width: 2.0, color: colorScheme.primary),
+                    backgroundColor:
+                        direction == index ? colorScheme.primary : null,
+                  ),
                   onPressed: () => setState(
                       () => direction = busRoute.subRoutes[index].direction),
                   child: Text(
                     "往 ${index == 0 ? busRoute.destinationStopNameZh : busRoute.departureStopNameZh}",
-                    style: const TextStyle(fontSize: 20),
+                    style: TextStyle(
+                        fontSize: 20,
+                        color:
+                            direction == index ? colorScheme.onPrimary : null),
                   ),
                 ),
               ),
@@ -63,20 +60,13 @@ class _BusStatePageWidgetState extends State<BusStatePageWidget> {
           Expanded(
             child: ListView.separated(
               key: PageStorageKey(direction),
-              itemCount: BusDataLoader.getStopsByDirection(
-                      widget.busRouteUID, direction)
+              itemCount: BusDataLoader.getRouteStopsByDirection(
+                      widget.routeUid, direction)!
                   .length,
               itemBuilder: (context, index) {
-                String stopUid = BusDataLoader.getStopsByDirection(
-                        widget.busRouteUID, direction)[index]
+                String stopUid = BusDataLoader.getRouteStopsByDirection(
+                        widget.routeUid, direction)![index]
                     .stopUid;
-                estimatedTimeData = BusDataLoader.allEstimatedTime
-                        .getEstimatedTimeData(widget.busRouteUID, direction,
-                            stopUid: stopUid) ??
-                    BusDataLoader.allEstimatedTime.getEstimatedTimeData(
-                        widget.busRouteUID, direction,
-                        stopSequence: index) ??
-                    EstimatedTimeData.noData();
                 return ListTile(
                   title: Text(
                     BusDataLoader.getBusStop(stopUid)!.stopName.zhTw,
@@ -87,65 +77,17 @@ class _BusStatePageWidgetState extends State<BusStatePageWidget> {
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Builder(
-                        builder: (context) {
-                          if (estimatedTimeData.estimatedTime == null ||
-                              estimatedTimeData.estimatedTime! < 0) {
-                            return Text(
-                              switch (estimatedTimeData.stopStatus) {
-                                1 => estimatedTimeData.nextBusTime != null
-                                    ? DateFormat.Hm().format(estimatedTimeData
-                                        .nextBusTime!
-                                        .toLocal())
-                                    : '今日未營運',
-                                2 => '交管不停靠',
-                                3 => '末班車已過',
-                                4 => '今日未營運',
-                                999 => '無資料',
-                                _ => '未知狀態',
-                              },
-                              style: const TextStyle(
-                                fontSize: 18,
-                              ),
-                            );
-                          }
-                          String showText = "";
-                          Color color = Colors.black;
-                          double fontSize = 18;
-                          if (estimatedTimeData.isClosestStop) {
-                            showText += '${estimatedTimeData.plateNumb}\n';
-                            fontSize = 16;
-                          }
-                          int estimatedMinutes =
-                              estimatedTimeData.estimatedTime! ~/ 60;
-                          if (estimatedMinutes <= 1) {
-                            showText += "進站中";
-                            color = Colors.red;
-                          } else {
-                            showText += "$estimatedMinutes 分";
-                            if (estimatedMinutes <= 3) {
-                              color = Colors.orange;
-                            }
-                          }
-                          return Text(
-                            showText,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: fontSize,
-                              color: color,
-                            ),
-                          );
-                        },
-                      ),
+                      EstimatedTimeText(
+                          routeUid: widget.routeUid,
+                          direction: direction,
+                          stopUid: stopUid,
+                          stopSequence: index + 1),
                       const SizedBox(width: 10),
-                      Builder(builder: (context) {
-                        return IconButton(
-                          icon: const Icon(Icons.bookmark_border),
-                          onPressed: () {
-                            setState(() {});
-                          },
-                        );
-                      }),
+                      FavoriteStopButton(
+                          routeUid: widget.routeUid,
+                          direction: direction,
+                          stopUid: stopUid,
+                          setState: setState),
                     ],
                   ),
                 );

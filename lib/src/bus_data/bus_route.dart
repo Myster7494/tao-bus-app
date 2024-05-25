@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
-import '../web_image/web_image_data.dart';
+import '../widgets/web_image/web_image_data.dart';
 import 'general_class.dart';
 
 part 'bus_route.g.dart';

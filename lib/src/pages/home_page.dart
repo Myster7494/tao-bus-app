@@ -1,9 +1,9 @@
-import 'package:bus_app/src/pages/bus_state_page.dart';
-import 'package:bus_app/src/pages/route_map_page.dart';
-import 'package:bus_app/src/bus_data/bus_data_loader.dart';
 import 'package:flutter/material.dart';
 
+import '../bus_data/bus_data_loader.dart';
 import '../bus_data/bus_route.dart';
+import '../pages/route_map_img_page.dart';
+import 'bus_state_page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -129,10 +129,12 @@ class _HomePageState extends State<HomePage> {
               if (busRoutes.isEmpty) {
                 return Center(
                   child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Icon(Icons.search_off,
                           size: 100,
                           color: Theme.of(context).colorScheme.primary),
+                      const SizedBox(height: 10),
                       const Text(
                         "找不到符合的路線",
                         style: TextStyle(
@@ -147,44 +149,55 @@ class _HomePageState extends State<HomePage> {
                 controller: scrollController,
                 itemCount: busRoutes.length,
                 itemBuilder: (context, index) => ListTile(
-                    title: Text(
-                      busRoutes[index].routeName.zhTw,
-                      style: const TextStyle(
-                        fontSize: 18,
-                      ),
+                  title: Text(
+                    busRoutes[index].routeName.zhTw,
+                    style: const TextStyle(
+                      fontSize: 18,
                     ),
-                    subtitle: Text(
-                      busRoutes[index].headsign,
-                      style: const TextStyle(
-                        fontSize: 16,
-                      ),
+                  ),
+                  subtitle: Text(
+                    busRoutes[index].headsign,
+                    style: const TextStyle(
+                      fontSize: 16,
                     ),
-                    trailing: PopupMenuButton(
-                      tooltip: "顯示功能選單",
-                      itemBuilder: (BuildContext context) => [
-                        PopupMenuItem(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            child: const Center(
-                              child: Text(
-                                "顯示路線簡圖",
-                                style: TextStyle(fontSize: 16),
-                              ),
+                  ),
+                  trailing: PopupMenuButton(
+                    tooltip: "顯示功能選單",
+                    itemBuilder: (BuildContext context) => [
+                      PopupMenuItem(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: const Center(
+                          child: Text(
+                            "顯示路線簡圖",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => RouteMapPage(
+                                routeUid: busRoutes[index].routeUid),
+                          ),
+                        ),
+                      ),
+                      PopupMenuItem(
+                        padding: const EdgeInsets.symmetric(horizontal: 5),
+                        child: const Center(
+                          child: Text(
+                            "顯示公車動態",
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => BusStatePage(
+                              routeUid: busRoutes[index].routeUid,
                             ),
-                            onTap: () => Navigator.of(context).push(
-                                ZoomRouteMapImagePage(
-                                    busRoutes[index].routeUid))),
-                        PopupMenuItem(
-                            padding: const EdgeInsets.symmetric(horizontal: 5),
-                            child: const Center(
-                              child: Text(
-                                "顯示公車動態",
-                                style: TextStyle(fontSize: 16),
-                              ),
-                            ),
-                            onTap: () => Navigator.of(context)
-                                .push(BusStatePage(busRoutes[index].routeUid))),
-                      ],
-                    )),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
                 separatorBuilder: (context, index) => const Divider(height: 5),
               );
             },

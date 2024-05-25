@@ -32,24 +32,24 @@ jobs:
         with:
           name: Android AAB
           path: ./build/app/outputs/bundle/release/app-release.aab
-  ios:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
-        with:
-          flutter-version: "3.16.8"
-          channel: "stable"
-          cache: true
-      - name: Build iOS
-        run: |
-          flutter pub get
-          flutter build ios --release --no-codesign
-      - name: Upload IPA
-        uses: actions/upload-artifact@v3
-        with:
-          name: iOS
-          path: ./build/ios/iphoneos/Runner.app
+  #  ios:
+  #    runs-on: macos-latest
+  #    steps:
+  #      - uses: actions/checkout@v3
+  #      - uses: subosito/flutter-action@v2
+  #        with:
+  #          flutter-version: "3.16.8"
+  #          channel: "stable"
+  #          cache: true
+  #      - name: Build iOS
+  #        run: |
+  #          flutter pub get
+  #          flutter build ios --release --no-codesign
+  #      - name: Upload IPA
+  #        uses: actions/upload-artifact@v3
+  #        with:
+  #          name: iOS
+  #          path: ./build/ios/iphoneos/Runner.app
   web:
     runs-on: ubuntu-latest
     steps:

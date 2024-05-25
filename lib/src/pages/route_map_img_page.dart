@@ -1,29 +1,19 @@
 import 'package:bus_app/src/bus_data/bus_data_loader.dart';
 import 'package:flutter/material.dart';
+
 import '../bus_data/bus_route.dart';
-import '../web_image/web_image.dart';
+import '../widgets/web_image/web_image.dart';
 
-class ZoomRouteMapImagePage extends MaterialPageRoute {
-  final String busRouteUID;
+class RouteMapPage extends StatefulWidget {
+  final String routeUid;
 
-  ZoomRouteMapImagePage(
-    this.busRouteUID,
-  ) : super(
-            builder: (context) => ZoomRouteMapImage(
-                  busRouteUID: busRouteUID,
-                ));
-}
-
-class ZoomRouteMapImage extends StatefulWidget {
-  final String busRouteUID;
-
-  const ZoomRouteMapImage({super.key, required this.busRouteUID});
+  const RouteMapPage({super.key, required this.routeUid});
 
   @override
-  State<ZoomRouteMapImage> createState() => _ZoomRouteMapImageState();
+  State<RouteMapPage> createState() => _RouteMapPageState();
 }
 
-class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
+class _RouteMapPageState extends State<RouteMapPage> {
   int rotateQuarter = 0;
   TransformationController transformationController =
       TransformationController();
@@ -37,7 +27,7 @@ class _ZoomRouteMapImageState extends State<ZoomRouteMapImage> {
 
   @override
   Widget build(BuildContext context) {
-    BusRoute busRoute = BusDataLoader.getBusRoute(widget.busRouteUID)!;
+    BusRoute busRoute = BusDataLoader.getBusRoute(widget.routeUid)!;
     return Scaffold(
       appBar: AppBar(title: const Text("路線簡圖")),
       body: Column(

@@ -1,10 +1,12 @@
 import 'dart:convert';
-import 'package:bus_app/src/bus_data/route_stops.dart';
+
 import 'package:flutter/services.dart';
+
 import 'bus_route.dart';
 import 'bus_station.dart';
 import 'bus_stop.dart';
 import 'estimated_time.dart';
+import 'route_stops.dart';
 
 abstract class BusDataLoader {
   static late final Map<String, BusRoute> busRoutes;
@@ -73,10 +75,16 @@ abstract class BusDataLoader {
     return busStops[stopUid];
   }
 
-  static List<RouteStop> getStopsByDirection(String routeUid, int direction) {
+  static List<RouteStop>? getRouteStopsByDirection(
+      String routeUid, int direction) {
     return BusDataLoader.routeStops[routeUid]!
-        .where((element) => element.direction == direction)
-        .first
+        .firstWhere((element) => element.direction == direction)
         .stops;
+  }
+
+  static RouteStop? getRouteStopByUid(
+      String routeUid, int direction, String stopUid) {
+    return getRouteStopsByDirection(routeUid, direction)
+        ?.firstWhere((element) => element.stopUid == stopUid);
   }
 }

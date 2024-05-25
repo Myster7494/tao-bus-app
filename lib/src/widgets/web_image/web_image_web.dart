@@ -1,8 +1,9 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 import 'dart:ui_web';
-import 'package:bus_app/src/web_image/web_image_data.dart';
 import 'package:flutter/cupertino.dart';
+
+import 'web_image_data.dart';
 
 class WebImage extends StatelessWidget {
   final WebImageData webImageData;

@@ -96,8 +96,15 @@ class AllEstimatedTime {
 
   factory AllEstimatedTime.fromJsonList(List<EstimatedTimeJson> json) {
     final data = <String, Map<int, Map<String, EstimatedTimeData>>>{};
-    String plateNumb = "";
+    String? lastRouteUid;
+    int? lastDirection;
+    String? lastPlateNumb;
     for (final item in json) {
+      if (item.routeUid != lastRouteUid || item.direction != lastDirection) {
+        lastRouteUid = item.routeUid;
+        lastDirection = item.direction;
+        lastPlateNumb = null;
+      }
       bool isClosestStop = false;
       if (!data.containsKey(item.routeUid)) {
         data[item.routeUid] = {};
@@ -105,8 +112,8 @@ class AllEstimatedTime {
       if (!data[item.routeUid]!.containsKey(item.direction)) {
         data[item.routeUid]![item.direction] = {};
       }
-      if (item.plateNumb != plateNumb && item.plateNumb != "") {
-        plateNumb = item.plateNumb;
+      if (item.plateNumb != lastPlateNumb) {
+        lastPlateNumb = item.plateNumb;
         isClosestStop = true;
       }
       data[item.routeUid]![item.direction]![item.stopUid] = EstimatedTimeData(

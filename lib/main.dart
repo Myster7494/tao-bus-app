@@ -1,12 +1,14 @@
-import 'package:bus_app/src/pages/main_page.dart';
-import 'package:bus_app/src/storage/storage.dart';
 import 'package:bus_app/src/bus_data/bus_data_loader.dart';
+import 'package:bus_app/src/pages/main_page.dart';
+import 'package:bus_app/src/storage/local_storage.dart';
 import 'package:flutter/material.dart';
+
+final LocalStorage localStorage = LocalStorage();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await BusDataLoader.loadAllData();
-  await StorageHelper.init();
+  await localStorage.init();
   runApp(const App());
 }
 
@@ -36,6 +38,10 @@ class App extends StatelessWidget {
         // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+          selectedLabelStyle: TextStyle(fontSize: 24),
+          unselectedLabelStyle: TextStyle(fontSize: 24),
+        ),
       ),
       home: const MainPage(),
     );
