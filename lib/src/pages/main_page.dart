@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../main.dart';
 import 'favorite_stops_page.dart';
 import 'home_page.dart';
+import 'settings_page.dart';
 import 'stops_map_osm_page.dart';
 
 class MainPage extends StatefulWidget {
@@ -31,6 +32,7 @@ class _MainPageState extends State<MainPage> {
         0 => const HomePage(),
         1 => const FavoriteStopsPage(),
         2 => const NearStopsOsmPage(),
+        3 => const SettingsPage(),
         _ => throw UnsupportedError('Invalid index: $selectedIndex'),
       },
       bottomNavigationBar: NavigationBar(
@@ -51,6 +53,11 @@ class _MainPageState extends State<MainPage> {
             icon: Icon(Icons.map_outlined),
             selectedIcon: Icon(Icons.map),
             label: '站牌地圖',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.settings_outlined),
+            selectedIcon: Icon(Icons.settings),
+            label: '設定',
           ),
         ],
       ),

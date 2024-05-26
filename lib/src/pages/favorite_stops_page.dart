@@ -18,13 +18,14 @@ class _FavoriteStopsPageState extends State<FavoriteStopsPage> {
   @override
   Widget build(BuildContext context) {
     if (localStorage.favoriteStops.isEmpty) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.bookmark_border, size: 100),
-            SizedBox(height: 10),
-            Text(
+            Icon(Icons.bookmark_border,
+                size: 100, color: Theme.of(context).colorScheme.primary),
+            const SizedBox(height: 10),
+            const Text(
               '尚無任何收藏站牌',
               style: TextStyle(
                 fontSize: 20,

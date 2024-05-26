@@ -1,3 +1,4 @@
+import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'general_class.g.dart';
@@ -38,4 +39,8 @@ class Position {
       _$PositionFromJson(json);
 
   Map<String, dynamic> toJson() => _$PositionToJson(this);
+
+  GeoPoint toGeoPoint() {
+    return GeoPoint(latitude: positionLat, longitude: positionLon);
+  }
 }
