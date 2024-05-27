@@ -7,6 +7,7 @@ part of 'bus_station.dart';
 // **************************************************************************
 
 BusStation _$BusStationFromJson(Map<String, dynamic> json) => BusStation(
+      stationUid: json['StationUID'] as String,
       stationName: Name.fromJson(json['StationName'] as Map<String, dynamic>),
       stationPosition:
           Position.fromJson(json['StationPosition'] as Map<String, dynamic>),
@@ -15,6 +16,7 @@ BusStation _$BusStationFromJson(Map<String, dynamic> json) => BusStation(
 
 Map<String, dynamic> _$BusStationToJson(BusStation instance) =>
     <String, dynamic>{
+      'StationUID': instance.stationUid,
       'StationName': instance.stationName,
       'StationPosition': instance.stationPosition,
       'Stops': instance.stops,

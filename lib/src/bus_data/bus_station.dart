@@ -6,6 +6,8 @@ part 'bus_station.g.dart';
 
 @JsonSerializable()
 class BusStation {
+  @JsonKey(name: "StationUID")
+  final String stationUid;
   @JsonKey(name: "StationName")
   final Name stationName;
   @JsonKey(name: "StationPosition")
@@ -14,6 +16,7 @@ class BusStation {
   final List<String> stops;
 
   const BusStation({
+    required this.stationUid,
     required this.stationName,
     required this.stationPosition,
     required this.stops,

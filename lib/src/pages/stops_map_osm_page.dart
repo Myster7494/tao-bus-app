@@ -17,9 +17,16 @@ class NearStopsOsmPage extends StatefulWidget {
 }
 
 class _NearStopsOsmPageState extends State<NearStopsOsmPage> {
-  final mapController = MapController.withUserPosition();
+  final mapController = MapController.withUserPosition(
+      trackUserLocation: const UserTrackingOption(
+    enableTracking: true,
+    unFollowUser: true,
+  ));
+  final Map<GeoPoint, String> nearStations = {};
 
-  Future<void> _drawCircle(ThemeData themeData) async {
+  Future<void> _drawNearStops(ThemeData themeData) async {
+    await mapController.removeAllCircle();
+    await mapController.removeMarkers(nearStations.keys.toList());
     await mapController.drawCircle(
       CircleOSM(
         key: "1kmCircle",
@@ -30,6 +37,47 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage> {
         strokeWidth: 3,
       ),
     );
+
+    GeoPoint myLocation = await mapController.myLocation();
+    const rad = pi / 180;
+    final phi = myLocation.latitude * rad;
+    final double latBoard1 = myLocation.latitude - 0.009;
+    final double latBoard2 = myLocation.latitude + 0.009;
+    final double cosLat = 0.009 / cos(myLocation.latitude * rad);
+    final double lonBoard1 = myLocation.longitude - cosLat;
+    final double lonBoard2 = myLocation.longitude + cosLat;
+    nearStations.clear();
+    for (BusStation busStation in BusDataLoader.busStations.values) {
+      if (!(busStation.stationPosition.positionLat >= latBoard1 &&
+          myLocation.latitude <= latBoard2 &&
+          busStation.stationPosition.positionLon >= lonBoard1 &&
+          myLocation.longitude <= lonBoard2)) {
+        continue;
+      }
+      final double a = sqrtSin(
+              (busStation.stationPosition.positionLat - myLocation.latitude) *
+                  rad /
+                  2) +
+          sqrtCos2(phi, busStation.stationPosition.positionLat * rad) *
+              sqrtSin((busStation.stationPosition.positionLon -
+                      myLocation.longitude) *
+                  rad /
+                  2);
+      final GeoPoint stationGeoPoint = busStation.stationPosition.toGeoPoint();
+      if (a / (1 - a) <= 6.159e-9) {
+        await mapController.addMarker(
+          stationGeoPoint,
+          markerIcon: const MarkerIcon(
+            icon: Icon(
+              Icons.location_on_outlined,
+              size: 48,
+              color: Colors.red,
+            ),
+          ),
+        );
+        nearStations[stationGeoPoint] = busStation.stationUid;
+      }
+    }
   }
 
   @override
@@ -72,21 +120,19 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage> {
                 ),
                 directionArrowMarker: const MarkerIcon(
                   icon: Icon(
-                    Icons.double_arrow,
+                    Icons.arrow_right,
                     size: 48,
                     color: Colors.blue,
                   ),
                 ),
               ),
             ),
+            onLocationChanged: (_) async => await _drawNearStops(themeData),
             onGeoPointClicked: (geoPoint) async {
-              BusStation? clickBusStation = BusDataLoader.busStations.values
-                  .cast<BusStation?>()
-                  .firstWhere((busStation) =>
-                      busStation!.stationPosition.positionLat ==
-                          geoPoint.latitude &&
-                      busStation.stationPosition.positionLon ==
-                          geoPoint.longitude);
+              BusStation? clickBusStation = BusDataLoader.getBusStation(
+                  nearStations.entries
+                      .firstWhere((mapEntry) => mapEntry.key.isEqual(geoPoint))
+                      .value);
               if (clickBusStation != null) {
                 Util.showSnackBar(
                   context,
@@ -96,38 +142,8 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage> {
             },
             onMapIsReady: (isReady) async {
               if (isReady) {
-                await mapController.enableTracking(enableStopFollow: true);
-                await _drawCircle(themeData);
-
-                GeoPoint myLocation = await mapController.myLocation();
-                const rad = pi / 180;
-                final phi1 = myLocation.latitude * rad;
-                for (BusStation busStation
-                    in BusDataLoader.busStations.values) {
-                  final double a = sqrtSin(
-                          (busStation.stationPosition.positionLat -
-                                  myLocation.latitude) *
-                              rad /
-                              2) +
-                      sqrtCos2(phi1,
-                              busStation.stationPosition.positionLat * rad) *
-                          sqrtSin((busStation.stationPosition.positionLon -
-                                  myLocation.longitude) *
-                              rad /
-                              2);
-                  if (a / (1 - a) <= 6.159e-9) {
-                    await mapController.addMarker(
-                      busStation.stationPosition.toGeoPoint(),
-                      markerIcon: const MarkerIcon(
-                        icon: Icon(
-                          Icons.location_on_outlined,
-                          size: 48,
-                          color: Colors.red,
-                        ),
-                      ),
-                    );
-                  }
-                }
+                await mapController.enableTracking();
+                await _drawNearStops(themeData);
               }
             },
           ),
@@ -168,8 +184,7 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage> {
                   ),
                   const SizedBox(height: 10),
                   FloatingActionButton(
-                    onPressed: () async => await mapController.enableTracking(
-                        enableStopFollow: true),
+                    onPressed: () async => await mapController.enableTracking(),
                     child: const Icon(Icons.my_location),
                   ),
                 ],

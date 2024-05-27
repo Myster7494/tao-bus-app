@@ -67,6 +67,10 @@ abstract class BusDataLoader {
     return busRoutes[routeUid];
   }
 
+  static BusStation? getBusStation(String stationUid) {
+    return busStations[stationUid];
+  }
+
   static List<BusRoute> getAllBusRoutes() {
     return busRoutes.values.toList();
   }
