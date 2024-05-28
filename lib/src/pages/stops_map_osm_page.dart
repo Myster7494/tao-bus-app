@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:math';
 
 import 'package:bus_app/src/bus_data/bus_data_loader.dart';
@@ -16,80 +17,119 @@ class NearStopsOsmPage extends StatefulWidget {
   State<StatefulWidget> createState() => _NearStopsOsmPageState();
 }
 
-class _NearStopsOsmPageState extends State<NearStopsOsmPage> {
-  final mapController = MapController.withUserPosition(
-      trackUserLocation: const UserTrackingOption(
-    enableTracking: true,
-    unFollowUser: true,
-  ));
-  final Map<GeoPoint, String> nearStations = {};
+class _NearStopsOsmPageState extends State<NearStopsOsmPage>
+    with OSMMixinObserver, TickerProviderStateMixin {
+  late MapController mapController;
+  final Map<String, GeoPoint> nearStations = {};
+  late GeoPoint myLocation;
+  ValueNotifier<GeoPoint?> centerMap = ValueNotifier(null);
+  ValueNotifier<bool> trackingNotifier = ValueNotifier(true);
+  Timer? timer;
+  late AnimationController animationController;
+  late Animation<double> animation =
+      Tween<double>(begin: 0, end: 2 * pi).animate(animationController);
 
-  Future<void> _drawNearStops(ThemeData themeData) async {
-    await mapController.removeAllCircle();
-    await mapController.removeMarkers(nearStations.keys.toList());
+  @override
+  void initState() {
+    super.initState();
+    mapController = MapController.withUserPosition(
+      trackUserLocation: const UserTrackingOption(
+        enableTracking: true,
+        unFollowUser: false,
+      ),
+    );
+    mapController.addObserver(this);
+    mapController.listenerRegionIsChanging.addListener(() async {
+      if (mapController.listenerRegionIsChanging.value != null) {
+        centerMap.value = mapController.listenerRegionIsChanging.value!.center;
+      }
+    });
+    animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(
+        milliseconds: 500,
+      ),
+    );
+  }
+
+  @override
+  Future<void> mapIsReady(bool isReady) async {
+    await mapController.setZoom(zoomLevel: 16);
+    myLocation = await mapController.myLocation();
+    await _drawNearStops();
+  }
+
+  @override
+  void dispose() {
+    if (timer != null && timer!.isActive) timer?.cancel();
+    animationController.dispose();
+    mapController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _drawNearStops() async {
+    final phi = myLocation.latitude * Util.rad;
+    final double latBoard1 = myLocation.latitude - 0.009;
+    final double latBoard2 = myLocation.latitude + 0.009;
+    final double cosLat = 0.009 / cos(myLocation.latitude * Util.rad);
+    final double lonBoard1 = myLocation.longitude - cosLat;
+    final double lonBoard2 = myLocation.longitude + cosLat;
+
+    bool inOneKm(double lat, double lon) {
+      if (!(lat >= latBoard1 &&
+          myLocation.latitude <= latBoard2 &&
+          lon >= lonBoard1 &&
+          myLocation.longitude <= lonBoard2)) {
+        return false;
+      }
+      final double a = sqrtSin((lat - myLocation.latitude) * Util.rad / 2) +
+          sqrtCos2(phi, lat * Util.rad) *
+              sqrtSin((lon - myLocation.longitude) * Util.rad / 2);
+      if (a / (1 - a) <= 6.159e-9) return true;
+      return false;
+    }
+
+    final Map<String, GeoPoint> removeStations = {};
+    nearStations.forEach((stationUid, geoPoint) {
+      if (!inOneKm(geoPoint.latitude, geoPoint.longitude)) {
+        removeStations[stationUid] = geoPoint;
+      }
+    });
+    for (String stationUid in removeStations.keys) {
+      nearStations.remove(stationUid);
+    }
+    await mapController.removeMarkers(removeStations.values.toList());
+    await mapController.removeCircle("nearStopsCircle");
     await mapController.drawCircle(
       CircleOSM(
-        key: "1kmCircle",
-        centerPoint: await mapController.myLocation(),
+        key: "nearStopsCircle",
+        centerPoint: myLocation,
         radius: 1000,
         color: Colors.green.withAlpha(10),
         borderColor: Colors.green,
         strokeWidth: 3,
       ),
     );
-
-    GeoPoint myLocation = await mapController.myLocation();
-    const rad = pi / 180;
-    final phi = myLocation.latitude * rad;
-    final double latBoard1 = myLocation.latitude - 0.009;
-    final double latBoard2 = myLocation.latitude + 0.009;
-    final double cosLat = 0.009 / cos(myLocation.latitude * rad);
-    final double lonBoard1 = myLocation.longitude - cosLat;
-    final double lonBoard2 = myLocation.longitude + cosLat;
-    nearStations.clear();
     for (BusStation busStation in BusDataLoader.busStations.values) {
-      if (!(busStation.stationPosition.positionLat >= latBoard1 &&
-          myLocation.latitude <= latBoard2 &&
-          busStation.stationPosition.positionLon >= lonBoard1 &&
-          myLocation.longitude <= lonBoard2)) {
-        continue;
-      }
-      final double a = sqrtSin(
-              (busStation.stationPosition.positionLat - myLocation.latitude) *
-                  rad /
-                  2) +
-          sqrtCos2(phi, busStation.stationPosition.positionLat * rad) *
-              sqrtSin((busStation.stationPosition.positionLon -
-                      myLocation.longitude) *
-                  rad /
-                  2);
-      final GeoPoint stationGeoPoint = busStation.stationPosition.toGeoPoint();
-      if (a / (1 - a) <= 6.159e-9) {
+      if (!nearStations.containsKey(busStation.stationUid) &&
+          !removeStations.containsKey(busStation.stationUid) &&
+          inOneKm(busStation.stationPosition.positionLat,
+              busStation.stationPosition.positionLon)) {
+        final GeoPoint stationGeoPoint =
+            busStation.stationPosition.toGeoPoint();
         await mapController.addMarker(
           stationGeoPoint,
           markerIcon: const MarkerIcon(
             icon: Icon(
               Icons.location_on_outlined,
-              size: 48,
+              size: 36,
               color: Colors.red,
             ),
           ),
         );
-        nearStations[stationGeoPoint] = busStation.stationUid;
+        nearStations[busStation.stationUid] = stationGeoPoint;
       }
     }
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    mapController.init();
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    mapController.dispose();
   }
 
   @override
@@ -114,36 +154,34 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage> {
                 personMarker: const MarkerIcon(
                   icon: Icon(
                     Icons.my_location,
-                    size: 48,
+                    size: 36,
                     color: Colors.blue,
                   ),
                 ),
                 directionArrowMarker: const MarkerIcon(
                   icon: Icon(
-                    Icons.arrow_right,
-                    size: 48,
+                    Icons.my_location,
+                    size: 36,
                     color: Colors.blue,
                   ),
                 ),
               ),
             ),
-            onLocationChanged: (_) async => await _drawNearStops(themeData),
-            onGeoPointClicked: (geoPoint) async {
+            onLocationChanged: (_) async {
+              myLocation = await mapController.myLocation();
+              _drawNearStops();
+            },
+            onGeoPointClicked: (geoPoint) {
               BusStation? clickBusStation = BusDataLoader.getBusStation(
                   nearStations.entries
-                      .firstWhere((mapEntry) => mapEntry.key.isEqual(geoPoint))
-                      .value);
+                      .firstWhere(
+                          (mapEntry) => mapEntry.value.isEqual(geoPoint))
+                      .key);
               if (clickBusStation != null) {
                 Util.showSnackBar(
                   context,
-                  "Marker clicked: ${clickBusStation.stationName.zhTw}",
+                  clickBusStation.stationName.zhTw,
                 );
-              }
-            },
-            onMapIsReady: (isReady) async {
-              if (isReady) {
-                await mapController.enableTracking();
-                await _drawNearStops(themeData);
               }
             },
           ),
@@ -184,8 +222,27 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage> {
                   ),
                   const SizedBox(height: 10),
                   FloatingActionButton(
-                    onPressed: () async => await mapController.enableTracking(),
-                    child: const Icon(Icons.my_location),
+                    onPressed: () async {
+                      if (!trackingNotifier.value) {
+                        await mapController.currentLocation();
+                        await mapController.enableTracking(
+                          enableStopFollow: true,
+                          disableUserMarkerRotation: false,
+                          anchor: Anchor.left,
+                        );
+                      } else {
+                        await mapController.disabledTracking();
+                      }
+                      trackingNotifier.value = !trackingNotifier.value;
+                    },
+                    child: ValueListenableBuilder<bool>(
+                      valueListenable: trackingNotifier,
+                      builder:
+                          (BuildContext context, bool value, Widget? child) =>
+                              value
+                                  ? const Icon(Icons.my_location)
+                                  : const Icon(Icons.gps_not_fixed),
+                    ),
                   ),
                 ],
               ),
