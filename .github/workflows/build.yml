@@ -62,7 +62,7 @@ jobs:
       - name: Build Web
         run: |
           flutter pub get
-          flutter build web --release
+          flutter build web --release --web-renderer canvaskit
       - name: Upload Web
         uses: actions/upload-artifact@v3
         with:
