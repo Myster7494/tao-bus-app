@@ -21,13 +21,36 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
     with OSMMixinObserver, TickerProviderStateMixin {
   late MapController mapController;
   final Map<String, GeoPoint> nearStations = {};
-  late GeoPoint myLocation;
-  ValueNotifier<GeoPoint?> centerMap = ValueNotifier(null);
+  ValueNotifier<GeoPoint?> myLocation = ValueNotifier(null);
   ValueNotifier<bool> trackingNotifier = ValueNotifier(true);
   Timer? timer;
   late AnimationController animationController;
-  late Animation<double> animation =
-      Tween<double>(begin: 0, end: 2 * pi).animate(animationController);
+
+  Future<void> limitArea() async {
+    await mapController.removeLimitAreaMap();
+    final double latBoard1 = myLocation.value!.latitude - 0.01;
+    final double latBoard2 = myLocation.value!.latitude + 0.01;
+    final double maxLat = max(latBoard1, latBoard2);
+    final double minLat = min(latBoard1, latBoard2);
+    final double cosLat = 0.01 / cos(myLocation.value!.latitude * Util.rad);
+    final double lonBoard1 = myLocation.value!.longitude - cosLat;
+    final double lonBoard2 = myLocation.value!.longitude + cosLat;
+    final double maxLon = max(lonBoard1, lonBoard2);
+    final double minLon = min(lonBoard1, lonBoard2);
+    await Future.delayed(const Duration(seconds: 1));
+    await mapController.limitAreaMap(
+        BoundingBox(north: maxLat, east: maxLon, south: minLat, west: minLon));
+  }
+
+  Future<void> updateMyLocation() async {
+    myLocation.value = await mapController.myLocation();
+    if (trackingNotifier.value) {
+      await limitArea();
+    } else {
+      await mapController.removeLimitAreaMap();
+    }
+    await _drawNearStops();
+  }
 
   @override
   void initState() {
@@ -39,11 +62,6 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
       ),
     );
     mapController.addObserver(this);
-    mapController.listenerRegionIsChanging.addListener(() async {
-      if (mapController.listenerRegionIsChanging.value != null) {
-        centerMap.value = mapController.listenerRegionIsChanging.value!.center;
-      }
-    });
     animationController = AnimationController(
       vsync: this,
       duration: const Duration(
@@ -55,36 +73,52 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
   @override
   Future<void> mapIsReady(bool isReady) async {
     await mapController.setZoom(zoomLevel: 16);
-    myLocation = await mapController.myLocation();
-    await _drawNearStops();
+    await updateMyLocation();
+  }
+
+  @override
+  Future<void> onLocationChanged(UserLocation userLocation) async {
+    super.onLocationChanged(userLocation);
+    await updateMyLocation();
+  }
+
+  @override
+  void onRegionChanged(Region region) {
+    super.onRegionChanged(region);
+    if (!trackingNotifier.value) mapController.removeLimitAreaMap();
   }
 
   @override
   void dispose() {
+    super.dispose();
     if (timer != null && timer!.isActive) timer?.cancel();
     animationController.dispose();
     mapController.dispose();
-    super.dispose();
   }
 
   Future<void> _drawNearStops() async {
-    final phi = myLocation.latitude * Util.rad;
-    final double latBoard1 = myLocation.latitude - 0.009;
-    final double latBoard2 = myLocation.latitude + 0.009;
-    final double cosLat = 0.009 / cos(myLocation.latitude * Util.rad);
-    final double lonBoard1 = myLocation.longitude - cosLat;
-    final double lonBoard2 = myLocation.longitude + cosLat;
+    if (myLocation.value == null) return;
+    await mapController.removeCircle("nearStopsCircle");
+
+    final phi = myLocation.value!.latitude * Util.rad;
+    final double latBoard1 = myLocation.value!.latitude - 0.009;
+    final double latBoard2 = myLocation.value!.latitude + 0.009;
+    final double maxLat = max(latBoard1, latBoard2);
+    final double minLat = min(latBoard1, latBoard2);
+    final double cosLat = 0.009 / cos(myLocation.value!.latitude * Util.rad);
+    final double lonBoard1 = myLocation.value!.longitude - cosLat;
+    final double lonBoard2 = myLocation.value!.longitude + cosLat;
+    final double maxLon = max(lonBoard1, lonBoard2);
+    final double minLon = min(lonBoard1, lonBoard2);
 
     bool inOneKm(double lat, double lon) {
-      if (!(lat >= latBoard1 &&
-          myLocation.latitude <= latBoard2 &&
-          lon >= lonBoard1 &&
-          myLocation.longitude <= lonBoard2)) {
+      if (!(lat >= minLat && lat <= maxLat && lon >= minLon && lon <= maxLon)) {
         return false;
       }
-      final double a = sqrtSin((lat - myLocation.latitude) * Util.rad / 2) +
-          sqrtCos2(phi, lat * Util.rad) *
-              sqrtSin((lon - myLocation.longitude) * Util.rad / 2);
+      final double a =
+          sqrtSin((lat - myLocation.value!.latitude) * Util.rad / 2) +
+              sqrtCos2(phi, lat * Util.rad) *
+                  sqrtSin((lon - myLocation.value!.longitude) * Util.rad / 2);
       if (a / (1 - a) <= 6.159e-9) return true;
       return false;
     }
@@ -99,11 +133,10 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
       nearStations.remove(stationUid);
     }
     await mapController.removeMarkers(removeStations.values.toList());
-    await mapController.removeCircle("nearStopsCircle");
     await mapController.drawCircle(
       CircleOSM(
         key: "nearStopsCircle",
-        centerPoint: myLocation,
+        centerPoint: myLocation.value!,
         radius: 1000,
         color: Colors.green.withAlpha(10),
         borderColor: Colors.green,
@@ -167,10 +200,6 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
                 ),
               ),
             ),
-            onLocationChanged: (_) async {
-              myLocation = await mapController.myLocation();
-              _drawNearStops();
-            },
             onGeoPointClicked: (geoPoint) {
               BusStation? clickBusStation = BusDataLoader.getBusStation(
                   nearStations.entries
@@ -223,6 +252,7 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
                   const SizedBox(height: 10),
                   FloatingActionButton(
                     onPressed: () async {
+                      await mapController.removeLimitAreaMap();
                       if (!trackingNotifier.value) {
                         await mapController.currentLocation();
                         await mapController.enableTracking(
@@ -234,6 +264,14 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
                         await mapController.disabledTracking();
                       }
                       trackingNotifier.value = !trackingNotifier.value;
+
+                      if (trackingNotifier.value) {
+                        await limitArea();
+                        await Future.delayed(const Duration(milliseconds: 500));
+                        await mapController.setZoom(zoomLevel: 16);
+                      } else {
+                        await mapController.removeLimitAreaMap();
+                      }
                     },
                     child: ValueListenableBuilder<bool>(
                       valueListenable: trackingNotifier,
