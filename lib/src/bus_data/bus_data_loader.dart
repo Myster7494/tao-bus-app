@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bus_app/src/bus_data/group_station.dart';
 import 'package:flutter/services.dart';
 
 import 'bus_route.dart';
@@ -13,6 +14,7 @@ abstract class BusDataLoader {
   static late final Map<String, BusStop> busStops;
   static late final Map<String, List<RouteStops>> routeStops;
   static late final Map<String, BusStation> busStations;
+  static late final Map<String, GroupStation> groupStations;
   static late final AllEstimatedTime allEstimatedTime;
 
   static Future<void> loadBusRoutes() async {
@@ -55,11 +57,20 @@ abstract class BusDataLoader {
         .toList());
   }
 
+  static Future<void> loadGroupStations() async {
+    final jsonString =
+        await rootBundle.loadString('assets/group_stations.json');
+    final Map jsonObject = jsonDecode(jsonString);
+    groupStations = jsonObject
+        .map((key, value) => MapEntry(key, GroupStation.fromJson(value)));
+  }
+
   static Future<void> loadAllData() async {
     await loadBusRoutes();
     await loadBusStops();
     await loadRouteStops();
     await loadBusStations();
+    await loadGroupStations();
     await loadEstimatedTime();
   }
 
@@ -90,5 +101,9 @@ abstract class BusDataLoader {
       String routeUid, int direction, String stopUid) {
     return getRouteStopsByDirection(routeUid, direction)
         ?.firstWhere((element) => element.stopUid == stopUid);
+  }
+
+  static GroupStation? getGroupStation(String groupStationUid) {
+    return groupStations[groupStationUid];
   }
 }

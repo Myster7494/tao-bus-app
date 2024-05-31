@@ -14,12 +14,15 @@ class BusStation {
   final Position stationPosition;
   @JsonKey(name: "Stops")
   final List<String> stops;
+  @JsonKey(name: "GroupStationUID")
+  final String groupStationUid;
 
   const BusStation({
     required this.stationUid,
     required this.stationName,
     required this.stationPosition,
     required this.stops,
+    required this.groupStationUid,
   });
 
   factory BusStation.fromJson(Map<String, dynamic> json) =>

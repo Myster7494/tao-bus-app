@@ -27,12 +27,12 @@ class Position {
   @JsonKey(name: "PositionLat")
   final double positionLat;
   @JsonKey(name: "GeoHash")
-  final String geoHash;
+  final String? geoHash;
 
   const Position({
     required this.positionLon,
     required this.positionLat,
-    required this.geoHash,
+    this.geoHash,
   });
 
   factory Position.fromJson(Map<String, dynamic> json) =>

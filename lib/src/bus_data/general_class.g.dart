@@ -19,7 +19,7 @@ Map<String, dynamic> _$NameToJson(Name instance) => <String, dynamic>{
 Position _$PositionFromJson(Map<String, dynamic> json) => Position(
       positionLon: (json['PositionLon'] as num).toDouble(),
       positionLat: (json['PositionLat'] as num).toDouble(),
-      geoHash: json['GeoHash'] as String,
+      geoHash: json['GeoHash'] as String?,
     );
 
 Map<String, dynamic> _$PositionToJson(Position instance) => <String, dynamic>{

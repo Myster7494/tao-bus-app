@@ -2,12 +2,12 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:bus_app/src/bus_data/bus_data_loader.dart';
+import 'package:bus_app/src/bus_data/group_station.dart';
 import 'package:bus_app/src/widgets/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 
-import '../bus_data/bus_station.dart';
 import '../util.dart';
 
 class NearStopsOsmPage extends StatefulWidget {
@@ -20,19 +20,20 @@ class NearStopsOsmPage extends StatefulWidget {
 class _NearStopsOsmPageState extends State<NearStopsOsmPage>
     with OSMMixinObserver, TickerProviderStateMixin {
   late MapController mapController;
-  final Map<String, GeoPoint> nearStations = {};
+  final Map<String, GeoPoint> displayGroupStations = {};
   ValueNotifier<GeoPoint?> myLocation = ValueNotifier(null);
   ValueNotifier<bool> trackingNotifier = ValueNotifier(true);
+  ValueNotifier<bool> showAllGroupStations = ValueNotifier(false);
   Timer? timer;
   late AnimationController animationController;
 
   Future<void> limitArea() async {
     await mapController.removeLimitAreaMap();
-    final double latBoard1 = myLocation.value!.latitude - 0.01;
-    final double latBoard2 = myLocation.value!.latitude + 0.01;
+    final double latBoard1 = myLocation.value!.latitude - 0.012;
+    final double latBoard2 = myLocation.value!.latitude + 0.012;
     final double maxLat = max(latBoard1, latBoard2);
     final double minLat = min(latBoard1, latBoard2);
-    final double cosLat = 0.01 / cos(myLocation.value!.latitude * Util.rad);
+    final double cosLat = 0.012 / cos(myLocation.value!.latitude * Util.rad);
     final double lonBoard1 = myLocation.value!.longitude - cosLat;
     final double lonBoard2 = myLocation.value!.longitude + cosLat;
     final double maxLon = max(lonBoard1, lonBoard2);
@@ -49,7 +50,7 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
     } else {
       await mapController.removeLimitAreaMap();
     }
-    await _drawNearStops();
+    if (!showAllGroupStations.value) await _drawNearGroupStations();
   }
 
   @override
@@ -96,7 +97,27 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
     mapController.dispose();
   }
 
-  Future<void> _drawNearStops() async {
+  Future<void> _drawAllGroupStations() async {
+    for (GroupStation groupStation in BusDataLoader.groupStations.values) {
+      if (!displayGroupStations.containsKey(groupStation.groupStationUid)) {
+        final GeoPoint stationGeoPoint =
+            groupStation.groupStationPosition.toGeoPoint();
+        await mapController.addMarker(
+          stationGeoPoint,
+          markerIcon: const MarkerIcon(
+            icon: Icon(
+              Icons.location_on_outlined,
+              size: 36,
+              color: Colors.red,
+            ),
+          ),
+        );
+        displayGroupStations[groupStation.groupStationUid] = stationGeoPoint;
+      }
+    }
+  }
+
+  Future<void> _drawNearGroupStations() async {
     if (myLocation.value == null) return;
     await mapController.removeCircle("nearStopsCircle");
 
@@ -116,23 +137,23 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
         return false;
       }
       final double a =
-          sqrtSin((lat - myLocation.value!.latitude) * Util.rad / 2) +
+          sqrtSin((lat - myLocation.value!.latitude) * Util.halfRad) +
               sqrtCos2(phi, lat * Util.rad) *
-                  sqrtSin((lon - myLocation.value!.longitude) * Util.rad / 2);
+                  sqrtSin((lon - myLocation.value!.longitude) * Util.halfRad);
       if (a / (1 - a) <= 6.159e-9) return true;
       return false;
     }
 
-    final Map<String, GeoPoint> removeStations = {};
-    nearStations.forEach((stationUid, geoPoint) {
+    final Map<String, GeoPoint> removeGroupStations = {};
+    displayGroupStations.forEach((groupStationUid, geoPoint) {
       if (!inOneKm(geoPoint.latitude, geoPoint.longitude)) {
-        removeStations[stationUid] = geoPoint;
+        removeGroupStations[groupStationUid] = geoPoint;
       }
     });
-    for (String stationUid in removeStations.keys) {
-      nearStations.remove(stationUid);
+    for (String groupStationUid in removeGroupStations.keys) {
+      displayGroupStations.remove(groupStationUid);
     }
-    await mapController.removeMarkers(removeStations.values.toList());
+    await mapController.removeMarkers(removeGroupStations.values.toList());
     await mapController.drawCircle(
       CircleOSM(
         key: "nearStopsCircle",
@@ -143,13 +164,13 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
         strokeWidth: 3,
       ),
     );
-    for (BusStation busStation in BusDataLoader.busStations.values) {
-      if (!nearStations.containsKey(busStation.stationUid) &&
-          !removeStations.containsKey(busStation.stationUid) &&
-          inOneKm(busStation.stationPosition.positionLat,
-              busStation.stationPosition.positionLon)) {
+    for (GroupStation groupStation in BusDataLoader.groupStations.values) {
+      if (!displayGroupStations.containsKey(groupStation.groupStationUid) &&
+          !removeGroupStations.containsKey(groupStation.groupStationUid) &&
+          inOneKm(groupStation.groupStationPosition.positionLat,
+              groupStation.groupStationPosition.positionLon)) {
         final GeoPoint stationGeoPoint =
-            busStation.stationPosition.toGeoPoint();
+            groupStation.groupStationPosition.toGeoPoint();
         await mapController.addMarker(
           stationGeoPoint,
           markerIcon: const MarkerIcon(
@@ -160,7 +181,7 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
             ),
           ),
         );
-        nearStations[busStation.stationUid] = stationGeoPoint;
+        displayGroupStations[groupStation.groupStationUid] = stationGeoPoint;
       }
     }
   }
@@ -201,15 +222,15 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
               ),
             ),
             onGeoPointClicked: (geoPoint) {
-              BusStation? clickBusStation = BusDataLoader.getBusStation(
-                  nearStations.entries
+              GroupStation? clickGroupStation = BusDataLoader.getGroupStation(
+                  displayGroupStations.entries
                       .firstWhere(
                           (mapEntry) => mapEntry.value.isEqual(geoPoint))
                       .key);
-              if (clickBusStation != null) {
+              if (clickGroupStation != null) {
                 Util.showSnackBar(
                   context,
-                  clickBusStation.stationName.zhTw,
+                  clickGroupStation.groupStationName.zhTw,
                 );
               }
             },
@@ -283,6 +304,45 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
                     ),
                   ),
                 ],
+              ),
+            ),
+          ),
+          Positioned(
+            bottom: 16,
+            left: 16,
+            child: PointerInterceptor(
+              child: Container(
+                decoration: BoxDecoration(
+                  color: themeData.colorScheme.secondaryContainer,
+                  borderRadius: const BorderRadius.all(Radius.circular(25)),
+                  border: Border.all(
+                      width: 3, color: themeData.colorScheme.primary),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const SizedBox(width: 5),
+                    const Text("顯示所有組站位"),
+                    const SizedBox(width: 5),
+                    ValueListenableBuilder(
+                      valueListenable: showAllGroupStations,
+                      builder:
+                          (BuildContext context, bool value, Widget? child) =>
+                              Switch(
+                        value: value,
+                        activeColor: themeData.colorScheme.primary,
+                        onChanged: (bool value) {
+                          showAllGroupStations.value = value;
+                          if (value) {
+                            _drawAllGroupStations();
+                          } else {
+                            _drawNearGroupStations();
+                          }
+                        },
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
