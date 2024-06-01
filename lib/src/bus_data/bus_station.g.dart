@@ -9,8 +9,8 @@ part of 'bus_station.dart';
 BusStation _$BusStationFromJson(Map<String, dynamic> json) => BusStation(
       stationUid: json['StationUID'] as String,
       stationName: Name.fromJson(json['StationName'] as Map<String, dynamic>),
-      stationPosition:
-          Position.fromJson(json['StationPosition'] as Map<String, dynamic>),
+      stationPosition: GeoPointJson.fromJson(
+          json['StationPosition'] as Map<String, dynamic>),
       stops: (json['Stops'] as List<dynamic>).map((e) => e as String).toList(),
       groupStationUid: json['GroupStationUID'] as String,
     );

@@ -21,26 +21,22 @@ class Name {
 }
 
 @JsonSerializable()
-class Position {
+class GeoPointJson extends GeoPoint {
   @JsonKey(name: "PositionLon")
   final double positionLon;
   @JsonKey(name: "PositionLat")
   final double positionLat;
-  @JsonKey(name: "GeoHash")
-  final String? geoHash;
 
-  const Position({
+  GeoPointJson({
     required this.positionLon,
     required this.positionLat,
-    this.geoHash,
-  });
+  }) : super(
+          latitude: positionLat,
+          longitude: positionLon,
+        );
 
-  factory Position.fromJson(Map<String, dynamic> json) =>
-      _$PositionFromJson(json);
+  factory GeoPointJson.fromJson(Map<String, dynamic> json) =>
+      _$GeoPointJsonFromJson(json);
 
-  Map<String, dynamic> toJson() => _$PositionToJson(this);
-
-  GeoPoint toGeoPoint() {
-    return GeoPoint(latitude: positionLat, longitude: positionLon);
-  }
+  Map<String, dynamic> toJson() => _$GeoPointJsonToJson(this);
 }

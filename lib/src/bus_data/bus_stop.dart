@@ -9,7 +9,7 @@ class BusStop {
   @JsonKey(name: "StopUID")
   final String stopUid;
   @JsonKey(name: "StopPosition")
-  final Position stopPosition;
+  final GeoPointJson stopPosition;
   @JsonKey(name: "StationUID")
   final String stationUid;
   @JsonKey(name: "StopName")

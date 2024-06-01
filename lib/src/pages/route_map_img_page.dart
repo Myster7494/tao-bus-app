@@ -66,7 +66,7 @@ class _RouteMapPageState extends State<RouteMapPage> {
             ),
           ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10),
+            margin: const EdgeInsets.symmetric(horizontal: 10),
             child: const Text(
               "使用滑鼠滾輪或雙指滑動以縮放圖片",
               textAlign: TextAlign.center,
@@ -77,7 +77,7 @@ class _RouteMapPageState extends State<RouteMapPage> {
             alignment: WrapAlignment.center,
             children: [
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(5),
                 child: FilledButton.icon(
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.of(context).pop(),
@@ -88,7 +88,7 @@ class _RouteMapPageState extends State<RouteMapPage> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(5),
                 child: FilledButton.icon(
                   icon: const Icon(Icons.zoom_out_map),
                   onPressed: () {
@@ -101,7 +101,7 @@ class _RouteMapPageState extends State<RouteMapPage> {
                 ),
               ),
               Container(
-                padding: const EdgeInsets.all(10),
+                padding: const EdgeInsets.all(5),
                 child: FilledButton.icon(
                   icon: const Icon(Icons.rotate_right),
                   onPressed: () => setState(() {

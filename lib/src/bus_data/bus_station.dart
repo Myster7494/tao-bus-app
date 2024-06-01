@@ -11,7 +11,7 @@ class BusStation {
   @JsonKey(name: "StationName")
   final Name stationName;
   @JsonKey(name: "StationPosition")
-  final Position stationPosition;
+  final GeoPointJson stationPosition;
   @JsonKey(name: "Stops")
   final List<String> stops;
   @JsonKey(name: "GroupStationUID")

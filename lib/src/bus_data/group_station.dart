@@ -11,7 +11,7 @@ class GroupStation {
   @JsonKey(name: "GroupStationName")
   final Name groupStationName;
   @JsonKey(name: "GroupStationPosition")
-  final Position groupStationPosition;
+  final GeoPointJson groupStationPosition;
   @JsonKey(name: "Stations")
   final List<String> stations;
 

@@ -9,7 +9,7 @@ part of 'bus_stop.dart';
 BusStop _$BusStopFromJson(Map<String, dynamic> json) => BusStop(
       stopUid: json['StopUID'] as String,
       stopPosition:
-          Position.fromJson(json['StopPosition'] as Map<String, dynamic>),
+          GeoPointJson.fromJson(json['StopPosition'] as Map<String, dynamic>),
       stationUid: json['StationUID'] as String,
       stopName: Name.fromJson(json['StopName'] as Map<String, dynamic>),
     );

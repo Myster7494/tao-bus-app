@@ -10,7 +10,7 @@ GroupStation _$GroupStationFromJson(Map<String, dynamic> json) => GroupStation(
       groupStationUid: json['GroupStationUID'] as String,
       groupStationName:
           Name.fromJson(json['GroupStationName'] as Map<String, dynamic>),
-      groupStationPosition: Position.fromJson(
+      groupStationPosition: GeoPointJson.fromJson(
           json['GroupStationPosition'] as Map<String, dynamic>),
       stations:
           (json['Stations'] as List<dynamic>).map((e) => e as String).toList(),
