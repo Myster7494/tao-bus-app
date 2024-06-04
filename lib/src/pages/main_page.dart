@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import '../../main.dart';
 import 'favorite_stops_page.dart';
 import 'home_page.dart';
+import 'osm_map_page.dart';
 import 'settings_page.dart';
-import 'stops_map_osm_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -31,7 +31,7 @@ class _MainPageState extends State<MainPage> {
       body: switch (selectedIndex) {
         0 => const HomePage(),
         1 => const FavoriteStopsPage(),
-        2 => const NearStopsOsmPage(),
+        2 => const OsmMapPage(),
         3 => const SettingsPage(),
         _ => throw UnsupportedError('Invalid index: $selectedIndex'),
       },

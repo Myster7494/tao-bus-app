@@ -7,6 +7,7 @@ import 'package:geolocator/geolocator.dart';
 abstract class Util {
   static const rad = pi / 180;
   static const halfRad = pi / 360;
+  static bool? enableGps;
 
   static void showSnackBar(BuildContext context, String message,
       {Duration? duration, SnackBarAction? action}) {

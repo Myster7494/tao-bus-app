@@ -12,15 +12,27 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 
 import '../util.dart';
 
-class NearStopsOsmPage extends StatefulWidget {
-  const NearStopsOsmPage({super.key});
-
-  @override
-  State<StatefulWidget> createState() => _NearStopsOsmPageState();
+enum BoardArgumentsEnum {
+  phi,
+  latBoard1,
+  latBoard2,
+  maxLat,
+  minLat,
+  cosLat,
+  lonBoard1,
+  lonBoard2,
+  maxLon,
+  minLon,
 }
 
-class _NearStopsOsmPageState extends State<NearStopsOsmPage>
-    with TickerProviderStateMixin {
+class OsmMapPage extends StatefulWidget {
+  const OsmMapPage({super.key});
+
+  @override
+  State<StatefulWidget> createState() => _OsmMapPageState();
+}
+
+class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
   MarkerIcon groupStationMarkerIcon = const MarkerIcon(
     icon: Icon(
       Icons.location_on_outlined,
@@ -28,7 +40,8 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
       color: Colors.red,
     ),
   );
-  Key key = UniqueKey();
+
+  //Key key = UniqueKey();
   late MapController mapController;
   final Map<String, GeoPoint> displayGroupStations = {};
   ValueNotifier<GeoPoint> myLocation = ValueNotifier(
@@ -38,9 +51,61 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
   Timer? timer;
   late AnimationController animationController;
 
-  Future<bool> hasGps() async {
-    LocationPermission permission;
+  Map<BoardArgumentsEnum, double> boardArguments = {};
 
+  get enableGps => Util.enableGps;
+
+  set enableGps(value) => Util.enableGps = value;
+
+  void calculateBoard() {
+    boardArguments[BoardArgumentsEnum.phi] =
+        myLocation.value.latitude * Util.rad;
+    boardArguments[BoardArgumentsEnum.latBoard1] =
+        myLocation.value.latitude - 0.009;
+    boardArguments[BoardArgumentsEnum.latBoard2] =
+        myLocation.value.latitude + 0.009;
+    boardArguments[BoardArgumentsEnum.maxLat] = max(
+        boardArguments[BoardArgumentsEnum.latBoard1]!,
+        boardArguments[BoardArgumentsEnum.latBoard2]!);
+    boardArguments[BoardArgumentsEnum.minLat] = min(
+        boardArguments[BoardArgumentsEnum.latBoard1]!,
+        boardArguments[BoardArgumentsEnum.latBoard2]!);
+    boardArguments[BoardArgumentsEnum.cosLat] =
+        0.009 / cos(myLocation.value.latitude * Util.rad);
+    boardArguments[BoardArgumentsEnum.lonBoard1] =
+        myLocation.value.longitude - boardArguments[BoardArgumentsEnum.cosLat]!;
+    boardArguments[BoardArgumentsEnum.lonBoard2] =
+        myLocation.value.longitude + boardArguments[BoardArgumentsEnum.cosLat]!;
+    boardArguments[BoardArgumentsEnum.maxLon] = max(
+        boardArguments[BoardArgumentsEnum.lonBoard1]!,
+        boardArguments[BoardArgumentsEnum.lonBoard2]!);
+    boardArguments[BoardArgumentsEnum.minLon] = min(
+        boardArguments[BoardArgumentsEnum.lonBoard1]!,
+        boardArguments[BoardArgumentsEnum.lonBoard2]!);
+  }
+
+  bool inOneKm(GeoPoint geoPoint) {
+    if (!(geoPoint.latitude >= boardArguments[BoardArgumentsEnum.minLat]! &&
+        geoPoint.latitude <= boardArguments[BoardArgumentsEnum.maxLat]! &&
+        geoPoint.longitude >= boardArguments[BoardArgumentsEnum.minLon]! &&
+        geoPoint.longitude <= boardArguments[BoardArgumentsEnum.maxLon]!)) {
+      return false;
+    }
+    final double a = sqrtSin(
+            (geoPoint.latitude - myLocation.value.latitude) * Util.halfRad) +
+        sqrtCos2(boardArguments[BoardArgumentsEnum.phi]!,
+                geoPoint.latitude * Util.rad) *
+            sqrtSin((geoPoint.longitude - myLocation.value.longitude) *
+                Util.halfRad);
+    if (a / (1 - a) <= 6.159e-9) return true;
+    return false;
+  }
+
+  Future<bool> hasGps() async {
+    if (enableGps != null) return enableGps!;
+
+    enableGps = false;
+    LocationPermission permission;
     if (!await Geolocator.isLocationServiceEnabled()) return false;
 
     permission = await Geolocator.checkPermission();
@@ -54,6 +119,7 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
     try {
       await Geolocator.getCurrentPosition(
           timeLimit: const Duration(seconds: 5));
+      enableGps = true;
       return true;
     } on TimeoutException {
       return false;
@@ -86,7 +152,9 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
           myLocation.value = Util.positionToGeoPoint(
               await Geolocator.getCurrentPosition(
                   timeLimit: const Duration(seconds: 5)));
-        } on TimeoutException {}
+        } on TimeoutException {
+          debugPrint("Get gps time out.");
+        }
       }
     }
     if (trackingNotifier.value) {
@@ -112,8 +180,15 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
   }
 
   Future<void> mapIsReady(bool isReady) async {
+    Geolocator.getPositionStream().listen((Position position) async {
+      await updateMyLocation();
+      if (trackingNotifier.value) {
+        await mapController.moveTo(myLocation.value);
+      }
+    });
     await updateMyLocation();
     await onRegionChanged();
+    //await mapController.moveTo(myLocation.value);
   }
 
   // Future<void> onLocationChanged(GeoPoint userLocation) async {
@@ -126,24 +201,30 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
       boundingBox: await mapController.bounds,
     );
     if (!trackingNotifier.value) await mapController.removeLimitAreaMap();
-    if (showAllGroupStations.value) {
-      for (GroupStation groupStation in BusDataLoader.groupStations.values) {
-        //debugPrint(groupStation.groupStationName.zhTw);
-        bool inRegion =
-            region.boundingBox.inBoundingBox(groupStation.groupStationPosition);
-        bool inDisplayGroupStations =
-            displayGroupStations.containsKey(groupStation.groupStationUid);
-        if (inRegion && !inDisplayGroupStations) {
-          displayGroupStations[groupStation.groupStationUid] =
-              groupStation.groupStationPosition;
-          await mapController.addMarker(
-            groupStation.groupStationPosition,
-            markerIcon: groupStationMarkerIcon,
-          );
-        } else if (!inRegion && inDisplayGroupStations) {
-          displayGroupStations.remove(groupStation.groupStationUid);
-          await mapController.removeMarker(groupStation.groupStationPosition);
-        }
+
+    calculateBoard();
+
+    for (GroupStation groupStation in BusDataLoader.groupStations.values) {
+      //debugPrint(groupStation.groupStationName.zhTw);
+      bool inRegion =
+          region.boundingBox.inBoundingBox(groupStation.groupStationPosition);
+      bool inDisplayGroupStations =
+          displayGroupStations.containsKey(groupStation.groupStationUid);
+      if ((showAllGroupStations.value ||
+              inOneKm(groupStation.groupStationPosition)) &&
+          inRegion &&
+          !inDisplayGroupStations) {
+        displayGroupStations[groupStation.groupStationUid] =
+            groupStation.groupStationPosition;
+        await mapController.addMarker(
+          groupStation.groupStationPosition,
+          markerIcon: groupStationMarkerIcon,
+        );
+      } else if ((!showAllGroupStations.value || !inRegion) &&
+          !inOneKm(groupStation.groupStationPosition) &&
+          inDisplayGroupStations) {
+        displayGroupStations.remove(groupStation.groupStationUid);
+        await mapController.removeMarker(groupStation.groupStationPosition);
       }
     }
   }
@@ -157,7 +238,7 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
   }
 
   Future<void> _drawNearGroupStations() async {
-    await mapController.removeCircle("nearCircle");
+    //await mapController.removeCircle("nearCircle");
 
     await mapController.drawCircle(
       CircleOSM(
@@ -169,33 +250,6 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
         strokeWidth: 3,
       ),
     );
-
-    final phi = myLocation.value.latitude * Util.rad;
-    final double latBoard1 = myLocation.value.latitude - 0.009;
-    final double latBoard2 = myLocation.value.latitude + 0.009;
-    final double maxLat = max(latBoard1, latBoard2);
-    final double minLat = min(latBoard1, latBoard2);
-    final double cosLat = 0.009 / cos(myLocation.value.latitude * Util.rad);
-    final double lonBoard1 = myLocation.value.longitude - cosLat;
-    final double lonBoard2 = myLocation.value.longitude + cosLat;
-    final double maxLon = max(lonBoard1, lonBoard2);
-    final double minLon = min(lonBoard1, lonBoard2);
-
-    bool inOneKm(GeoPoint geoPoint) {
-      if (!(geoPoint.latitude >= minLat &&
-          geoPoint.latitude <= maxLat &&
-          geoPoint.longitude >= minLon &&
-          geoPoint.longitude <= maxLon)) {
-        return false;
-      }
-      final double a = sqrtSin(
-              (geoPoint.latitude - myLocation.value.latitude) * Util.halfRad) +
-          sqrtCos2(phi, geoPoint.latitude * Util.rad) *
-              sqrtSin((geoPoint.longitude - myLocation.value.longitude) *
-                  Util.halfRad);
-      if (a / (1 - a) <= 6.159e-9) return true;
-      return false;
-    }
 
     for (GroupStation groupStation in BusDataLoader.groupStations.values) {
       if (!displayGroupStations.containsKey(groupStation.groupStationUid) &&
@@ -216,10 +270,16 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
   }
 
   void onGeoPointClicked(BuildContext context, GeoPoint geoPoint) async {
-    GroupStation? clickGroupStation = BusDataLoader.getGroupStation(
-        displayGroupStations.entries
-            .firstWhere((mapEntry) => mapEntry.value.isEqual(geoPoint))
-            .key);
+    String groupStationUid = displayGroupStations.entries
+        .firstWhere((mapEntry) => mapEntry.value.isEqual(geoPoint),
+            orElse: () => MapEntry("-1", GeoPoint(latitude: 0, longitude: 0)))
+        .key;
+    if (groupStationUid == "-1") {
+      await mapController.removeMarker(geoPoint);
+      return;
+    }
+    GroupStation? clickGroupStation =
+        BusDataLoader.getGroupStation(groupStationUid);
     if (clickGroupStation != null) {
       double distance = Util.twoGeoPointsDistance(
         myLocation.value,
@@ -242,21 +302,9 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
   @override
   Widget build(BuildContext context) {
     return ThemeProvider(
-      builder: (BuildContext context, ThemeData themeData) => FutureBuilder(
-        future: hasGps(),
-        builder: (BuildContext context, AsyncSnapshot<bool> myPosSnapshot) {
-          if (myPosSnapshot.connectionState != ConnectionState.done) {
-            return const Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                  Text("正在請求位置"),
-                ],
-              ),
-            );
-          }
-          if (!myPosSnapshot.data!) {
+      builder: (BuildContext context, ThemeData themeData) {
+        Widget widgetBuilder(BuildContext context, bool enableGps) {
+          if (!enableGps) {
             trackingNotifier.value = false;
             showAllGroupStations.value = true;
           }
@@ -340,33 +388,25 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
                       const SizedBox(height: 10),
                       FloatingActionButton(
                         onPressed: () async {
-                          if (!await hasGps()) {
-                            if (context.mounted) {
-                              Util.showSnackBar(
-                                context,
-                                "無法取得位置",
-                                action: SnackBarAction(
-                                  label: "返回「桃園市政府」",
-                                  onPressed: () async => await mapController
-                                      .moveTo(myLocation.value),
-                                ),
-                              );
-                            }
-                            return;
-                          }
+                          // if (!trackingNotifier.value && !await hasGps()) {
+                          //   if (context.mounted) {
+                          //     Util.showSnackBar(
+                          //       context,
+                          //       "無法取得位置",
+                          //       action: SnackBarAction(
+                          //         label: "返回「桃園市政府」",
+                          //         onPressed: () async => await mapController
+                          //             .moveTo(myLocation.value),
+                          //       ),
+                          //     );
+                          //   }
+                          //   return;
+                          // }
                           trackingNotifier.value = !trackingNotifier.value;
                           await mapController.removeLimitAreaMap();
                           if (trackingNotifier.value) {
                             await mapController.moveTo(myLocation.value);
-                          } else {
-                            await mapController.disabledTracking();
-                          }
-
-                          if (trackingNotifier.value) {
                             await limitArea();
-                            await Future.delayed(
-                                const Duration(milliseconds: 500));
-                            await mapController.setZoom(zoomLevel: 16);
                           } else {
                             await mapController.removeLimitAreaMap();
                           }
@@ -418,12 +458,12 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
                             value: value,
                             activeColor: themeData.colorScheme.primary,
                             onChanged: (bool value) async {
-                              if (!await hasGps()) return;
                               showAllGroupStations.value = value;
                               if (value) {
                                 await onRegionChanged();
                               } else {
                                 await updateMyLocation();
+                                await onRegionChanged();
                               }
                             },
                           ),
@@ -435,8 +475,30 @@ class _NearStopsOsmPageState extends State<NearStopsOsmPage>
               ),
             ],
           );
-        },
-      ),
+        }
+
+        if (enableGps != null) {
+          return widgetBuilder(context, enableGps!);
+        }
+        return FutureBuilder(
+          future: hasGps(),
+          builder: (BuildContext context, AsyncSnapshot<bool> myPosSnapshot) {
+            if (myPosSnapshot.connectionState != ConnectionState.done ||
+                !myPosSnapshot.hasData) {
+              return const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    Text("正在請求位置"),
+                  ],
+                ),
+              );
+            }
+            return widgetBuilder(context, myPosSnapshot.data!);
+          },
+        );
+      },
     );
   }
 }
