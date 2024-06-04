@@ -53,10 +53,6 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
 
   Map<BoardArgumentsEnum, double> boardArguments = {};
 
-  get enableGps => Util.enableGps;
-
-  set enableGps(value) => Util.enableGps = value;
-
   void calculateBoard() {
     boardArguments[BoardArgumentsEnum.phi] =
         myLocation.value.latitude * Util.rad;
@@ -101,31 +97,6 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
     return false;
   }
 
-  Future<bool> hasGps() async {
-    if (enableGps != null) return enableGps!;
-
-    enableGps = false;
-    LocationPermission permission;
-    if (!await Geolocator.isLocationServiceEnabled()) return false;
-
-    permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.denied) {
-      permission = await Geolocator.requestPermission();
-      if (permission == LocationPermission.denied) return false;
-    }
-
-    if (permission == LocationPermission.deniedForever) return false;
-    if (!kIsWeb) return (await Geolocator.getLastKnownPosition() != null);
-    try {
-      await Geolocator.getCurrentPosition(
-          timeLimit: const Duration(seconds: 5));
-      enableGps = true;
-      return true;
-    } on TimeoutException {
-      return false;
-    }
-  }
-
   Future<void> limitArea() async {
     await mapController.removeLimitAreaMap();
     final double latBoard1 = myLocation.value.latitude - 0.012;
@@ -143,7 +114,7 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
   }
 
   Future<void> updateMyLocation() async {
-    if (await hasGps()) {
+    if (await Util.hasGps()) {
       if (!kIsWeb) {
         myLocation.value =
             Util.positionToGeoPoint((await Geolocator.getLastKnownPosition())!);
@@ -181,10 +152,22 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
 
   Future<void> mapIsReady(bool isReady) async {
     Geolocator.getPositionStream().listen((Position position) async {
+      await mapController.removeMarker(myLocation.value);
       await updateMyLocation();
       if (trackingNotifier.value) {
         await mapController.moveTo(myLocation.value);
       }
+      await Future.delayed(const Duration(milliseconds: 500));
+      await mapController.addMarker(
+        Util.positionToGeoPoint(position),
+        markerIcon: const MarkerIcon(
+          icon: Icon(
+            Icons.my_location,
+            size: 36,
+            color: Colors.blue,
+          ),
+        ),
+      );
     });
     await updateMyLocation();
     await onRegionChanged();
@@ -238,8 +221,11 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
   }
 
   Future<void> _drawNearGroupStations() async {
-    //await mapController.removeCircle("nearCircle");
-
+    try {
+      await mapController.removeCircle("nearCircle");
+    } catch (e) {
+      debugPrint(e.toString());
+    }
     await mapController.drawCircle(
       CircleOSM(
         key: "nearCircle",
@@ -270,6 +256,10 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
   }
 
   void onGeoPointClicked(BuildContext context, GeoPoint geoPoint) async {
+    if (geoPoint == myLocation.value) {
+      Util.showSnackBar(context, "我的位置");
+      return;
+    }
     String groupStationUid = displayGroupStations.entries
         .firstWhere((mapEntry) => mapEntry.value.isEqual(geoPoint),
             orElse: () => MapEntry("-1", GeoPoint(latitude: 0, longitude: 0)))
@@ -406,28 +396,24 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                           await mapController.removeLimitAreaMap();
                           if (trackingNotifier.value) {
                             await mapController.moveTo(myLocation.value);
-                            await limitArea();
+                            if (enableGps) await limitArea();
                           } else {
                             await mapController.removeLimitAreaMap();
                           }
                         },
-                        child: FutureBuilder(
-                            future: hasGps(),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<bool> myPosSnapshot) {
-                              if (!myPosSnapshot.hasData ||
-                                  !myPosSnapshot.data!) {
-                                return const Icon(Icons.gps_off);
-                              }
-                              return ValueListenableBuilder<bool>(
-                                valueListenable: trackingNotifier,
-                                builder: (BuildContext context, bool value,
-                                        Widget? child) =>
-                                    value
-                                        ? const Icon(Icons.my_location)
-                                        : const Icon(Icons.gps_not_fixed),
-                              );
-                            }),
+                        child: Builder(builder: (BuildContext context) {
+                          if (!enableGps) {
+                            return const Icon(Icons.gps_off);
+                          }
+                          return ValueListenableBuilder<bool>(
+                            valueListenable: trackingNotifier,
+                            builder: (BuildContext context, bool value,
+                                    Widget? child) =>
+                                value
+                                    ? const Icon(Icons.my_location)
+                                    : const Icon(Icons.gps_not_fixed),
+                          );
+                        }),
                       ),
                     ],
                   ),
@@ -458,6 +444,7 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                             value: value,
                             activeColor: themeData.colorScheme.primary,
                             onChanged: (bool value) async {
+                              if (!enableGps) return;
                               showAllGroupStations.value = value;
                               if (value) {
                                 await onRegionChanged();
@@ -477,11 +464,11 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
           );
         }
 
-        if (enableGps != null) {
-          return widgetBuilder(context, enableGps!);
+        if (Util.enableGps != null) {
+          return widgetBuilder(context, Util.enableGps!);
         }
         return FutureBuilder(
-          future: hasGps(),
+          future: Util.hasGps(),
           builder: (BuildContext context, AsyncSnapshot<bool> myPosSnapshot) {
             if (myPosSnapshot.connectionState != ConnectionState.done ||
                 !myPosSnapshot.hasData) {

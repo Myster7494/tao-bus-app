@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'dart:math';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:geolocator/geolocator.dart';
@@ -34,5 +36,35 @@ abstract class Util {
 
   static GeoPoint positionToGeoPoint(Position position) {
     return GeoPoint(latitude: position.latitude, longitude: position.longitude);
+  }
+
+  static Future<bool> hasGps() async {
+    if (enableGps != null) return enableGps!;
+
+    enableGps = false;
+    if (await requestGpsPermission() == false) return false;
+    if (!kIsWeb) return (await Geolocator.getLastKnownPosition() != null);
+    try {
+      await Geolocator.getCurrentPosition(
+          timeLimit: const Duration(seconds: 5));
+      enableGps = true;
+      return true;
+    } on TimeoutException {
+      return false;
+    }
+  }
+
+  static Future<bool> requestGpsPermission() async {
+    enableGps = false;
+    if (!await Geolocator.isLocationServiceEnabled()) return false;
+    LocationPermission permission;
+    permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) return false;
+    }
+    if (permission == LocationPermission.deniedForever) return false;
+    enableGps = true;
+    return true;
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../main.dart';
+import '../util.dart';
 import 'favorite_stops_page.dart';
 import 'home_page.dart';
 import 'osm_map_page.dart';
@@ -22,10 +22,9 @@ class _MainPageState extends State<MainPage> {
       appBar: AppBar(
         title: const Text("桃園公車-自主學習"),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () => localStorage.favoriteStops = {},
-          )
+          FilledButton(
+              onPressed: () async => await Util.requestGpsPermission(),
+              child: const Text('更新GPS狀態'))
         ],
       ),
       body: switch (selectedIndex) {
