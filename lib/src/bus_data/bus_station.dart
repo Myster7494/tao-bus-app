@@ -16,6 +16,8 @@ class BusStation {
   final List<String> stops;
   @JsonKey(name: "GroupStationUID")
   final String groupStationUid;
+  @JsonKey(name: "Bearing")
+  final Bearing bearing;
 
   const BusStation({
     required this.stationUid,
@@ -23,10 +25,51 @@ class BusStation {
     required this.stationPosition,
     required this.stops,
     required this.groupStationUid,
+    required this.bearing,
   });
 
   factory BusStation.fromJson(Map<String, dynamic> json) =>
       _$BusStationFromJson(json);
 
   Map<String, dynamic> toJson() => _$BusStationToJson(this);
+}
+
+enum Bearing {
+  @JsonValue("E")
+  E,
+  @JsonValue("NE")
+  NE,
+  @JsonValue("N")
+  N,
+  @JsonValue("NW")
+  NW,
+  @JsonValue("W")
+  W,
+  @JsonValue("SW")
+  SW,
+  @JsonValue("S")
+  S,
+  @JsonValue("SE")
+  SE;
+
+  String toChinese() {
+    switch (this) {
+      case Bearing.E:
+        return "東";
+      case Bearing.NE:
+        return "東北";
+      case Bearing.N:
+        return "北";
+      case Bearing.NW:
+        return "西北";
+      case Bearing.W:
+        return "西";
+      case Bearing.SW:
+        return "西南";
+      case Bearing.S:
+        return "南";
+      case Bearing.SE:
+        return "東南";
+    }
+  }
 }

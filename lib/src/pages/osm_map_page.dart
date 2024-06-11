@@ -25,15 +25,33 @@ enum BoardArgumentsEnum {
   minLon,
 }
 
+class ExtraMarker {
+  final String name;
+  final GeoPoint geoPoint;
+  final MarkerIcon markerIcon;
+
+  const ExtraMarker(
+      {required this.name, required this.geoPoint, required this.markerIcon});
+}
+
 class OsmMapPage extends StatefulWidget {
-  const OsmMapPage({super.key});
+  final GeoPoint? initPosition;
+  final List<ExtraMarker> extraMarkers;
+  final bool showNearGroupStations;
+
+  const OsmMapPage(
+      {super.key,
+      this.initPosition,
+      this.extraMarkers = const [],
+      this.showNearGroupStations = true});
 
   @override
   State<StatefulWidget> createState() => _OsmMapPageState();
 }
 
 class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
-  MarkerIcon groupStationMarkerIcon = const MarkerIcon(
+  late GeoPoint initPosition;
+  final MarkerIcon groupStationMarkerIcon = const MarkerIcon(
     icon: Icon(
       Icons.location_on_outlined,
       size: 36,
@@ -41,17 +59,16 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
     ),
   );
 
-  //Key key = UniqueKey();
   late MapController mapController;
   final Map<String, GeoPoint> displayGroupStations = {};
-  ValueNotifier<GeoPoint> myLocation = ValueNotifier(
+  final ValueNotifier<GeoPoint> myLocation = ValueNotifier(
       GeoPoint(latitude: 24.99290738364926, longitude: 121.30105867981855));
-  ValueNotifier<bool> trackingNotifier = ValueNotifier(true);
-  ValueNotifier<bool> showAllGroupStations = ValueNotifier(false);
+  final ValueNotifier<bool> trackingNotifier = ValueNotifier(true);
+  final ValueNotifier<bool> showAllGroupStations = ValueNotifier(false);
   Timer? timer;
   late AnimationController animationController;
 
-  Map<BoardArgumentsEnum, double> boardArguments = {};
+  final Map<BoardArgumentsEnum, double> boardArguments = {};
 
   void calculateBoard() {
     boardArguments[BoardArgumentsEnum.phi] =
@@ -139,8 +156,15 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
   @override
   void initState() {
     super.initState();
+    if (widget.initPosition == null) {
+      initPosition = myLocation.value;
+    } else {
+      initPosition = widget.initPosition!;
+      trackingNotifier.value = false;
+      showAllGroupStations.value = false;
+    }
     mapController = MapController.withPosition(
-      initPosition: myLocation.value,
+      initPosition: initPosition,
     );
     animationController = AnimationController(
       vsync: this,
@@ -169,6 +193,12 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
         ),
       );
     });
+    for (ExtraMarker extraMarker in widget.extraMarkers) {
+      await mapController.addMarker(
+        extraMarker.geoPoint,
+        markerIcon: extraMarker.markerIcon,
+      );
+    }
     await updateMyLocation();
     await onRegionChanged();
     //await mapController.moveTo(myLocation.value);
@@ -188,13 +218,13 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
     calculateBoard();
 
     for (GroupStation groupStation in BusDataLoader.groupStations.values) {
-      //debugPrint(groupStation.groupStationName.zhTw);
       bool inRegion =
           region.boundingBox.inBoundingBox(groupStation.groupStationPosition);
       bool inDisplayGroupStations =
           displayGroupStations.containsKey(groupStation.groupStationUid);
       if ((showAllGroupStations.value ||
-              inOneKm(groupStation.groupStationPosition)) &&
+              (inOneKm(groupStation.groupStationPosition) &&
+                  widget.showNearGroupStations)) &&
           inRegion &&
           !inDisplayGroupStations) {
         displayGroupStations[groupStation.groupStationUid] =
@@ -205,7 +235,10 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
         );
       } else if ((!showAllGroupStations.value || !inRegion) &&
           !inOneKm(groupStation.groupStationPosition) &&
-          inDisplayGroupStations) {
+          inDisplayGroupStations &&
+          !widget.extraMarkers.map((extraMarker) => extraMarker.geoPoint).any(
+              (element) =>
+                  element.isEqual(groupStation.groupStationPosition))) {
         displayGroupStations.remove(groupStation.groupStationUid);
         await mapController.removeMarker(groupStation.groupStationPosition);
       }
@@ -221,6 +254,7 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
   }
 
   Future<void> _drawNearGroupStations() async {
+    if (!widget.showNearGroupStations) return;
     try {
       await mapController.removeCircle("nearCircle");
     } catch (e) {
@@ -248,7 +282,10 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
         );
       } else if (displayGroupStations
               .containsKey(groupStation.groupStationUid) &&
-          !inOneKm(groupStation.groupStationPosition)) {
+          !inOneKm(groupStation.groupStationPosition) &&
+          !widget.extraMarkers.map((extraMarker) => extraMarker.geoPoint).any(
+              (element) =>
+                  element.isEqual(groupStation.groupStationPosition))) {
         displayGroupStations.remove(groupStation.groupStationUid);
         await mapController.removeMarker(groupStation.groupStationPosition);
       }
@@ -260,32 +297,44 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
       Util.showSnackBar(context, "我的位置");
       return;
     }
-    String groupStationUid = displayGroupStations.entries
-        .firstWhere((mapEntry) => mapEntry.value.isEqual(geoPoint),
-            orElse: () => MapEntry("-1", GeoPoint(latitude: 0, longitude: 0)))
-        .key;
-    if (groupStationUid == "-1") {
-      await mapController.removeMarker(geoPoint);
-      return;
-    }
-    GroupStation? clickGroupStation = Util.getGroupStation(groupStationUid);
-    if (clickGroupStation != null) {
-      double distance = Util.twoGeoPointsDistance(
-        myLocation.value,
-        geoPoint,
-      );
-      if (distance > 1000) {
-        Util.showSnackBar(
-          context,
-          '${clickGroupStation.groupStationName.zhTw} | ${(distance / 1000).toStringAsFixed(2)} km',
-        );
+    bool isExtraMarker = widget.extraMarkers
+        .map((extraMarker) => extraMarker.geoPoint)
+        .any((element) => element.isEqual(geoPoint));
+    late String name;
+    if (!isExtraMarker) {
+      String groupStationUid = displayGroupStations.entries
+          .firstWhere((mapEntry) => mapEntry.value.isEqual(geoPoint),
+              orElse: () => MapEntry("-1", GeoPoint(latitude: 0, longitude: 0)))
+          .key;
+      if (groupStationUid == "-1") {
+        await mapController.removeMarker(geoPoint);
         return;
       }
+      name = Util.getGroupStation(groupStationUid)!.groupStationName.zhTw;
+    } else {
+      name = widget.extraMarkers
+          .firstWhere((extraMarker) => extraMarker.geoPoint.isEqual(geoPoint))
+          .name;
+    }
+    if (!Util.enableGps!) {
+      Util.showSnackBar(context, name);
+      return;
+    }
+    double distance = Util.twoGeoPointsDistance(
+      myLocation.value,
+      geoPoint,
+    );
+    if (distance > 1000) {
       Util.showSnackBar(
         context,
-        '${clickGroupStation.groupStationName.zhTw} | ${distance.round()} m',
+        '$name | ${(distance / 1000).toStringAsFixed(2)} km',
       );
+      return;
     }
+    Util.showSnackBar(
+      context,
+      '$name | ${distance.round()} m',
+    );
   }
 
   @override
@@ -295,7 +344,7 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
         Widget widgetBuilder(BuildContext context, bool enableGps) {
           if (!enableGps) {
             trackingNotifier.value = false;
-            showAllGroupStations.value = true;
+            showAllGroupStations.value = widget.extraMarkers.isEmpty;
           }
           return Stack(
             children: [
@@ -335,6 +384,28 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                 onMapMoved: (Region region) async {
                   await onRegionChanged(region);
                 },
+              ),
+              if (widget.initPosition != null)
+                Positioned(
+                  top: 16,
+                  left: 16,
+                  child: PointerInterceptor(
+                    child: FilledButton(
+                      onPressed: () async =>
+                          await mapController.moveTo(widget.initPosition!),
+                      child: const Text('返回標記定位點'),
+                    ),
+                  ),
+                ),
+              Positioned(
+                top: 16,
+                right: 16,
+                child: PointerInterceptor(
+                  child: FilledButton(
+                    onPressed: () async => await Util.requestGpsPermission(),
+                    child: const Text('更新GPS狀態'),
+                  ),
+                ),
               ),
               Positioned(
                 bottom: 16,
@@ -443,7 +514,9 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                             value: value,
                             activeColor: themeData.colorScheme.primary,
                             onChanged: (bool value) async {
-                              if (!enableGps) return;
+                              if (!enableGps && widget.extraMarkers.isEmpty) {
+                                return;
+                              }
                               showAllGroupStations.value = value;
                               if (value) {
                                 await onRegionChanged();

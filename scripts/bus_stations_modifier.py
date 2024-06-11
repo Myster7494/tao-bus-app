@@ -15,7 +15,8 @@ for station in stations:
     new_station = {'StationUID': station['StationUID'],
                    'StationName': station['StationName'],
                    'StationPosition': station['StationPosition'],
-                   'Stops': list({stop['StopUID'] for stop in station['Stops']})}
+                   'Stops': list({stop['StopUID'] for stop in station['Stops']}),
+                   'Bearing': station['Bearing'], }
     if english_name is not None:
         new_station['StationName']['En'] = english_name
     for group_station in group_stations.values():

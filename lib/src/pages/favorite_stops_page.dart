@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../main.dart';
 import '../util.dart';
 import '../widgets/estimated_time_text.dart';
+import '../widgets/route_popup_menu_button.dart';
 
 class FavoriteStopsPage extends StatefulWidget {
   const FavoriteStopsPage({super.key});
@@ -72,6 +73,7 @@ class _FavoriteStopsPageState extends State<FavoriteStopsPage> {
                             direction: routeStops.direction,
                             stopUid: stop.stopUid,
                             setState: setState),
+                        RoutePopupMenuButton(routeUid: routeStops.routeUid),
                       ],
                     ),
                   );

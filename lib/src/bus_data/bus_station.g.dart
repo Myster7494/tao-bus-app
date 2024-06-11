@@ -13,6 +13,7 @@ BusStation _$BusStationFromJson(Map<String, dynamic> json) => BusStation(
           json['StationPosition'] as Map<String, dynamic>),
       stops: (json['Stops'] as List<dynamic>).map((e) => e as String).toList(),
       groupStationUid: json['GroupStationUID'] as String,
+      bearing: $enumDecode(_$BearingEnumMap, json['Bearing']),
     );
 
 Map<String, dynamic> _$BusStationToJson(BusStation instance) =>
@@ -22,4 +23,16 @@ Map<String, dynamic> _$BusStationToJson(BusStation instance) =>
       'StationPosition': instance.stationPosition,
       'Stops': instance.stops,
       'GroupStationUID': instance.groupStationUid,
+      'Bearing': _$BearingEnumMap[instance.bearing]!,
     };
+
+const _$BearingEnumMap = {
+  Bearing.E: 'E',
+  Bearing.NE: 'NE',
+  Bearing.N: 'N',
+  Bearing.NW: 'NW',
+  Bearing.W: 'W',
+  Bearing.SW: 'SW',
+  Bearing.S: 'S',
+  Bearing.SE: 'SE',
+};
