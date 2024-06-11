@@ -1,7 +1,6 @@
 import 'package:bus_app/src/bus_data/route_stops.dart';
 import 'package:flutter/material.dart';
 
-import '../bus_data/bus_data_loader.dart';
 import '../bus_data/bus_stop.dart';
 import '../bus_data/favorite_stops.dart';
 import '../util.dart';
@@ -22,9 +21,8 @@ class FavoriteStopButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    RouteStop routeStop =
-        BusDataLoader.getRouteStopByUid(routeUid, direction, stopUid)!;
-    BusStop busStop = BusDataLoader.getBusStop(stopUid)!;
+    RouteStop routeStop = Util.getRouteStopByUid(routeUid, direction, stopUid)!;
+    BusStop busStop = Util.getBusStop(stopUid)!;
     return IconButton(
       tooltip: FavoriteStops.isFavoriteStop(routeUid, direction, routeStop)
           ? '移除收藏'
@@ -63,7 +61,6 @@ class FavoriteStopButton extends StatelessWidget {
                       routeUid, direction, routeStop),
                 ),
               ),
-
             );
           }
         },

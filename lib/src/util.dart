@@ -6,6 +6,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:geolocator/geolocator.dart';
 
+import 'bus_data/bus_data_loader.dart';
+import 'bus_data/bus_route.dart';
+import 'bus_data/bus_station.dart';
+import 'bus_data/bus_stop.dart';
+import 'bus_data/group_station.dart';
+import 'bus_data/route_stops.dart';
+
 abstract class Util {
   static const rad = pi / 180;
   static const halfRad = pi / 360;
@@ -66,5 +73,55 @@ abstract class Util {
     if (permission == LocationPermission.deniedForever) return false;
     enableGps = true;
     return true;
+  }
+
+  static BusRoute? getBusRoute(String routeUid, [BusRoutesType? busRoutes]) {
+    busRoutes ??= BusDataLoader.getAllBusRoutesMap();
+    return busRoutes[routeUid];
+  }
+
+  static BusStation? getBusStation(String stationUid,
+      [BusStationsType? busStations]) {
+    busStations ??= BusDataLoader.getAllBusStationsMap();
+    return busStations[stationUid];
+  }
+
+  static BusStop? getBusStop(String stopUid, [BusStopsType? busStops]) {
+    busStops ??= BusDataLoader.getAllBusStopsMap();
+    return busStops[stopUid];
+  }
+
+  static List<RouteStop>? getRouteStopsByDirection(
+      String routeUid, int direction,
+      [RouteStopsType? routeStops]) {
+    routeStops ??= BusDataLoader.getAllRouteStopsMap();
+    return routeStops[routeUid]!
+        .firstWhere((element) => element.direction == direction)
+        .stops;
+  }
+
+  static RouteStop? getRouteStopByUid(
+      String routeUid, int direction, String stopUid) {
+    return getRouteStopsByDirection(routeUid, direction)
+        ?.firstWhere((element) => element.stopUid == stopUid);
+  }
+
+  static GroupStation? getGroupStation(String groupStationUid,
+      [GroupStationsType? groupStations]) {
+    groupStations ??= BusDataLoader.getAllGroupStationsMap();
+    return groupStations[groupStationUid];
+  }
+
+  static int sortRoutes(BusRoute a, BusRoute b) {
+    if (a.routeName.zhTw.startsWith(RegExp(r'[^0-9]')) ||
+        b.routeName.zhTw.startsWith(RegExp(r'[^0-9]'))) {
+      return a.routeName.zhTw.compareTo(b.routeName.zhTw);
+    }
+    String aNum = a.routeName.zhTw.replaceAll(RegExp(r'[^0-9]'), '');
+    String bNum = b.routeName.zhTw.replaceAll(RegExp(r'[^0-9]'), '');
+    if (aNum == bNum) {
+      return a.routeName.zhTw.compareTo(b.routeName.zhTw);
+    }
+    return aNum.compareTo(bNum);
   }
 }

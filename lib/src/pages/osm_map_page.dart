@@ -268,8 +268,7 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
       await mapController.removeMarker(geoPoint);
       return;
     }
-    GroupStation? clickGroupStation =
-        BusDataLoader.getGroupStation(groupStationUid);
+    GroupStation? clickGroupStation = Util.getGroupStation(groupStationUid);
     if (clickGroupStation != null) {
       double distance = Util.twoGeoPointsDistance(
         myLocation.value,

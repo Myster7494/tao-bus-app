@@ -1,10 +1,11 @@
+import 'package:bus_app/src/pages/station_detail_page.dart';
 import 'package:bus_app/src/widgets/estimated_time_text.dart';
 import 'package:bus_app/src/widgets/favorite_stop_button.dart';
 import 'package:bus_app/src/widgets/theme_provider.dart';
 import 'package:flutter/material.dart';
 
-import '../bus_data/bus_data_loader.dart';
 import '../bus_data/bus_route.dart';
+import '../util.dart';
 
 class BusStatePage extends StatefulWidget {
   final String routeUid;
@@ -20,7 +21,7 @@ class _BusStatePageState extends State<BusStatePage> {
 
   @override
   Widget build(BuildContext context) {
-    BusRoute busRoute = BusDataLoader.getBusRoute(widget.routeUid)!;
+    BusRoute busRoute = Util.getBusRoute(widget.routeUid)!;
     return ThemeProvider(
       builder: (BuildContext context, ThemeData themeData) => Scaffold(
         appBar: AppBar(title: const Text('公車動態')),
@@ -64,16 +65,16 @@ class _BusStatePageState extends State<BusStatePage> {
             Expanded(
               child: ListView.separated(
                 key: PageStorageKey(direction),
-                itemCount: BusDataLoader.getRouteStopsByDirection(
-                        widget.routeUid, direction)!
-                    .length,
+                itemCount:
+                    Util.getRouteStopsByDirection(widget.routeUid, direction)!
+                        .length,
                 itemBuilder: (context, index) {
-                  String stopUid = BusDataLoader.getRouteStopsByDirection(
+                  String stopUid = Util.getRouteStopsByDirection(
                           widget.routeUid, direction)![index]
                       .stopUid;
                   return ListTile(
                     title: Text(
-                      BusDataLoader.getBusStop(stopUid)!.stopName.zhTw,
+                      Util.getBusStop(stopUid)!.stopName.zhTw,
                       style: const TextStyle(
                         fontSize: 18,
                       ),
@@ -92,6 +93,28 @@ class _BusStatePageState extends State<BusStatePage> {
                             direction: direction,
                             stopUid: stopUid,
                             setState: setState),
+                        PopupMenuButton(
+                            itemBuilder: (BuildContext context) => [
+                                  PopupMenuItem(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 5),
+                                    child: const Center(
+                                      child: Text(
+                                        "顯示組站位路線",
+                                        style: TextStyle(fontSize: 16),
+                                      ),
+                                    ),
+                                    onTap: () => Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) => StationDetailPage(
+                                            data: stopUid,
+                                            provideDataType:
+                                                StationDetailProvideDataType
+                                                    .stopUid),
+                                      ),
+                                    ),
+                                  ),
+                                ])
                       ],
                     ),
                   );

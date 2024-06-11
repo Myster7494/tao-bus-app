@@ -4,7 +4,7 @@ import 'package:bus_app/src/widgets/favorite_stop_button.dart';
 import 'package:flutter/material.dart';
 
 import '../../main.dart';
-import '../bus_data/bus_data_loader.dart';
+import '../util.dart';
 import '../widgets/estimated_time_text.dart';
 
 class FavoriteStopsPage extends StatefulWidget {
@@ -43,11 +43,10 @@ class _FavoriteStopsPageState extends State<FavoriteStopsPage> {
             for (RouteStop stop in routeStops.stops)
               Builder(
                 builder: (context) {
-                  BusRoute busRoute =
-                      BusDataLoader.getBusRoute(routeStops.routeUid)!;
+                  BusRoute busRoute = Util.getBusRoute(routeStops.routeUid)!;
                   return ListTile(
                     title: Text(
-                      BusDataLoader.busStops[stop.stopUid]!.stopName.zhTw,
+                      Util.getBusStop(stop.stopUid)!.stopName.zhTw,
                       style: const TextStyle(
                         fontSize: 18,
                       ),

@@ -9,12 +9,18 @@ import 'bus_stop.dart';
 import 'estimated_time.dart';
 import 'route_stops.dart';
 
+typedef BusRoutesType = Map<String, BusRoute>;
+typedef BusStopsType = Map<String, BusStop>;
+typedef RouteStopsType = Map<String, List<RouteStops>>;
+typedef BusStationsType = Map<String, BusStation>;
+typedef GroupStationsType = Map<String, GroupStation>;
+
 abstract class BusDataLoader {
-  static late final Map<String, BusRoute> busRoutes;
-  static late final Map<String, BusStop> busStops;
-  static late final Map<String, List<RouteStops>> routeStops;
-  static late final Map<String, BusStation> busStations;
-  static late final Map<String, GroupStation> groupStations;
+  static late final BusRoutesType busRoutes;
+  static late final BusStopsType busStops;
+  static late final RouteStopsType routeStops;
+  static late final BusStationsType busStations;
+  static late final GroupStationsType groupStations;
   static late final AllEstimatedTime allEstimatedTime;
 
   static Future<void> loadBusRoutes() async {
@@ -74,36 +80,63 @@ abstract class BusDataLoader {
     await loadEstimatedTime();
   }
 
-  static BusRoute? getBusRoute(String routeUid) {
-    return busRoutes[routeUid];
-  }
-
-  static BusStation? getBusStation(String stationUid) {
-    return busStations[stationUid];
-  }
-
-  static List<BusRoute> getAllBusRoutes() {
+  static List<BusRoute> getAllBusRoutesList([BusRoutesType? busRoutesMap]) {
+    busRoutesMap ??= getAllBusRoutesMap();
     return busRoutes.values.toList();
   }
 
-  static BusStop? getBusStop(String stopUid) {
-    return busStops[stopUid];
+  static BusRoutesType getAllBusRoutesMap([List<BusRoute>? busStationsList]) {
+    if (busStationsList == null) return Map.of(BusDataLoader.busRoutes);
+    return Map.fromEntries(busStationsList
+        .map((busRoute) => MapEntry(busRoute.routeUid, busRoute)));
   }
 
-  static List<RouteStop>? getRouteStopsByDirection(
-      String routeUid, int direction) {
-    return BusDataLoader.routeStops[routeUid]!
-        .firstWhere((element) => element.direction == direction)
-        .stops;
+  static List<BusStation> getAllBusStationsList(
+      [BusStationsType? busStationsMap]) {
+    busStationsMap ??= BusDataLoader.busStations;
+    return busStations.values.toList();
   }
 
-  static RouteStop? getRouteStopByUid(
-      String routeUid, int direction, String stopUid) {
-    return getRouteStopsByDirection(routeUid, direction)
-        ?.firstWhere((element) => element.stopUid == stopUid);
+  static BusStationsType getAllBusStationsMap(
+      [List<BusStation>? busStationsList]) {
+    if (busStationsList == null) return Map.of(BusDataLoader.busStations);
+    return Map.fromEntries(busStationsList
+        .map((busStation) => MapEntry(busStation.stationUid, busStation)));
   }
 
-  static GroupStation? getGroupStation(String groupStationUid) {
-    return groupStations[groupStationUid];
+  static List<BusStop> getAllBusStopsList([BusStopsType? busStopsMap]) {
+    busStopsMap ??= BusDataLoader.busStops;
+    return busStops.values.toList();
+  }
+
+  static BusStopsType getAllBusStopsMap([List<BusStop>? busStopsList]) {
+    if (busStopsList == null) return Map.of(BusDataLoader.busStops);
+    return Map.fromEntries(
+        busStopsList.map((busStop) => MapEntry(busStop.stopUid, busStop)));
+  }
+
+  static List<GroupStation> getAllGroupStationsList(
+      [GroupStationsType? groupStationsMap]) {
+    groupStationsMap ??= BusDataLoader.groupStations;
+    return groupStations.values.toList();
+  }
+
+  static GroupStationsType getAllGroupStationsMap(
+      [List<GroupStation>? groupStationsList]) {
+    if (groupStationsList == null) return Map.of(BusDataLoader.groupStations);
+    return Map.fromEntries(groupStationsList.map((groupStation) =>
+        MapEntry(groupStation.groupStationUid, groupStation)));
+  }
+
+  static List<RouteStops> getAllRouteStopsList(
+      [RouteStopsType? routeStopsMap]) {
+    routeStopsMap ??= BusDataLoader.routeStops;
+    return routeStops.values.expand((element) => element).toList();
+  }
+
+  static RouteStopsType getAllRouteStopsMap(
+      // [List<RouteStops>? routeStopsList]
+      ) {
+    return Map.of(BusDataLoader.routeStops);
   }
 }

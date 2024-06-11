@@ -1,10 +1,10 @@
+import 'package:bus_app/src/bus_data/bus_data_loader.dart';
+import 'package:bus_app/src/widgets/route_popup_menu_button.dart';
 import 'package:bus_app/src/widgets/theme_provider.dart';
 import 'package:flutter/material.dart';
 
-import '../bus_data/bus_data_loader.dart';
 import '../bus_data/bus_route.dart';
-import '../pages/route_map_img_page.dart';
-import 'bus_state_page.dart';
+import '../util.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -19,27 +19,14 @@ class _HomePageState extends State<HomePage> {
       ScrollController(keepScrollOffset: false);
   late List<BusRoute> busRoutes;
 
-  int sortRoutes(BusRoute a, BusRoute b) {
-    if (a.routeName.zhTw.startsWith(RegExp(r'[^0-9]')) ||
-        b.routeName.zhTw.startsWith(RegExp(r'[^0-9]'))) {
-      return a.routeName.zhTw.compareTo(b.routeName.zhTw);
-    }
-    String aNum = a.routeName.zhTw.replaceAll(RegExp(r'[^0-9]'), '');
-    String bNum = b.routeName.zhTw.replaceAll(RegExp(r'[^0-9]'), '');
-    if (aNum == bNum) {
-      return a.routeName.zhTw.compareTo(b.routeName.zhTw);
-    }
-    return aNum.compareTo(bNum);
-  }
-
   void modifyRoutes() {
-    setState(() => busRoutes = BusDataLoader.getAllBusRoutes()
+    setState(() => busRoutes = BusDataLoader.getAllBusRoutesList()
         .where((busRoute) => textEditingController.text.split(' ').every(
             (element) =>
                 busRoute.routeName.zhTw.contains(element) ||
                 busRoute.headsign.contains(element)))
         .toList()
-      ..sort((a, b) => sortRoutes(a, b)));
+      ..sort((a, b) => Util.sortRoutes(a, b)));
     if (scrollController.hasClients) {
       scrollController.jumpTo(0);
     }
@@ -163,42 +150,8 @@ class _HomePageState extends State<HomePage> {
                         fontSize: 16,
                       ),
                     ),
-                    trailing: PopupMenuButton(
-                      tooltip: "顯示功能選單",
-                      itemBuilder: (BuildContext context) => [
-                        PopupMenuItem(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: const Center(
-                            child: Text(
-                              "顯示路線簡圖",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => RouteMapPage(
-                                  routeUid: busRoutes[index].routeUid),
-                            ),
-                          ),
-                        ),
-                        PopupMenuItem(
-                          padding: const EdgeInsets.symmetric(horizontal: 5),
-                          child: const Center(
-                            child: Text(
-                              "顯示公車動態",
-                              style: TextStyle(fontSize: 16),
-                            ),
-                          ),
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) => BusStatePage(
-                                routeUid: busRoutes[index].routeUid,
-                              ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
+                    trailing: RoutePopupMenuButton(
+                        routeUid: busRoutes[index].routeUid),
                   ),
                   separatorBuilder: (context, index) =>
                       const Divider(height: 5),

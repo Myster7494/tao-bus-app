@@ -1,7 +1,7 @@
-import 'package:bus_app/src/bus_data/bus_data_loader.dart';
 import 'package:flutter/material.dart';
 
 import '../bus_data/bus_route.dart';
+import '../util.dart';
 import '../widgets/web_image/web_image.dart';
 
 class RouteMapPage extends StatefulWidget {
@@ -27,7 +27,7 @@ class _RouteMapPageState extends State<RouteMapPage> {
 
   @override
   Widget build(BuildContext context) {
-    BusRoute busRoute = BusDataLoader.getBusRoute(widget.routeUid)!;
+    BusRoute busRoute = Util.getBusRoute(widget.routeUid)!;
     return Scaffold(
       appBar: AppBar(title: const Text("路線簡圖")),
       body: Column(
