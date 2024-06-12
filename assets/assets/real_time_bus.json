@@ -1,0 +1,533 @@
+[
+  {
+    "PlateNumb": "032-U8",
+    "OperatorNo": "1201",
+    "RouteUID": "TAO715",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.207445,
+      "PositionLat": 25.06156,
+      "GeoHash": "wsqnw4kd4"
+    },
+    "Speed": 0,
+    "Azimuth": 12,
+    "DutyStatus": 1,
+    "GPSTime": "2024-06-12T23:58:56+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "033-U8",
+    "OperatorNo": "1201",
+    "RouteUID": "TAO715",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.298801,
+      "PositionLat": 24.955558,
+      "GeoHash": "wsqmbpp0d"
+    },
+    "Speed": 37,
+    "Azimuth": 189,
+    "DutyStatus": 0,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:58+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "169-FV",
+    "OperatorNo": "1002",
+    "RouteUID": "TAO6070",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.321466,
+      "PositionLat": 24.981063,
+      "GeoHash": "wsqq0ext5"
+    },
+    "Speed": 0,
+    "Azimuth": 152,
+    "DutyStatus": 1,
+    "GPSTime": "2024-06-12T23:58:56+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "170-FV",
+    "OperatorNo": "1002",
+    "RouteUID": "TAO6070",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.321719,
+      "PositionLat": 24.981476,
+      "GeoHash": "wsqq0exz8"
+    },
+    "Speed": 0,
+    "Azimuth": 312,
+    "DutyStatus": 1,
+    "GPSTime": "2024-06-12T23:58:46+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "176-FV",
+    "OperatorNo": "1002",
+    "RouteUID": "TAO6910",
+    "Direction": 0,
+    "BusPosition": {
+      "PositionLon": 121.321491,
+      "PositionLat": 24.981228,
+      "GeoHash": "wsqq0exw5"
+    },
+    "Speed": 0,
+    "Azimuth": 356,
+    "DutyStatus": 1,
+    "GPSTime": "2024-06-12T23:58:52+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "405-U7",
+    "OperatorNo": "1002",
+    "RouteUID": "TAO607",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.314391,
+      "PositionLat": 24.985731,
+      "GeoHash": "wsqq0sd2q"
+    },
+    "Speed": 12,
+    "Azimuth": 9,
+    "DutyStatus": 0,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:40+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "455-FT",
+    "OperatorNo": "1002",
+    "RouteUID": "TAO5063",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.353246,
+      "PositionLat": 25.026271,
+      "GeoHash": "wsqq37ysx"
+    },
+    "Speed": 45,
+    "Azimuth": 208,
+    "DutyStatus": 0,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:57+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "582-FY",
+    "OperatorNo": "1002",
+    "RouteUID": "TAO3165",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.306186,
+      "PositionLat": 24.997151,
+      "GeoHash": "wsqq0qs6z"
+    },
+    "Speed": 0,
+    "Azimuth": 117,
+    "DutyStatus": 0,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:44+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "597-FY",
+    "OperatorNo": "1002",
+    "RouteUID": "TAO50861",
+    "Direction": 0,
+    "BusPosition": {
+      "PositionLon": 121.204711,
+      "PositionLat": 25.057169,
+      "GeoHash": "wsqnw1d8d"
+    },
+    "Speed": 0,
+    "Azimuth": 194,
+    "DutyStatus": 1,
+    "GPSTime": "2024-06-12T23:58:00+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "919-FP",
+    "OperatorNo": "1002",
+    "RouteUID": "TAO50711",
+    "Direction": 0,
+    "BusPosition": {
+      "PositionLon": 121.242321,
+      "PositionLat": 25.110551,
+      "GeoHash": "wsqnygjzw"
+    },
+    "Speed": 0,
+    "Azimuth": 280,
+    "DutyStatus": 1,
+    "GPSTime": "2024-06-12T23:58:50+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "983-FP",
+    "OperatorNo": "0404",
+    "RouteUID": "TAO130",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.313693,
+      "PositionLat": 24.987166,
+      "GeoHash": "wsqq0scbv"
+    },
+    "Speed": 0,
+    "Azimuth": 0,
+    "DutyStatus": 1,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:55+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "FAB-336",
+    "OperatorNo": "1201",
+    "RouteUID": "TAO168",
+    "Direction": 0,
+    "BusPosition": {
+      "PositionLon": 121.309118,
+      "PositionLat": 24.967085,
+      "GeoHash": "wsqq03neg"
+    },
+    "Speed": 40,
+    "Azimuth": 176,
+    "DutyStatus": 0,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:42+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "FAB-867",
+    "OperatorNo": "0301",
+    "RouteUID": "TAO708",
+    "Direction": 0,
+    "BusPosition": {
+      "PositionLon": 121.374433,
+      "PositionLat": 25.052596,
+      "GeoHash": "wsqq9bwjv"
+    },
+    "Speed": 0,
+    "Azimuth": 0,
+    "DutyStatus": 1,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:47+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "FAB-880",
+    "OperatorNo": "0301",
+    "RouteUID": "TAO708",
+    "Direction": 0,
+    "BusPosition": {
+      "PositionLon": 121.374276,
+      "PositionLat": 25.053001,
+      "GeoHash": "wsqq9by03"
+    },
+    "Speed": 0,
+    "Azimuth": 0,
+    "DutyStatus": 1,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:51+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "FAB-883",
+    "OperatorNo": "0301",
+    "RouteUID": "TAO6060",
+    "Direction": 0,
+    "BusPosition": {
+      "PositionLon": 121.374426,
+      "PositionLat": 25.052334,
+      "GeoHash": "wsqq9bwhm"
+    },
+    "Speed": 0,
+    "Azimuth": 0,
+    "DutyStatus": 1,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:46+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "FAD-565",
+    "OperatorNo": "1002",
+    "RouteUID": "TAO606",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.260413,
+      "PositionLat": 24.933743,
+      "GeoHash": "wsqjz751s"
+    },
+    "Speed": 0,
+    "Azimuth": 175,
+    "DutyStatus": 0,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:55+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "FAD-653",
+    "OperatorNo": "1002",
+    "RouteUID": "TAO302",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.213946,
+      "PositionLat": 25.018838,
+      "GeoHash": "wsqnq6933"
+    },
+    "Speed": 21,
+    "Azimuth": 266,
+    "DutyStatus": 1,
+    "GPSTime": "2024-06-12T23:58:57+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "FAD-686",
+    "OperatorNo": "1002",
+    "RouteUID": "TAO5098",
+    "Direction": 0,
+    "BusPosition": {
+      "PositionLon": 121.292141,
+      "PositionLat": 24.876496,
+      "GeoHash": "wsqm80dhp"
+    },
+    "Speed": 7,
+    "Azimuth": 132,
+    "DutyStatus": 1,
+    "GPSTime": "2024-06-12T23:58:46+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "KKA-1250",
+    "OperatorNo": "1201",
+    "RouteUID": "TAO717",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.273865,
+      "PositionLat": 24.959213,
+      "GeoHash": "wsqjzxsvv"
+    },
+    "Speed": 49,
+    "Azimuth": 251,
+    "DutyStatus": 0,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:57+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "KKA-1252",
+    "OperatorNo": "1201",
+    "RouteUID": "TAO7092",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.214233,
+      "PositionLat": 24.86944,
+      "GeoHash": "wsqjqr3db"
+    },
+    "Speed": 0,
+    "Azimuth": 313,
+    "DutyStatus": 0,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:57+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "KKA-3726",
+    "OperatorNo": "1002",
+    "RouteUID": "TAO3165",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.245346,
+      "PositionLat": 25.027338,
+      "GeoHash": "wsqnrh04v"
+    },
+    "Speed": 51,
+    "Azimuth": 142,
+    "DutyStatus": 0,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:58+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "KKA-3758",
+    "OperatorNo": "1002",
+    "RouteUID": "TAO3010",
+    "Direction": 0,
+    "BusPosition": {
+      "PositionLon": 121.312931,
+      "PositionLat": 24.985861,
+      "GeoHash": "wsqq0s93h"
+    },
+    "Speed": 0,
+    "Azimuth": 109,
+    "DutyStatus": 1,
+    "GPSTime": "2024-06-12T23:58:43+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "KKA-8066",
+    "OperatorNo": "0301",
+    "RouteUID": "TAO6030",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.374626,
+      "PositionLat": 25.052559,
+      "GeoHash": "wsqq9bwm9"
+    },
+    "Speed": 0,
+    "Azimuth": 0,
+    "DutyStatus": 1,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:45+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "KKB-0232",
+    "OperatorNo": "0907",
+    "RouteUID": "TAO7092",
+    "Direction": 0,
+    "BusPosition": {
+      "PositionLon": 121.39838,
+      "PositionLat": 24.971816,
+      "GeoHash": "wsqq43zx7"
+    },
+    "Speed": 4,
+    "Azimuth": 12,
+    "DutyStatus": 1,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:51+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "KKB-0237",
+    "OperatorNo": "0907",
+    "RouteUID": "TAO709",
+    "Direction": 0,
+    "BusPosition": {
+      "PositionLon": 121.318446,
+      "PositionLat": 24.977486,
+      "GeoHash": "wsqq0ej2k"
+    },
+    "Speed": 0,
+    "Azimuth": 0,
+    "DutyStatus": 1,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:41+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "KKB-1900",
+    "OperatorNo": "1201",
+    "RouteUID": "TAO713",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.289298,
+      "PositionLat": 24.947563,
+      "GeoHash": "wsqmbj84j"
+    },
+    "Speed": 46,
+    "Azimuth": 195,
+    "DutyStatus": 0,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:51+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "KKB-1917",
+    "OperatorNo": "1201",
+    "RouteUID": "TAO706",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.202066,
+      "PositionLat": 25.064509,
+      "GeoHash": "wsqnw4bek"
+    },
+    "Speed": 1,
+    "Azimuth": 0,
+    "DutyStatus": 0,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:53+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "KKB-2026",
+    "OperatorNo": "1201",
+    "RouteUID": "TAO208",
+    "Direction": 0,
+    "BusPosition": {
+      "PositionLon": 121.284728,
+      "PositionLat": 24.9252,
+      "GeoHash": "wsqjzckzf"
+    },
+    "Speed": 0,
+    "Azimuth": 170,
+    "DutyStatus": 0,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:51+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "KKB-7501",
+    "OperatorNo": "0702",
+    "RouteUID": "TAO5616",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.22857,
+      "PositionLat": 24.955024,
+      "GeoHash": "wsqjywgvw"
+    },
+    "Speed": 0,
+    "Azimuth": 0,
+    "DutyStatus": 1,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:54+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  },
+  {
+    "PlateNumb": "KKB-7501",
+    "OperatorNo": "0702",
+    "RouteUID": "TAO5616",
+    "Direction": 1,
+    "BusPosition": {
+      "PositionLon": 121.22857,
+      "PositionLat": 24.955024,
+      "GeoHash": "wsqjywgvw"
+    },
+    "Speed": 0,
+    "Azimuth": 0,
+    "DutyStatus": 1,
+    "BusStatus": 0,
+    "GPSTime": "2024-06-12T23:58:54+08:00",
+    "SrcUpdateTime": "2024-06-12T23:58:59+08:00",
+    "UpdateTime": "2024-06-12T23:58:59+08:00"
+  }
+]
