@@ -181,5 +181,32 @@ enum OperatorNo {
 
   /// 指南客運
   @JsonValue("0907")
-  ZHINAN_BUS
+  ZHINAN_BUS;
+
+  String toChinese() {
+    switch (this) {
+      case OperatorNo.CHUNGLI_BUS:
+        return "中壢客運";
+      case OperatorNo.HSINCHU_BUS:
+        return "新竹客運";
+      case OperatorNo.JASUN_BUS:
+        return "捷順交通";
+      case OperatorNo.JINGYANG_BUS:
+        return "勁揚通運";
+      case OperatorNo.JINTAI_BUS:
+        return "金台通運";
+      case OperatorNo.SANCHUNG_BUS:
+        return "三重客運";
+      case OperatorNo.TAOYUAN_BUS:
+        return "桃園客運";
+      case OperatorNo.UNITED_HIGHWAY_BUS:
+        return "統聯客運";
+      case OperatorNo.YACHENG_BUS:
+        return "亞盛通運";
+      case OperatorNo.YATUNG_BUS:
+        return "亞通客運";
+      case OperatorNo.ZHINAN_BUS:
+        return "指南客運";
+    }
+  }
 }

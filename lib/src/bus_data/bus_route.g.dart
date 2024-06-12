@@ -8,8 +8,9 @@ part of 'bus_route.dart';
 
 BusRoute _$BusRouteFromJson(Map<String, dynamic> json) => BusRoute(
       routeUid: json['RouteUID'] as String,
-      operators:
-          (json['Operators'] as List<dynamic>).map((e) => e as String).toList(),
+      operators: (json['Operators'] as List<dynamic>)
+          .map((e) => $enumDecode(_$OperatorNoEnumMap, e))
+          .toList(),
       subRoutes: (json['SubRoutes'] as List<dynamic>)
           .map((e) => SubRoute.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -25,7 +26,8 @@ BusRoute _$BusRouteFromJson(Map<String, dynamic> json) => BusRoute(
 
 Map<String, dynamic> _$BusRouteToJson(BusRoute instance) => <String, dynamic>{
       'RouteUID': instance.routeUid,
-      'Operators': instance.operators,
+      'Operators':
+          instance.operators.map((e) => _$OperatorNoEnumMap[e]!).toList(),
       'SubRoutes': instance.subRoutes,
       'RouteName': instance.routeName,
       'DepartureStopNameZh': instance.departureStopNameZh,
@@ -36,10 +38,28 @@ Map<String, dynamic> _$BusRouteToJson(BusRoute instance) => <String, dynamic>{
       'RouteMapImageData': instance.routeMapImageData,
     };
 
+const _$OperatorNoEnumMap = {
+  OperatorNo.CHUNGLI_BUS: '0404',
+  OperatorNo.HSINCHU_BUS: '1303',
+  OperatorNo.JASUN_BUS: '1103',
+  OperatorNo.JINGYANG_BUS: '0915',
+  OperatorNo.JINTAI_BUS: '0806',
+  OperatorNo.SANCHUNG_BUS: '0301',
+  OperatorNo.TAOYUAN_BUS: '1002',
+  OperatorNo.UNITED_HIGHWAY_BUS: '1201',
+  OperatorNo.YACHENG_BUS: '0704',
+  OperatorNo.YATUNG_BUS: '0702',
+  OperatorNo.ZHINAN_BUS: '0907',
+};
+
 SubRoute _$SubRouteFromJson(Map<String, dynamic> json) => SubRoute(
       direction: (json['Direction'] as num).toInt(),
+      points: (json['Points'] as List<dynamic>)
+          .map((e) => GeoPointJson.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$SubRouteToJson(SubRoute instance) => <String, dynamic>{
       'Direction': instance.direction,
+      'Points': instance.points,
     };

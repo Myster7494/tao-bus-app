@@ -1,3 +1,4 @@
+import 'package:bus_app/src/bus_data/bus.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 import '../widgets/web_image/web_image_data.dart';
@@ -10,7 +11,7 @@ class BusRoute {
   @JsonKey(name: "RouteUID")
   final String routeUid;
   @JsonKey(name: "Operators")
-  final List<String> operators;
+  final List<OperatorNo> operators;
   @JsonKey(name: "SubRoutes")
   final List<SubRoute> subRoutes;
   @JsonKey(name: "RouteName")
@@ -51,9 +52,12 @@ class BusRoute {
 class SubRoute {
   @JsonKey(name: "Direction")
   final int direction;
+  @JsonKey(name: "Points")
+  final List<GeoPointJson> points;
 
   const SubRoute({
     required this.direction,
+    required this.points,
   });
 
   factory SubRoute.fromJson(Map<String, dynamic> json) =>

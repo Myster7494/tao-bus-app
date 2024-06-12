@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:bus_app/src/bus_data/group_station.dart';
+import 'package:bus_app/src/bus_data/real_time_bus.dart';
 import 'package:flutter/services.dart';
 
 import 'bus_route.dart';
@@ -22,6 +23,7 @@ abstract class BusDataLoader {
   static late final BusStationsType busStations;
   static late final GroupStationsType groupStations;
   static late final AllEstimatedTime allEstimatedTime;
+  static late final List<RealTimeBus> realTimeBuses;
 
   static Future<void> loadBusRoutes() async {
     final jsonString = await rootBundle.loadString('assets/bus_routes.json');
@@ -54,6 +56,14 @@ abstract class BusDataLoader {
         .map((key, value) => MapEntry(key, BusStation.fromJson(value)));
   }
 
+  static Future<void> loadGroupStations() async {
+    final jsonString =
+        await rootBundle.loadString('assets/group_stations.json');
+    final Map jsonObject = jsonDecode(jsonString);
+    groupStations = jsonObject
+        .map((key, value) => MapEntry(key, GroupStation.fromJson(value)));
+  }
+
   static Future<void> loadEstimatedTime() async {
     final jsonString =
         await rootBundle.loadString('assets/estimated_time.json');
@@ -63,12 +73,12 @@ abstract class BusDataLoader {
         .toList());
   }
 
-  static Future<void> loadGroupStations() async {
-    final jsonString =
-        await rootBundle.loadString('assets/group_stations.json');
-    final Map jsonObject = jsonDecode(jsonString);
-    groupStations = jsonObject
-        .map((key, value) => MapEntry(key, GroupStation.fromJson(value)));
+  static Future<void> loadRealTimeBuses() async {
+    final jsonString = await rootBundle.loadString('assets/real_time_bus.json');
+    final List jsonObjects = jsonDecode(jsonString);
+    realTimeBuses = jsonObjects
+        .map((jsonObject) => RealTimeBus.fromJson(jsonObject))
+        .toList();
   }
 
   static Future<void> loadAllData() async {
@@ -78,6 +88,7 @@ abstract class BusDataLoader {
     await loadBusStations();
     await loadGroupStations();
     await loadEstimatedTime();
+    await loadRealTimeBuses();
   }
 
   static List<BusRoute> getAllBusRoutesList([BusRoutesType? busRoutesMap]) {
@@ -134,9 +145,11 @@ abstract class BusDataLoader {
     return routeStops.values.expand((element) => element).toList();
   }
 
-  static RouteStopsType getAllRouteStopsMap(
-      // [List<RouteStops>? routeStopsList]
-      ) {
+  static RouteStopsType getAllRouteStopsMap() {
     return Map.of(BusDataLoader.routeStops);
+  }
+
+  static List<RealTimeBus> getAllRealTimeBusesList() {
+    return List.of(BusDataLoader.realTimeBuses);
   }
 }

@@ -80,8 +80,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
         ),
         body: ValueListenableBuilder(
           valueListenable: showMap,
-          builder: (BuildContext context, bool value, Widget? child) => showMap
-                  .value
+          builder: (BuildContext context, bool value, Widget? child) => value
               ? OsmMapPage(
                   initPosition: widget.groupStation.groupStationPosition,
                   extraMarkers: [

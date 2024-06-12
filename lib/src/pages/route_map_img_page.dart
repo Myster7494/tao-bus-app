@@ -35,7 +35,7 @@ class _RouteMapPageState extends State<RouteMapPage> {
           Container(
             padding: const EdgeInsets.only(bottom: 10),
             child: Text(
-              '${busRoute.routeName.zhTw}  |  ${busRoute.headsign}',
+              '${busRoute.routeName.zhTw} | ${busRoute.headsign} | ${busRoute.operators.map((operator) => operator.toChinese()).join("、")}',
               softWrap: true,
               maxLines: 10,
               textAlign: TextAlign.center,

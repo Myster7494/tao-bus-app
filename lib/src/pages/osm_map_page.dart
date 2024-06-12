@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:bus_app/src/bus_data/bus_data_loader.dart';
+import 'package:bus_app/src/bus_data/bus_route.dart';
 import 'package:bus_app/src/bus_data/group_station.dart';
+import 'package:bus_app/src/bus_data/real_time_bus.dart';
 import 'package:bus_app/src/widgets/theme_provider.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -38,12 +40,14 @@ class OsmMapPage extends StatefulWidget {
   final GeoPoint? initPosition;
   final List<ExtraMarker> extraMarkers;
   final bool showNearGroupStations;
+  final List<GeoPoint> roadPoints;
 
   const OsmMapPage(
       {super.key,
       this.initPosition,
       this.extraMarkers = const [],
-      this.showNearGroupStations = true});
+      this.showNearGroupStations = true,
+      this.roadPoints = const []});
 
   @override
   State<StatefulWidget> createState() => _OsmMapPageState();
@@ -61,10 +65,12 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
 
   late MapController mapController;
   final Map<String, GeoPoint> displayGroupStations = {};
+  final Map<String, RealTimeBus> displayRealTimeBuses = {};
   final ValueNotifier<GeoPoint> myLocation = ValueNotifier(
       GeoPoint(latitude: 24.99290738364926, longitude: 121.30105867981855));
   final ValueNotifier<bool> trackingNotifier = ValueNotifier(true);
   final ValueNotifier<bool> showAllGroupStations = ValueNotifier(false);
+  final ValueNotifier<bool> showRealTimeBuses = ValueNotifier(false);
   Timer? timer;
   late AnimationController animationController;
 
@@ -130,6 +136,24 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
         BoundingBox(north: maxLat, east: maxLon, south: minLat, west: minLon));
   }
 
+  Future<void> drawMyLocation() async {
+    await mapController.removeMarker(myLocation.value);
+    await updateMyLocation();
+    if (trackingNotifier.value) {
+      await mapController.moveTo(myLocation.value);
+    }
+    await mapController.addMarker(
+      myLocation.value,
+      markerIcon: const MarkerIcon(
+        icon: Icon(
+          Icons.my_location,
+          size: 36,
+          color: Colors.blue,
+        ),
+      ),
+    );
+  }
+
   Future<void> updateMyLocation() async {
     if (await Util.hasGps()) {
       if (!kIsWeb) {
@@ -175,33 +199,25 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
   }
 
   Future<void> mapIsReady(bool isReady) async {
-    Geolocator.getPositionStream().listen((Position position) async {
-      await mapController.removeMarker(myLocation.value);
-      await updateMyLocation();
-      if (trackingNotifier.value) {
-        await mapController.moveTo(myLocation.value);
-      }
-      await Future.delayed(const Duration(milliseconds: 500));
-      await mapController.addMarker(
-        Util.positionToGeoPoint(position),
-        markerIcon: const MarkerIcon(
-          icon: Icon(
-            Icons.my_location,
-            size: 36,
-            color: Colors.blue,
-          ),
+    if (widget.roadPoints.isNotEmpty) {
+      await mapController.drawRoadManually(
+        widget.roadPoints,
+        const RoadOption(
+          roadColor: Colors.blue,
+          roadWidth: 5,
         ),
       );
-    });
+    }
     for (ExtraMarker extraMarker in widget.extraMarkers) {
       await mapController.addMarker(
         extraMarker.geoPoint,
         markerIcon: extraMarker.markerIcon,
       );
     }
-    await updateMyLocation();
+    await drawMyLocation();
+    Geolocator.getPositionStream()
+        .listen((Position position) async => await drawMyLocation());
     await onRegionChanged();
-    //await mapController.moveTo(myLocation.value);
   }
 
   // Future<void> onLocationChanged(GeoPoint userLocation) async {
@@ -241,6 +257,29 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                   element.isEqual(groupStation.groupStationPosition))) {
         displayGroupStations.remove(groupStation.groupStationUid);
         await mapController.removeMarker(groupStation.groupStationPosition);
+      }
+    }
+
+    for (RealTimeBus realTimeBus in BusDataLoader.getAllRealTimeBusesList()) {
+      bool inRegion = region.boundingBox.inBoundingBox(realTimeBus.busPosition);
+      bool inDisplayRealTimeBuses =
+          displayRealTimeBuses.containsKey(realTimeBus.plateNumb);
+      if (inRegion && !inDisplayRealTimeBuses && showRealTimeBuses.value) {
+        displayRealTimeBuses[realTimeBus.plateNumb] = realTimeBus;
+        await mapController.addMarker(
+          realTimeBus.busPosition,
+          markerIcon: const MarkerIcon(
+            icon: Icon(
+              Icons.directions_bus,
+              size: 36,
+              color: Colors.orange,
+            ),
+          ),
+        );
+      } else if ((!showRealTimeBuses.value || !inRegion) &&
+          inDisplayRealTimeBuses) {
+        displayRealTimeBuses.remove(realTimeBus.plateNumb);
+        await mapController.removeMarker(realTimeBus.busPosition);
       }
     }
   }
@@ -300,8 +339,21 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
     bool isExtraMarker = widget.extraMarkers
         .map((extraMarker) => extraMarker.geoPoint)
         .any((element) => element.isEqual(geoPoint));
+    bool isRealTimeBus = displayRealTimeBuses.values
+        .map((realTimeBus) => realTimeBus.busPosition)
+        .any((element) => element.isEqual(geoPoint));
     late String name;
-    if (!isExtraMarker) {
+    if (isExtraMarker) {
+      name = widget.extraMarkers
+          .firstWhere((extraMarker) => extraMarker.geoPoint.isEqual(geoPoint))
+          .name;
+    } else if (isRealTimeBus) {
+      RealTimeBus realTimeBus = displayRealTimeBuses.values.firstWhere(
+          (realTimeBus) => realTimeBus.busPosition.isEqual(geoPoint));
+      BusRoute busRoute = Util.getBusRoute(realTimeBus.routeUid)!;
+      name =
+          '${realTimeBus.plateNumb} | ${busRoute.routeName.zhTw} | 往 ${realTimeBus.direction == 0 ? busRoute.destinationStopNameZh : busRoute.departureStopNameZh} | ${realTimeBus.operatorNo.toChinese()}';
+    } else {
       String groupStationUid = displayGroupStations.entries
           .firstWhere((mapEntry) => mapEntry.value.isEqual(geoPoint),
               orElse: () => MapEntry("-1", GeoPoint(latitude: 0, longitude: 0)))
@@ -311,10 +363,6 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
         return;
       }
       name = Util.getGroupStation(groupStationUid)!.groupStationName.zhTw;
-    } else {
-      name = widget.extraMarkers
-          .firstWhere((extraMarker) => extraMarker.geoPoint.isEqual(geoPoint))
-          .name;
     }
     if (!Util.enableGps!) {
       Util.showSnackBar(context, name);
@@ -500,32 +548,60 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                       border: Border.all(
                           width: 3, color: themeData.colorScheme.primary),
                     ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
+                    padding: const EdgeInsets.all(5),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(width: 5),
-                        const Text("顯示所有組站位"),
-                        const SizedBox(width: 5),
-                        ValueListenableBuilder(
-                          valueListenable: showAllGroupStations,
-                          builder: (BuildContext context, bool value,
-                                  Widget? child) =>
-                              Switch(
-                            value: value,
-                            activeColor: themeData.colorScheme.primary,
-                            onChanged: (bool value) async {
-                              if (!enableGps && widget.extraMarkers.isEmpty) {
-                                return;
-                              }
-                              showAllGroupStations.value = value;
-                              if (value) {
-                                await onRegionChanged();
-                              } else {
-                                await updateMyLocation();
-                                await onRegionChanged();
-                              }
-                            },
-                          ),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text("顯示所有組站位"),
+                            const SizedBox(width: 5),
+                            ValueListenableBuilder(
+                              valueListenable: showAllGroupStations,
+                              builder: (BuildContext context, bool value,
+                                      Widget? child) =>
+                                  Switch(
+                                value: value,
+                                activeColor: themeData.colorScheme.primary,
+                                onChanged: (bool value) async {
+                                  if (!enableGps &&
+                                      widget.extraMarkers.isEmpty) {
+                                    return;
+                                  }
+                                  showAllGroupStations.value = value;
+                                  if (!value) {
+                                    await updateMyLocation();
+                                  }
+                                  await onRegionChanged();
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Text("顯示公車位置"),
+                            const SizedBox(width: 5),
+                            ValueListenableBuilder(
+                              valueListenable: showRealTimeBuses,
+                              builder: (BuildContext context, bool value,
+                                      Widget? child) =>
+                                  Switch(
+                                value: value,
+                                activeColor: themeData.colorScheme.primary,
+                                onChanged: (bool value) async {
+                                  showRealTimeBuses.value = value;
+                                  if (!value) {
+                                    await updateMyLocation();
+                                  }
+                                  await onRegionChanged();
+                                },
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
