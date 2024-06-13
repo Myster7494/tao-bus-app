@@ -5,8 +5,10 @@ import '../pages/route_map_img_page.dart';
 
 class RoutePopupMenuButton extends StatelessWidget {
   final String routeUid;
+  final List<PopupMenuItem>? extraItems;
 
-  const RoutePopupMenuButton({super.key, required this.routeUid});
+  const RoutePopupMenuButton(
+      {super.key, required this.routeUid, this.extraItems});
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +45,7 @@ class RoutePopupMenuButton extends StatelessWidget {
             ),
           ),
         ),
+        ...?extraItems,
       ],
     );
   }

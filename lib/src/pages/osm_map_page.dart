@@ -506,6 +506,14 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                               await mapController
                                   .removeMarker(realTimeBus.busPosition);
                             }
+                            await Future.delayed(const Duration(seconds: 1));
+                            for (ExtraMarker extraMarker
+                                in widget.extraMarkers) {
+                              await mapController.addMarker(
+                                extraMarker.geoPoint,
+                                markerIcon: extraMarker.markerIcon,
+                              );
+                            }
                           },
                           child: const Text('清除圖標'),
                         ),
@@ -722,6 +730,7 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     CircularProgressIndicator(),
+                    SizedBox(height: 10),
                     Text("正在請求位置"),
                   ],
                 ),

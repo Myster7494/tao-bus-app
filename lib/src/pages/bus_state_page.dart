@@ -1,3 +1,4 @@
+import 'package:bus_app/src/bus_data/route_stops.dart';
 import 'package:bus_app/src/pages/station_detail_page.dart';
 import 'package:bus_app/src/widgets/estimated_time_text.dart';
 import 'package:bus_app/src/widgets/favorite_stop_button.dart';
@@ -56,8 +57,7 @@ class _BusStatePageState extends State<BusStatePage> {
                       ),
                       infoBuilder:
                           (BuildContext context, _, GeoPoint? myLocation) {
-                        String text =
-                            '${busStop.stopName.zhTw} (第 ${routeStop.stopSequence} 站)';
+                        String text = busStop.stopName.zhTw;
                         if (myLocation != null) {
                           double distance = Util.twoGeoPointsDistance(
                             myLocation,
@@ -71,6 +71,24 @@ class _BusStatePageState extends State<BusStatePage> {
                           }
                         }
                         return [
+                          Container(
+                            width: 40,
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: themeData.colorScheme.primary,
+                            ),
+                            padding: const EdgeInsets.all(5),
+                            margin: const EdgeInsets.only(right: 5),
+                            child: FittedBox(
+                              child: Text(
+                                routeStop.stopSequence.toString(),
+                                style: TextStyle(
+                                    fontSize: 16,
+                                    color: themeData.colorScheme.onPrimary),
+                              ),
+                            ),
+                          ),
                           Text(text, style: const TextStyle(fontSize: 16)),
                           const SizedBox(width: 5),
                           FilledButton(
@@ -97,7 +115,7 @@ class _BusStatePageState extends State<BusStatePage> {
               : Column(
                   children: [
                     Text(
-                      '${busRoute.routeName.zhTw}  |  ${busRoute.headsign}',
+                      '${busRoute.routeName.zhTw} | ${busRoute.headsign} | ${busRoute.operators.map((operator) => operator.toChinese()).join("、")}',
                       softWrap: true,
                       maxLines: 10,
                       textAlign: TextAlign.center,
@@ -139,15 +157,40 @@ class _BusStatePageState extends State<BusStatePage> {
                                 widget.routeUid, direction)!
                             .length,
                         itemBuilder: (context, index) {
-                          String stopUid = Util.getRouteStopsByDirection(
-                                  widget.routeUid, direction)![index]
-                              .stopUid;
+                          RouteStop routeStop = Util.getRouteStopsByDirection(
+                              widget.routeUid, direction)![index];
+                          String stopUid = routeStop.stopUid;
                           return ListTile(
-                            title: Text(
-                              Util.getBusStop(stopUid)!.stopName.zhTw,
-                              style: const TextStyle(
-                                fontSize: 18,
-                              ),
+                            title: Wrap(
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                Container(
+                                  width: 40,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: themeData
+                                        .colorScheme.secondaryContainer,
+                                  ),
+                                  padding: const EdgeInsets.all(5),
+                                  margin: const EdgeInsets.only(right: 5),
+                                  child: FittedBox(
+                                    child: Text(
+                                      routeStop.stopSequence.toString(),
+                                      style: TextStyle(
+                                          fontSize: 16,
+                                          color:
+                                              themeData.colorScheme.onSurface),
+                                    ),
+                                  ),
+                                ),
+                                Text(
+                                  Util.getBusStop(stopUid)!.stopName.zhTw,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                  ),
+                                )
+                              ],
                             ),
                             trailing: Row(
                               mainAxisSize: MainAxisSize.min,

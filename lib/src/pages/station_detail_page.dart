@@ -126,7 +126,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
                       children: widget.stations.entries
                           .map(
                             (entry) => Container(
-                              margin: const EdgeInsets.all(10),
+                              margin: const EdgeInsets.all(5),
                               child: OutlinedButton(
                                 style: OutlinedButton.styleFrom(
                                   side: BorderSide(
@@ -151,11 +151,11 @@ class _StationDetailPageState extends State<StationDetailPage> {
                                 child: Text(
                                   "往 ${entry.value.bearing.toChinese()}\n(站位${entry.key})",
                                   style: TextStyle(
-                                      fontSize: 20,
-                                      color: isStationSelected[entry.key]!
-                                          ? themeData.colorScheme.onPrimary
-                                          : null,
-                                      height: 1.2),
+                                    fontSize: 16,
+                                    color: isStationSelected[entry.key]!
+                                        ? themeData.colorScheme.onPrimary
+                                        : null,
+                                  ),
                                   textAlign: TextAlign.center,
                                 ),
                               ),
@@ -164,47 +164,62 @@ class _StationDetailPageState extends State<StationDetailPage> {
                           .toList(),
                     ),
                     const Divider(),
-                    Wrap(
-                        alignment: WrapAlignment.center,
-                        children: () {
-                          List<Widget> widgets = [];
-                          widget.stops.forEach(
-                              (String stationUid, BusStopsType busStops) {
-                            if (!isStationSelected[stationUid]!) return;
-                            for (String busStopUid in busStops.keys) {
-                              widgets.add(
-                                Container(
-                                  margin: const EdgeInsets.all(3),
-                                  child: OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      padding: const EdgeInsets.all(5),
-                                      side: BorderSide(
-                                          width: 2.0,
-                                          color: themeData.colorScheme.primary),
-                                      backgroundColor:
-                                          isStopSelected[busStopUid]!
-                                              ? themeData.colorScheme.primary
-                                              : null,
-                                    ),
-                                    onPressed: () => setState(() =>
-                                        isStopSelected[busStopUid] =
-                                            !isStopSelected[busStopUid]!),
-                                    child: Text(
-                                      "站牌 $busStopUid",
-                                      style: TextStyle(
-                                          fontSize: 12,
-                                          color: isStopSelected[busStopUid]!
-                                              ? themeData.colorScheme.onPrimary
-                                              : null),
-                                    ),
-                                  ),
-                                ),
-                              );
-                            }
-                          });
-                          return widgets;
-                        }.call()),
-                    const Divider(),
+                    if (widget.stations.keys.any(
+                        (stationUid) => isStationSelected[stationUid]!)) ...[
+                      ExpansionTile(
+                        controlAffinity: ListTileControlAffinity.leading,
+                        title:
+                            const Text("站牌選擇", style: TextStyle(fontSize: 20)),
+                        shape: const RoundedRectangleBorder(),
+                        children: [
+                          Wrap(
+                              alignment: WrapAlignment.center,
+                              children: () {
+                                List<Widget> widgets = [];
+                                widget.stops.forEach(
+                                    (String stationUid, BusStopsType busStops) {
+                                  if (!isStationSelected[stationUid]!) return;
+                                  for (String busStopUid in busStops.keys) {
+                                    widgets.add(
+                                      Container(
+                                        margin: const EdgeInsets.all(3),
+                                        child: OutlinedButton(
+                                          style: OutlinedButton.styleFrom(
+                                            padding: const EdgeInsets.all(5),
+                                            side: BorderSide(
+                                                width: 2.0,
+                                                color: themeData
+                                                    .colorScheme.primary),
+                                            backgroundColor:
+                                                isStopSelected[busStopUid]!
+                                                    ? themeData
+                                                        .colorScheme.primary
+                                                    : null,
+                                          ),
+                                          onPressed: () => setState(() =>
+                                              isStopSelected[busStopUid] =
+                                                  !isStopSelected[busStopUid]!),
+                                          child: Text(
+                                            "站牌 $busStopUid",
+                                            style: TextStyle(
+                                                fontSize: 12,
+                                                color:
+                                                    isStopSelected[busStopUid]!
+                                                        ? themeData.colorScheme
+                                                            .onPrimary
+                                                        : null),
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                });
+                                return widgets;
+                              }.call())
+                        ],
+                      ),
+                      const Divider(),
+                    ],
                     Expanded(
                       child: Builder(
                         builder: (BuildContext context) {
