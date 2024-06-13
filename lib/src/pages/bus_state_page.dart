@@ -46,15 +46,49 @@ class _BusStatePageState extends State<BusStatePage> {
                           .map((routeStop) {
                     BusStop busStop = Util.getBusStop(routeStop.stopUid)!;
                     return ExtraMarker(
-                        name:
-                            '${busStop.stopName.zhTw} (第 ${routeStop.stopSequence} 站)',
-                        geoPoint: busStop.stopPosition,
-                        markerIcon: const MarkerIcon(
-                            iconWidget: Icon(
+                      geoPoint: busStop.stopPosition,
+                      markerIcon: const MarkerIcon(
+                        iconWidget: Icon(
                           Icons.location_on_outlined,
                           color: Colors.green,
                           size: 40,
-                        )));
+                        ),
+                      ),
+                      infoBuilder:
+                          (BuildContext context, _, GeoPoint? myLocation) {
+                        String text =
+                            '${busStop.stopName.zhTw} (第 ${routeStop.stopSequence} 站)';
+                        if (myLocation != null) {
+                          double distance = Util.twoGeoPointsDistance(
+                            myLocation,
+                            busStop.stopPosition,
+                          );
+                          if (distance > 1000) {
+                            text +=
+                                ' | ${(distance / 1000).toStringAsFixed(2)} km';
+                          } else {
+                            text += ' | ${distance.round()} m';
+                          }
+                        }
+                        return [
+                          Text(text, style: const TextStyle(fontSize: 16)),
+                          const SizedBox(width: 5),
+                          FilledButton(
+                            style: FilledButton.styleFrom(
+                                padding: const EdgeInsets.all(5)),
+                            onPressed: () => Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => StationDetailPage(
+                                    data: busStop.stopUid,
+                                    provideDataType:
+                                        StationDetailProvideDataType.stopUid),
+                              ),
+                            ),
+                            child: const Text("顯示組站位路線"),
+                          ),
+                        ];
+                      },
+                    );
                   }).toList(),
                   initPosition: busRoute.subRoutes[direction].points.first,
                   roadPoints: busRoute.subRoutes[direction].points,

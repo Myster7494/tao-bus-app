@@ -88,7 +88,6 @@ class _StationDetailPageState extends State<StationDetailPage> {
                         in widget.stops.values.expand((stops) => stops.values))
                       if (isStopSelected[busStop.stopUid]!)
                         ExtraMarker(
-                          name: '站牌 ${busStop.stopUid}',
                           geoPoint: busStop.stopPosition,
                           markerIcon: const MarkerIcon(
                             icon: Icon(
@@ -97,6 +96,25 @@ class _StationDetailPageState extends State<StationDetailPage> {
                               color: Colors.green,
                             ),
                           ),
+                          infoBuilder:
+                              (BuildContext context, _, GeoPoint? myLocation) {
+                            String text = '站牌 ${busStop.stopUid}';
+                            if (myLocation != null) {
+                              double distance = Util.twoGeoPointsDistance(
+                                myLocation,
+                                busStop.stopPosition,
+                              );
+                              if (distance > 1000) {
+                                text +=
+                                    ' | ${(distance / 1000).toStringAsFixed(2)} km';
+                              } else {
+                                text += ' | ${distance.round()} m';
+                              }
+                            }
+                            return [
+                              Text(text, style: const TextStyle(fontSize: 16))
+                            ];
+                          },
                         ),
                   ],
                   showNearGroupStations: false,
