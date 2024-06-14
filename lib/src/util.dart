@@ -10,13 +10,36 @@ import 'bus_data/bus_data_loader.dart';
 import 'bus_data/bus_route.dart';
 import 'bus_data/bus_station.dart';
 import 'bus_data/bus_stop.dart';
+import 'bus_data/car_data.dart';
+import 'bus_data/estimated_time.dart';
 import 'bus_data/group_station.dart';
+import 'bus_data/real_time_bus.dart';
 import 'bus_data/route_stops.dart';
+
+typedef BusRoutesType = Map<String, BusRoute>;
+typedef BusStopsType = Map<String, BusStop>;
+typedef RouteStopsType = Map<String, List<RouteStops>>;
+typedef BusStationsType = Map<String, BusStation>;
+typedef GroupStationsType = Map<String, GroupStation>;
+typedef CarDataType = Map<String, CarData>;
+
+abstract class RecordData {
+  static bool? enableGps;
+  static late final BusRoutesType busRoutes;
+  static late final BusStopsType busStops;
+  static late final RouteStopsType routeStops;
+  static late final BusStationsType busStations;
+  static late final GroupStationsType groupStations;
+  static late final CarDataType carData;
+  static late AllEstimatedTime allEstimatedTime;
+  static late List<RealTimeBus> realTimeBuses;
+  static DateTime? lastUpdateEstimatedTime;
+  static DateTime? lastUpdateRealTimeBuses;
+}
 
 abstract class Util {
   static const rad = pi / 180;
   static const halfRad = pi / 360;
-  static bool? enableGps;
 
   static void showSnackBar(BuildContext context, String message,
       {Duration? duration, SnackBarAction? action}) {
@@ -46,15 +69,15 @@ abstract class Util {
   }
 
   static Future<bool> hasGps() async {
-    if (enableGps != null) return enableGps!;
+    if (RecordData.enableGps != null) return RecordData.enableGps!;
 
-    enableGps = false;
+    RecordData.enableGps = false;
     if (await requestGpsPermission() == false) return false;
     if (!kIsWeb) return (await Geolocator.getLastKnownPosition() != null);
     try {
       await Geolocator.getCurrentPosition(
           timeLimit: const Duration(seconds: 5));
-      enableGps = true;
+      RecordData.enableGps = true;
       return true;
     } on TimeoutException {
       return false;
@@ -62,7 +85,7 @@ abstract class Util {
   }
 
   static Future<bool> requestGpsPermission() async {
-    enableGps = false;
+    RecordData.enableGps = false;
     if (!await Geolocator.isLocationServiceEnabled()) return false;
     LocationPermission permission;
     permission = await Geolocator.checkPermission();
@@ -71,7 +94,7 @@ abstract class Util {
       if (permission == LocationPermission.denied) return false;
     }
     if (permission == LocationPermission.deniedForever) return false;
-    enableGps = true;
+    RecordData.enableGps = true;
     return true;
   }
 
@@ -110,6 +133,11 @@ abstract class Util {
       [GroupStationsType? groupStations]) {
     groupStations ??= BusDataLoader.getAllGroupStationsMap();
     return groupStations[groupStationUid];
+  }
+
+  static CarData? getCarData(String plateNumb, [CarDataType? carData]) {
+    carData ??= RecordData.carData;
+    return carData[plateNumb];
   }
 
   static int sortRoutes(BusRoute a, BusRoute b) {

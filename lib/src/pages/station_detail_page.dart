@@ -3,7 +3,7 @@ import 'package:bus_app/src/bus_data/bus_route.dart';
 import 'package:bus_app/src/bus_data/group_station.dart';
 import 'package:bus_app/src/bus_data/route_stops.dart';
 import 'package:bus_app/src/pages/osm_map_page.dart';
-import 'package:bus_app/src/widgets/route_popup_menu_button.dart';
+import 'package:bus_app/src/widgets/show_bus_state_btn.dart';
 import 'package:bus_app/src/widgets/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
@@ -12,6 +12,7 @@ import '../bus_data/bus_stop.dart';
 import '../util.dart';
 import '../widgets/estimated_time_text.dart';
 import '../widgets/favorite_stop_button.dart';
+import '../widgets/show_map_button.dart';
 
 enum StationDetailProvideDataType { groupStationUid, stationUid, stopUid }
 
@@ -72,10 +73,8 @@ class _StationDetailPageState extends State<StationDetailPage> {
         appBar: AppBar(
           title: Text(widget.groupStation.groupStationName.zhTw),
           actions: [
-            const Text("顯示地圖"),
-            Switch(
-                value: showMap.value,
-                onChanged: (value) => setState(() => showMap.value = value)),
+            ShowMapButton(showMap: showMap),
+            const SizedBox(width: 10),
           ],
         ),
         body: ValueListenableBuilder(
@@ -272,7 +271,6 @@ class _StationDetailPageState extends State<StationDetailPage> {
                                       stopSequence: index + 1,
                                       showPlateNumb: true,
                                     ),
-                                    const SizedBox(width: 10),
                                     FavoriteStopButton(
                                         routeUid: busRoute.routeUid,
                                         direction:
@@ -282,7 +280,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
                                             .first
                                             .stopUid,
                                         setState: setState),
-                                    RoutePopupMenuButton(
+                                    ShowBusStateBtn(
                                         routeUid: busRoute.routeUid),
                                   ],
                                 ),

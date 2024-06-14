@@ -3,7 +3,7 @@ import 'package:bus_app/src/widgets/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../bus_data/bus_data_loader.dart';
+import '../util.dart';
 
 class EstimatedTimeText extends StatelessWidget {
   final String routeUid;
@@ -23,10 +23,9 @@ class EstimatedTimeText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ThemeProvider(builder: (context, theme) {
-      EstimatedTimeData estimatedTimeData = BusDataLoader.allEstimatedTime
+      EstimatedTimeData estimatedTimeData = RecordData.allEstimatedTime
               .getEstimatedTimeData(routeUid, direction, stopUid: stopUid) ??
-          BusDataLoader.allEstimatedTime.getEstimatedTimeData(
-              routeUid, direction,
+          RecordData.allEstimatedTime.getEstimatedTimeData(routeUid, direction,
               stopSequence: stopSequence) ??
           EstimatedTimeData.noData();
       if (estimatedTimeData.estimatedTime == null ||

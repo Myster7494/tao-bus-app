@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:bus_app/src/bus_data/bus_data_loader.dart';
 import 'package:bus_app/src/bus_data/bus_route.dart';
+import 'package:bus_app/src/bus_data/car_data.dart';
 import 'package:bus_app/src/bus_data/group_station.dart';
 import 'package:bus_app/src/bus_data/real_time_bus.dart';
 import 'package:bus_app/src/pages/bus_state_page.dart';
@@ -238,7 +239,7 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
 
     calculateBoard();
 
-    for (GroupStation groupStation in BusDataLoader.groupStations.values) {
+    for (GroupStation groupStation in RecordData.groupStations.values) {
       bool inRegion =
           region.boundingBox.inBoundingBox(groupStation.groupStationPosition);
       bool inDisplayGroupStations =
@@ -316,7 +317,7 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
       ),
     );
 
-    for (GroupStation groupStation in BusDataLoader.groupStations.values) {
+    for (GroupStation groupStation in RecordData.groupStations.values) {
       if (!displayGroupStations.containsKey(groupStation.groupStationUid) &&
           inOneKm(groupStation.groupStationPosition)) {
         displayGroupStations[groupStation.groupStationUid] =
@@ -361,15 +362,93 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
       BusRoute busRoute = Util.getBusRoute(realTimeBus.routeUid)!;
       infoBuilder.value = (BuildContext context, _, __) => [
             Text(
-                '${realTimeBus.plateNumb} | ${busRoute.routeName.zhTw} | 往 ${realTimeBus.direction == 0 ? busRoute.destinationStopNameZh : busRoute.departureStopNameZh} | ${realTimeBus.operatorNo.toChinese()}',
+                '${realTimeBus.plateNumb} | ${busRoute.routeName.zhTw} | ${busRoute.headsign} | 往 ${realTimeBus.direction == 0 ? busRoute.destinationStopNameZh : busRoute.departureStopNameZh} | ${realTimeBus.operatorNo.toChinese()}',
                 style: const TextStyle(fontSize: 16)),
-            const SizedBox(width: 5),
+            if (Util.getCarData(realTimeBus.plateNumb) != null)
+              IconButton(
+                  onPressed: () => showDialog(
+                        context: context,
+                        builder: (context) => PointerInterceptor(
+                          child: AlertDialog(
+                            title: Text(realTimeBus.plateNumb),
+                            content: Builder(
+                              builder: (BuildContext context) {
+                                CarData carData =
+                                    Util.getCarData(realTimeBus.plateNumb)!;
+                                return Text(
+                                    '所屬客運：${carData.operatorNo.toChinese()}\n'
+                                    '車輛種類：${switch (carData.vehicleClass) {
+                                      1 => "大型巴士",
+                                      2 => "中型巴士",
+                                      3 => "小型巴士",
+                                      4 => "雙層巴士",
+                                      5 => "雙節巴士",
+                                      6 => "營業用小客車",
+                                      99 => "其他",
+                                      _ => "未知",
+                                    }}\n'
+                                    '車輛種類：${switch (carData.vehicleType) {
+                                      1 => "一般",
+                                      2 => "復康巴士",
+                                      3 => "專車",
+                                      4 => "其他",
+                                      _ => "未知",
+                                    }}\n'
+                                    '讀卡機配置：${switch (carData.cardReaderLayout) {
+                                      0 => "無讀卡機配置",
+                                      1 => "前門刷卡",
+                                      2 => "前後門刷卡",
+                                      _ => "未知",
+                                    }}\n'
+                                    '是否為電動公車：${switch (carData.isElectric) {
+                                      0 => "否",
+                                      1 => "是",
+                                      _ => "未知",
+                                    }}\n'
+                                    '是否為油電混合公車：${switch (carData.isHybrid) {
+                                      0 => "否",
+                                      1 => "是",
+                                      _ => "未知",
+                                    }}\n'
+                                    '是否為低地板公車：${switch (carData.isLowFloor) {
+                                      0 => "否",
+                                      1 => "是",
+                                      _ => "未知",
+                                    }}\n'
+                                    '是否有升降或斜坡板設備：${switch (carData.hasLiftOrRamp) {
+                                      0 => "否",
+                                      1 => "是",
+                                      _ => "未知",
+                                    }}\n'
+                                    '是否有提供Wifi服務：${switch (carData.hasWifi) {
+                                      -1 => "未設定",
+                                      0 => "否",
+                                      1 => "是",
+                                      _ => "未知",
+                                    }}',
+                                    style: const TextStyle(fontSize: 16));
+                              },
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('關閉'),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                  icon: const Icon(Icons.info_outline))
+            else
+              const SizedBox(width: 5),
             FilledButton(
               style: FilledButton.styleFrom(padding: const EdgeInsets.all(5)),
               onPressed: () => Navigator.of(context).push(
                 MaterialPageRoute(
-                  builder: (context) =>
-                      BusStatePage(routeUid: realTimeBus.routeUid),
+                  builder: (context) => BusStatePage(
+                    routeUid: realTimeBus.routeUid,
+                    initialDirection: realTimeBus.direction,
+                  ),
                 ),
               ),
               child: const Text("顯示公車路線"),
@@ -478,6 +557,8 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                     children: [
                       PointerInterceptor(
                         child: FilledButton(
+                          style: FilledButton.styleFrom(
+                              padding: const EdgeInsets.all(10)),
                           onPressed: () async =>
                               await Util.requestGpsPermission(),
                           child: const Text('更新GPS狀態'),
@@ -486,6 +567,8 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                       const SizedBox(height: 5),
                       PointerInterceptor(
                         child: FilledButton(
+                          style: FilledButton.styleFrom(
+                              padding: const EdgeInsets.all(10)),
                           onPressed: () async {
                             try {
                               await mapController.removeCircle("nearCircle");
@@ -507,6 +590,7 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                               await mapController
                                   .removeMarker(realTimeBus.busPosition);
                             }
+                            displayRealTimeBuses.clear();
                             await Future.delayed(const Duration(seconds: 1));
                             for (ExtraMarker extraMarker
                                 in widget.extraMarkers) {
@@ -515,6 +599,7 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                                 markerIcon: extraMarker.markerIcon,
                               );
                             }
+                            await drawMyLocation();
                           },
                           child: const Text('清除圖標'),
                         ),
@@ -523,6 +608,8 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                         const SizedBox(height: 5),
                         PointerInterceptor(
                           child: FilledButton(
+                            style: FilledButton.styleFrom(
+                                padding: const EdgeInsets.all(10)),
                             onPressed: () async => await mapController
                                 .moveTo(widget.initPosition!),
                             child: const Text('返回標記定位點'),
@@ -680,11 +767,11 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                     if (builder == null) return const SizedBox.shrink();
                     return Positioned(
                       bottom: 16,
-                      child: PointerInterceptor(
-                        child: SizedBox(
-                          width: constraints.maxWidth,
-                          child: FittedBox(
-                            fit: BoxFit.scaleDown,
+                      child: SizedBox(
+                        width: constraints.maxWidth,
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: PointerInterceptor(
                             child: Container(
                               decoration: BoxDecoration(
                                 color: themeData.colorScheme.secondaryContainer,
@@ -698,8 +785,12 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                               child: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: builder(context, themeData,
-                                    Util.enableGps! ? myLocation.value : null)
+                                children: builder(
+                                    context,
+                                    themeData,
+                                    RecordData.enableGps!
+                                        ? myLocation.value
+                                        : null)
                                   ..add(IconButton(
                                     padding: const EdgeInsets.all(5),
                                     onPressed: () => infoBuilder.value = null,
@@ -718,8 +809,8 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
           );
         }
 
-        if (Util.enableGps != null) {
-          return widgetBuilder(context, Util.enableGps!);
+        if (RecordData.enableGps != null) {
+          return widgetBuilder(context, RecordData.enableGps!);
         }
         return FutureBuilder(
           future: Util.hasGps(),

@@ -1,49 +1,36 @@
 import 'dart:convert';
 
-import 'package:bus_app/main.dart';
 import 'package:bus_app/src/bus_data/group_station.dart';
 import 'package:bus_app/src/bus_data/real_time_bus.dart';
+import 'package:bus_app/src/util.dart';
 import 'package:flutter/services.dart';
 
 import 'bus_route.dart';
 import 'bus_station.dart';
 import 'bus_stop.dart';
+import 'car_data.dart';
 import 'estimated_time.dart';
 import 'route_stops.dart';
 
-typedef BusRoutesType = Map<String, BusRoute>;
-typedef BusStopsType = Map<String, BusStop>;
-typedef RouteStopsType = Map<String, List<RouteStops>>;
-typedef BusStationsType = Map<String, BusStation>;
-typedef GroupStationsType = Map<String, GroupStation>;
-
 abstract class BusDataLoader {
-  static late final BusRoutesType busRoutes;
-  static late final BusStopsType busStops;
-  static late final RouteStopsType routeStops;
-  static late final BusStationsType busStations;
-  static late final GroupStationsType groupStations;
-  static late final AllEstimatedTime allEstimatedTime;
-  static late final List<RealTimeBus> realTimeBuses;
-
   static Future<void> loadBusRoutes() async {
     final jsonString = await rootBundle.loadString('assets/bus_routes.json');
     final Map jsonObject = jsonDecode(jsonString);
-    busRoutes =
+    RecordData.busRoutes =
         jsonObject.map((key, value) => MapEntry(key, BusRoute.fromJson(value)));
   }
 
   static Future<void> loadBusStops() async {
     final jsonString = await rootBundle.loadString('assets/bus_stops.json');
     final Map jsonObject = jsonDecode(jsonString);
-    busStops =
+    RecordData.busStops =
         jsonObject.map((key, value) => MapEntry(key, BusStop.fromJson(value)));
   }
 
   static Future<void> loadRouteStops() async {
     final jsonString = await rootBundle.loadString('assets/route_stops.json');
     final Map jsonObject = jsonDecode(jsonString);
-    routeStops = jsonObject.map((key, value) => MapEntry(
+    RecordData.routeStops = jsonObject.map((key, value) => MapEntry(
         key,
         (value as List)
             .map((jsonObject) => RouteStops.fromJson(jsonObject))
@@ -53,7 +40,7 @@ abstract class BusDataLoader {
   static Future<void> loadBusStations() async {
     final jsonString = await rootBundle.loadString('assets/bus_stations.json');
     final Map jsonObject = jsonDecode(jsonString);
-    busStations = jsonObject
+    RecordData.busStations = jsonObject
         .map((key, value) => MapEntry(key, BusStation.fromJson(value)));
   }
 
@@ -61,30 +48,31 @@ abstract class BusDataLoader {
     final jsonString =
         await rootBundle.loadString('assets/group_stations.json');
     final Map jsonObject = jsonDecode(jsonString);
-    groupStations = jsonObject
+    RecordData.groupStations = jsonObject
         .map((key, value) => MapEntry(key, GroupStation.fromJson(value)));
   }
 
-  static Future<void> loadEstimatedTime() async {
-    if (localStorage.estimatedTimeData != null) {
-      allEstimatedTime = AllEstimatedTime.fromJsonList(
-          jsonDecode(localStorage.estimatedTimeData!));
-      return;
-    }
-    final jsonString =
-        await rootBundle.loadString('assets/estimated_time.json');
+  static Future<void> loadEstimatedTime({String? jsonString}) async {
+    jsonString ??= await rootBundle.loadString('assets/estimated_time.json');
     final List jsonObjects = jsonDecode(jsonString);
-    allEstimatedTime = AllEstimatedTime.fromJsonList(jsonObjects
+    RecordData.allEstimatedTime = AllEstimatedTime.fromJsonList(jsonObjects
         .map((jsonObject) => EstimatedTimeJson.fromJson(jsonObject))
         .toList());
   }
 
-  static Future<void> loadRealTimeBuses() async {
-    final jsonString = await rootBundle.loadString('assets/real_time_bus.json');
+  static Future<void> loadRealTimeBuses({String? jsonString}) async {
+    jsonString ??= await rootBundle.loadString('assets/real_time_bus.json');
     final List jsonObjects = jsonDecode(jsonString);
-    realTimeBuses = jsonObjects
+    RecordData.realTimeBuses = jsonObjects
         .map((jsonObject) => RealTimeBus.fromJson(jsonObject))
         .toList();
+  }
+
+  static Future<void> loadCarData() async {
+    final jsonString = await rootBundle.loadString('assets/car_data.json');
+    final Map jsonObject = jsonDecode(jsonString);
+    RecordData.carData =
+        jsonObject.map((key, value) => MapEntry(key, CarData.fromJson(value)));
   }
 
   static Future<void> loadAllData() async {
@@ -93,69 +81,70 @@ abstract class BusDataLoader {
     await loadRouteStops();
     await loadBusStations();
     await loadGroupStations();
+    await loadCarData();
     await loadEstimatedTime();
     await loadRealTimeBuses();
   }
 
   static List<BusRoute> getAllBusRoutesList([BusRoutesType? busRoutesMap]) {
     busRoutesMap ??= getAllBusRoutesMap();
-    return busRoutes.values.toList();
+    return busRoutesMap.values.toList();
   }
 
   static BusRoutesType getAllBusRoutesMap([List<BusRoute>? busStationsList]) {
-    if (busStationsList == null) return Map.of(BusDataLoader.busRoutes);
+    if (busStationsList == null) return Map.of(RecordData.busRoutes);
     return Map.fromEntries(busStationsList
         .map((busRoute) => MapEntry(busRoute.routeUid, busRoute)));
   }
 
   static List<BusStation> getAllBusStationsList(
       [BusStationsType? busStationsMap]) {
-    busStationsMap ??= BusDataLoader.busStations;
-    return busStations.values.toList();
+    busStationsMap ??= RecordData.busStations;
+    return busStationsMap.values.toList();
   }
 
   static BusStationsType getAllBusStationsMap(
       [List<BusStation>? busStationsList]) {
-    if (busStationsList == null) return Map.of(BusDataLoader.busStations);
+    if (busStationsList == null) return Map.of(RecordData.busStations);
     return Map.fromEntries(busStationsList
         .map((busStation) => MapEntry(busStation.stationUid, busStation)));
   }
 
   static List<BusStop> getAllBusStopsList([BusStopsType? busStopsMap]) {
-    busStopsMap ??= BusDataLoader.busStops;
-    return busStops.values.toList();
+    busStopsMap ??= RecordData.busStops;
+    return busStopsMap.values.toList();
   }
 
   static BusStopsType getAllBusStopsMap([List<BusStop>? busStopsList]) {
-    if (busStopsList == null) return Map.of(BusDataLoader.busStops);
+    if (busStopsList == null) return Map.of(RecordData.busStops);
     return Map.fromEntries(
         busStopsList.map((busStop) => MapEntry(busStop.stopUid, busStop)));
   }
 
   static List<GroupStation> getAllGroupStationsList(
       [GroupStationsType? groupStationsMap]) {
-    groupStationsMap ??= BusDataLoader.groupStations;
-    return groupStations.values.toList();
+    groupStationsMap ??= RecordData.groupStations;
+    return groupStationsMap.values.toList();
   }
 
   static GroupStationsType getAllGroupStationsMap(
       [List<GroupStation>? groupStationsList]) {
-    if (groupStationsList == null) return Map.of(BusDataLoader.groupStations);
+    if (groupStationsList == null) return Map.of(RecordData.groupStations);
     return Map.fromEntries(groupStationsList.map((groupStation) =>
         MapEntry(groupStation.groupStationUid, groupStation)));
   }
 
   static List<RouteStops> getAllRouteStopsList(
       [RouteStopsType? routeStopsMap]) {
-    routeStopsMap ??= BusDataLoader.routeStops;
-    return routeStops.values.expand((element) => element).toList();
+    routeStopsMap ??= RecordData.routeStops;
+    return routeStopsMap.values.expand((element) => element).toList();
   }
 
   static RouteStopsType getAllRouteStopsMap() {
-    return Map.of(BusDataLoader.routeStops);
+    return Map.of(RecordData.routeStops);
   }
 
   static List<RealTimeBus> getDefaultAllRealTimeBusesList() {
-    return List.of(BusDataLoader.realTimeBuses);
+    return List.of(RecordData.realTimeBuses);
   }
 }

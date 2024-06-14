@@ -1,7 +1,7 @@
 {
   "1002": {
     "OperatorName": {
-      "Zh_tw": "桃園客運"
+      "Zh_tw": "桃園客運-16278"
     },
     "OperatorPhone": "(03)375-3711、0800-053808",
     "OperatorUrl": "http://www.tybus.com.tw"
@@ -91,21 +91,21 @@
   },
   "1407": {
     "OperatorName": {
-      "Zh_tw": "臺北客運"
+      "Zh_tw": "臺北客運-16176"
     },
     "OperatorPhone": "(02)2982-2886、0800-003-307",
     "OperatorUrl": "http://www.tpebus.com.tw"
   },
   "0913": {
     "OperatorName": {
-      "Zh_tw": "首都客運"
+      "Zh_tw": "首都客運-16177"
     },
     "OperatorPhone": "0800-000-866",
     "OperatorUrl": "http://www.capital-bus.com.tw"
   },
   "0303": {
     "OperatorName": {
-      "Zh_tw": "大都會客運"
+      "Zh_tw": "大都會客運-16182"
     },
     "OperatorPhone": "0800-053434",
     "OperatorUrl": "http://www.mtcbus.com.tw"

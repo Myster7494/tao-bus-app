@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import '../../main.dart';
 import '../util.dart';
 import '../widgets/estimated_time_text.dart';
-import '../widgets/route_popup_menu_button.dart';
+import 'bus_state_page.dart';
 
 class FavoriteStopsPage extends StatefulWidget {
   const FavoriteStopsPage({super.key});
@@ -96,15 +96,32 @@ class _FavoriteStopsPageState extends State<FavoriteStopsPage> {
                               stopUid: routeStop.stopUid,
                               showPlateNumb: true,
                             ),
-                            const SizedBox(width: 10),
                             FavoriteStopButton(
                                 routeUid: routeStops.routeUid,
                                 direction: routeStops.direction,
                                 stopUid: routeStop.stopUid,
                                 setState: setState),
-                            RoutePopupMenuButton(
-                              routeUid: routeStops.routeUid,
-                              extraItems: [
+                            PopupMenuButton(
+                              tooltip: "顯示功能選單",
+                              itemBuilder: (BuildContext context) => [
+                                PopupMenuItem(
+                                  padding:
+                                      const EdgeInsets.symmetric(horizontal: 5),
+                                  child: const Center(
+                                    child: Text(
+                                      "顯示公車動態",
+                                      style: TextStyle(fontSize: 16),
+                                    ),
+                                  ),
+                                  onTap: () => Navigator.of(context).push(
+                                    MaterialPageRoute(
+                                      builder: (context) => BusStatePage(
+                                        routeUid: routeStops.routeUid,
+                                        initialDirection: routeStops.direction,
+                                      ),
+                                    ),
+                                  ),
+                                ),
                                 PopupMenuItem(
                                   padding:
                                       const EdgeInsets.symmetric(horizontal: 5),

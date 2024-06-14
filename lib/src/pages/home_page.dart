@@ -1,5 +1,5 @@
 import 'package:bus_app/src/bus_data/bus_data_loader.dart';
-import 'package:bus_app/src/widgets/route_popup_menu_button.dart';
+import 'package:bus_app/src/widgets/show_bus_state_btn.dart';
 import 'package:bus_app/src/widgets/theme_provider.dart';
 import 'package:flutter/material.dart';
 
@@ -138,21 +138,20 @@ class _HomePageState extends State<HomePage> {
                   controller: scrollController,
                   itemCount: busRoutes.length,
                   itemBuilder: (context, index) => ListTile(
-                    title: Text(
-                      busRoutes[index].routeName.zhTw,
-                      style: const TextStyle(
-                        fontSize: 18,
+                      title: Text(
+                        busRoutes[index].routeName.zhTw,
+                        style: const TextStyle(
+                          fontSize: 18,
+                        ),
                       ),
-                    ),
-                    subtitle: Text(
-                      busRoutes[index].headsign,
-                      style: const TextStyle(
-                        fontSize: 16,
+                      subtitle: Text(
+                        busRoutes[index].headsign,
+                        style: const TextStyle(
+                          fontSize: 16,
+                        ),
                       ),
-                    ),
-                    trailing: RoutePopupMenuButton(
-                        routeUid: busRoutes[index].routeUid),
-                  ),
+                      trailing:
+                          ShowBusStateBtn(routeUid: busRoutes[index].routeUid)),
                   separatorBuilder: (context, index) =>
                       const Divider(height: 5),
                 );

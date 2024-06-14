@@ -1,7 +1,9 @@
 import 'package:bus_app/src/bus_data/route_stops.dart';
+import 'package:bus_app/src/pages/route_map_img_page.dart';
 import 'package:bus_app/src/pages/station_detail_page.dart';
 import 'package:bus_app/src/widgets/estimated_time_text.dart';
 import 'package:bus_app/src/widgets/favorite_stop_button.dart';
+import 'package:bus_app/src/widgets/show_map_button.dart';
 import 'package:bus_app/src/widgets/theme_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
@@ -13,16 +15,24 @@ import 'osm_map_page.dart';
 
 class BusStatePage extends StatefulWidget {
   final String routeUid;
+  final int initialDirection;
 
-  const BusStatePage({super.key, required this.routeUid});
+  const BusStatePage(
+      {super.key, required this.routeUid, this.initialDirection = 0});
 
   @override
   State<BusStatePage> createState() => _BusStatePageState();
 }
 
 class _BusStatePageState extends State<BusStatePage> {
-  int direction = 0;
+  late int direction;
   final ValueNotifier<bool> showMap = ValueNotifier(false);
+
+  @override
+  void initState() {
+    super.initState();
+    direction = widget.initialDirection;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,10 +42,18 @@ class _BusStatePageState extends State<BusStatePage> {
         appBar: AppBar(
           title: const Text('公車動態'),
           actions: [
-            const Text("顯示地圖"),
-            Switch(
-                value: showMap.value,
-                onChanged: (value) => setState(() => showMap.value = value)),
+            FilledButton(
+              style: FilledButton.styleFrom(padding: const EdgeInsets.all(10)),
+              onPressed: () => Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (context) => RouteMapPage(routeUid: widget.routeUid),
+                ),
+              ),
+              child: const Text("顯示路線簡圖", style: TextStyle(fontSize: 16)),
+            ),
+            const SizedBox(width: 10),
+            ShowMapButton(showMap: showMap),
+            const SizedBox(width: 10),
           ],
         ),
         body: ValueListenableBuilder(
@@ -90,7 +108,11 @@ class _BusStatePageState extends State<BusStatePage> {
                             ),
                           ),
                           Text(text, style: const TextStyle(fontSize: 16)),
-                          const SizedBox(width: 5),
+                          FavoriteStopButton(
+                              routeUid: widget.routeUid,
+                              direction: direction,
+                              stopUid: routeStop.stopUid,
+                              setState: setState),
                           FilledButton(
                             style: FilledButton.styleFrom(
                                 padding: const EdgeInsets.all(5)),
@@ -200,7 +222,6 @@ class _BusStatePageState extends State<BusStatePage> {
                                     direction: direction,
                                     stopUid: stopUid,
                                     stopSequence: index + 1),
-                                const SizedBox(width: 10),
                                 FavoriteStopButton(
                                     routeUid: widget.routeUid,
                                     direction: direction,

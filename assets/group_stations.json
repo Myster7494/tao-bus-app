@@ -2061,8 +2061,8 @@
       "En": "Xiang-an Elementary School"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.203035,
-      "PositionLat": 24.894393
+      "PositionLon": 121.203028,
+      "PositionLat": 24.894365
     },
     "Stations": [
       "TAO11509",
@@ -3598,8 +3598,8 @@
       "En": "Huanzhong E. Road Intersection"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.241285,
-      "PositionLat": 24.95069
+      "PositionLon": 121.241665,
+      "PositionLat": 24.950295
     },
     "Stations": [
       "TAO1309",
@@ -4479,8 +4479,8 @@
       "En": "Zhongcuo"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.214267,
-      "PositionLat": 25.00947
+      "PositionLon": 121.214123,
+      "PositionLat": 25.009747
     },
     "Stations": [
       "TAO1426",
@@ -6603,12 +6603,11 @@
       "En": "MRT Laojie River Station(Zhongfeng Rd.)"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.21943,
-      "PositionLat": 24.95893
+      "PositionLon": 121.2194,
+      "PositionLat": 24.95901
     },
     "Stations": [
-      "TAO16732",
-      "TAO16733"
+      "TAO16732"
     ]
   },
   "TAO16734": {
@@ -6653,21 +6652,6 @@
     "Stations": [
       "TAO1674",
       "TAO1675"
-    ]
-  },
-  "TAO16753": {
-    "GroupStationUID": "TAO16753",
-    "GroupStationName": {
-      "Zh_tw": "南興里",
-      "En": "Nanxing Village"
-    },
-    "GroupStationPosition": {
-      "PositionLon": 121.262025,
-      "PositionLat": 24.896565
-    },
-    "Stations": [
-      "TAO16753",
-      "TAO9408"
     ]
   },
   "TAO16757": {
@@ -10229,8 +10213,8 @@
       "En": "Danfong 1"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.42002,
-      "PositionLat": 25.028685
+      "PositionLon": 121.42028,
+      "PositionLat": 25.02935
     },
     "Stations": [
       "TAO1925",
@@ -11905,8 +11889,8 @@
   "TAO2147": {
     "GroupStationUID": "TAO2147",
     "GroupStationName": {
-      "Zh_tw": "白蘭社區",
-      "En": "BaiLan"
+      "Zh_tw": "國產社區",
+      "En": "Goldsun Community"
     },
     "GroupStationPosition": {
       "PositionLon": 121.308185,
@@ -11920,8 +11904,8 @@
   "TAO2149": {
     "GroupStationUID": "TAO2149",
     "GroupStationName": {
-      "Zh_tw": "米祺爾",
-      "En": "MiChiEr"
+      "Zh_tw": "白蘭社區",
+      "En": "Bailan Community"
     },
     "GroupStationPosition": {
       "PositionLon": 121.30881,
@@ -12311,8 +12295,8 @@
       "En": "Gong 5th Rd."
     },
     "GroupStationPosition": {
-      "PositionLon": 121.19781,
-      "PositionLat": 24.902055
+      "PositionLon": 121.197825,
+      "PositionLat": 24.90206
     },
     "Stations": [
       "TAO2203",
@@ -12455,8 +12439,8 @@
       "En": "Nanfeng Rd."
     },
     "GroupStationPosition": {
-      "PositionLon": 121.20724,
-      "PositionLat": 24.90003
+      "PositionLon": 121.20721,
+      "PositionLat": 24.899995
     },
     "Stations": [
       "TAO2225",
@@ -12470,8 +12454,8 @@
       "En": "Gong 1st Rd. Int."
     },
     "GroupStationPosition": {
-      "PositionLon": 121.205085,
-      "PositionLat": 24.89965
+      "PositionLon": 121.20513,
+      "PositionLat": 24.89972
     },
     "Stations": [
       "TAO2227",
@@ -12515,8 +12499,8 @@
       "En": "Gong 3rd Rd. Int."
     },
     "GroupStationPosition": {
-      "PositionLon": 121.200685,
-      "PositionLat": 24.90002
+      "PositionLon": 121.20065,
+      "PositionLat": 24.89995
     },
     "Stations": [
       "TAO2231",
@@ -12545,8 +12529,8 @@
       "En": "Sewage Treatment Plant"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.199115,
-      "PositionLat": 24.9053
+      "PositionLon": 121.19912,
+      "PositionLat": 24.90527
     },
     "Stations": [
       "TAO2235",
@@ -12560,8 +12544,8 @@
       "En": "Gong 6th Rd. Int."
     },
     "GroupStationPosition": {
-      "PositionLon": 121.198925,
-      "PositionLat": 24.899685
+      "PositionLon": 121.198785,
+      "PositionLat": 24.899855
     },
     "Stations": [
       "TAO2237",
@@ -12575,8 +12559,8 @@
       "En": "Hongjia Company"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.202485,
-      "PositionLat": 24.897495
+      "PositionLon": 121.202495,
+      "PositionLat": 24.89736
     },
     "Stations": [
       "TAO2239",
@@ -13403,21 +13387,6 @@
     "Stations": [
       "TAO2338",
       "TAO2339"
-    ]
-  },
-  "TAO2340": {
-    "GroupStationUID": "TAO2340",
-    "GroupStationName": {
-      "Zh_tw": "中山中平路口",
-      "En": "Zhongshan and Zhongping Road Intersection"
-    },
-    "GroupStationPosition": {
-      "PositionLon": 121.221215,
-      "PositionLat": 24.95691
-    },
-    "Stations": [
-      "TAO2340",
-      "TAO2341"
     ]
   },
   "TAO2343": {
@@ -14806,8 +14775,8 @@
       "En": "Sanhong"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.189475,
-      "PositionLat": 24.983035
+      "PositionLon": 121.189555,
+      "PositionLat": 24.983175
     },
     "Stations": [
       "TAO251",
@@ -16514,17 +16483,18 @@
       "TAO2736"
     ]
   },
-  "TAO2738": {
-    "GroupStationUID": "TAO2738",
+  "TAO2737": {
+    "GroupStationUID": "TAO2737",
     "GroupStationName": {
-      "Zh_tw": "永昌",
-      "En": "Yongchang "
+      "Zh_tw": "南興里",
+      "En": "Nanxing Village"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.26212,
-      "PositionLat": 24.8961
+      "PositionLon": 121.26213,
+      "PositionLat": 24.89688
     },
     "Stations": [
+      "TAO2737",
       "TAO2738"
     ]
   },
@@ -18058,8 +18028,8 @@
       "En": "Qiaxi"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.20339,
-      "PositionLat": 25.01645
+      "PositionLon": 121.203455,
+      "PositionLat": 25.016275
     },
     "Stations": [
       "TAO293",
@@ -19094,24 +19064,11 @@
       "En": "Lijie Company"
     },
     "GroupStationPosition": {
-      "PositionLon": 120.65676,
-      "PositionLat": 24.12478
-    },
-    "Stations": [
-      "TAO3057"
-    ]
-  },
-  "TAO3058": {
-    "GroupStationUID": "TAO3058",
-    "GroupStationName": {
-      "Zh_tw": "力捷公司",
-      "En": "Lijie Company"
-    },
-    "GroupStationPosition": {
-      "PositionLon": 121.30164,
+      "PositionLon": 121.30166,
       "PositionLat": 25.03654
     },
     "Stations": [
+      "TAO3057",
       "TAO3058"
     ]
   },
@@ -22383,12 +22340,13 @@
       "En": "Kwong Fong Plaza"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.30036,
-      "PositionLat": 24.964065
+      "PositionLon": 121.300323,
+      "PositionLat": 24.9639
     },
     "Stations": [
       "TAO3489",
-      "TAO3491"
+      "TAO3491",
+      "TAO65665"
     ]
   },
   "TAO3492": {
@@ -25833,27 +25791,12 @@
       "En": "Household Administration and Land Office"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.27901,
-      "PositionLat": 24.99035
+      "PositionLon": 121.279185,
+      "PositionLat": 24.989825
     },
     "Stations": [
       "TAO3935",
       "TAO3936"
-    ]
-  },
-  "TAO3937": {
-    "GroupStationUID": "TAO3937",
-    "GroupStationName": {
-      "Zh_tw": "國強七街口",
-      "En": "Guociang 7th St. Intersection"
-    },
-    "GroupStationPosition": {
-      "PositionLon": 121.27945,
-      "PositionLat": 24.98917
-    },
-    "Stations": [
-      "TAO3937",
-      "TAO3938"
     ]
   },
   "TAO3939": {
@@ -27798,7 +27741,7 @@
     "GroupStationUID": "TAO4212",
     "GroupStationName": {
       "Zh_tw": "台茂",
-      "En": "TaiMall"
+      "En": "Taimall"
     },
     "GroupStationPosition": {
       "PositionLon": 121.287137,
@@ -30725,21 +30668,6 @@
       "TAO4580"
     ]
   },
-  "TAO4581": {
-    "GroupStationUID": "TAO4581",
-    "GroupStationName": {
-      "Zh_tw": "臨時站",
-      "En": "Temporary Stop"
-    },
-    "GroupStationPosition": {
-      "PositionLon": 121.35012,
-      "PositionLat": 24.73807
-    },
-    "Stations": [
-      "TAO4581",
-      "TAO4582"
-    ]
-  },
   "TAO4583": {
     "GroupStationUID": "TAO4583",
     "GroupStationName": {
@@ -30873,34 +30801,18 @@
       "TAO4599"
     ]
   },
-  "TAO4600": {
-    "GroupStationUID": "TAO4600",
-    "GroupStationName": {
-      "Zh_tw": "石門山登山口1",
-      "En": "Shi men Mountain trailhead 1st"
-    },
-    "GroupStationPosition": {
-      "PositionLon": 121.237515,
-      "PositionLat": 24.820465
-    },
-    "Stations": [
-      "TAO4600",
-      "TAO8594"
-    ]
-  },
   "TAO4601": {
     "GroupStationUID": "TAO4601",
     "GroupStationName": {
-      "Zh_tw": "石門山登山口2",
-      "En": "Shi men Mountain trailhead 2nd"
+      "Zh_tw": "石門山登山口",
+      "En": "Shihmen Mountain Trailhead"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.23785,
-      "PositionLat": 24.81909
+      "PositionLon": 121.23792,
+      "PositionLat": 24.81908
     },
     "Stations": [
-      "TAO4601",
-      "TAO8595"
+      "TAO4601"
     ]
   },
   "TAO4602": {
@@ -31100,8 +31012,8 @@
       "En": "Guanyin Temple"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.286485,
-      "PositionLat": 24.88746
+      "PositionLon": 121.28668,
+      "PositionLat": 24.887365
     },
     "Stations": [
       "TAO4623",
@@ -32478,14 +32390,12 @@
       "En": "MRT Taoyuan Sports Park Station"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.20253,
-      "PositionLat": 25.001872
+      "PositionLon": 121.203385,
+      "PositionLat": 25.001695
     },
     "Stations": [
       "TAO4801",
-      "TAO4802",
-      "TAO8711",
-      "TAO8712"
+      "TAO4802"
     ]
   },
   "TAO4805": {
@@ -32775,8 +32685,8 @@
       "En": "Dacheng and Dazhi Road Intersection"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.21763,
-      "PositionLat": 25.023155
+      "PositionLon": 121.217785,
+      "PositionLat": 25.022965
     },
     "Stations": [
       "TAO4844",
@@ -35492,12 +35402,11 @@
       "En": "Taoyuan International Airport Terminal 2"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.23199,
-      "PositionLat": 25.077855
+      "PositionLon": 121.23272,
+      "PositionLat": 25.07787
     },
     "Stations": [
-      "TAO5188",
-      "TAO5190"
+      "TAO5188"
     ]
   },
   "TAO519": {
@@ -38498,8 +38407,8 @@
       "En": "Tianliao"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.246955,
-      "PositionLat": 25.104475
+      "PositionLon": 121.24685,
+      "PositionLat": 25.10459
     },
     "Stations": [
       "TAO5591",
@@ -39816,20 +39725,6 @@
     },
     "Stations": [
       "TAO5771"
-    ]
-  },
-  "TAO5773": {
-    "GroupStationUID": "TAO5773",
-    "GroupStationName": {
-      "Zh_tw": "中山民生路口",
-      "En": "Zhongshan and Minsheng Road Intersection"
-    },
-    "GroupStationPosition": {
-      "PositionLon": 121.3114,
-      "PositionLat": 24.99489
-    },
-    "Stations": [
-      "TAO5773"
     ]
   },
   "TAO5774": {
@@ -41558,11 +41453,12 @@
       "En": "Bade Bus Station"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.31877,
-      "PositionLat": 24.96025
+      "PositionLon": 121.31872,
+      "PositionLat": 24.96026
     },
     "Stations": [
-      "TAO60008"
+      "TAO60008",
+      "TAO65644"
     ]
   },
   "TAO60010": {
@@ -41767,21 +41663,6 @@
       "TAO6018"
     ]
   },
-  "TAO6019": {
-    "GroupStationUID": "TAO6019",
-    "GroupStationName": {
-      "Zh_tw": "中豐路",
-      "En": "Zhongfeng Road"
-    },
-    "GroupStationPosition": {
-      "PositionLon": 121.220185,
-      "PositionLat": 24.963925
-    },
-    "Stations": [
-      "TAO6019",
-      "TAO6020"
-    ]
-  },
   "TAO6021": {
     "GroupStationUID": "TAO6021",
     "GroupStationName": {
@@ -41834,8 +41715,8 @@
       "En": "ShinShing Market"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.33541,
-      "PositionLat": 24.99201
+      "PositionLon": 121.33531,
+      "PositionLat": 24.99207
     },
     "Stations": [
       "TAO6027"
@@ -41937,8 +41818,8 @@
       "En": "TzJiang South Road"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.33566,
-      "PositionLat": 24.99038
+      "PositionLon": 121.33604,
+      "PositionLat": 24.99052
     },
     "Stations": [
       "TAO6038"
@@ -45746,6 +45627,66 @@
       "TAO6565"
     ]
   },
+  "TAO65645": {
+    "GroupStationUID": "TAO65645",
+    "GroupStationName": {
+      "Zh_tw": "卡義蘭",
+      "En": "Kayiran"
+    },
+    "GroupStationPosition": {
+      "PositionLon": 121.34973,
+      "PositionLat": 24.738085
+    },
+    "Stations": [
+      "TAO65645",
+      "TAO65646"
+    ]
+  },
+  "TAO65647": {
+    "GroupStationUID": "TAO65647",
+    "GroupStationName": {
+      "Zh_tw": "峭壁",
+      "En": "Chiaobi"
+    },
+    "GroupStationPosition": {
+      "PositionLon": 121.362775,
+      "PositionLat": 24.807755
+    },
+    "Stations": [
+      "TAO65647",
+      "TAO65648"
+    ]
+  },
+  "TAO65649": {
+    "GroupStationUID": "TAO65649",
+    "GroupStationName": {
+      "Zh_tw": "黃厝(二)",
+      "En": "Huangcuo(2)"
+    },
+    "GroupStationPosition": {
+      "PositionLon": 121.13618,
+      "PositionLat": 24.980825
+    },
+    "Stations": [
+      "TAO65649",
+      "TAO65650"
+    ]
+  },
+  "TAO65659": {
+    "GroupStationUID": "TAO65659",
+    "GroupStationName": {
+      "Zh_tw": "山子頂(南豐路)",
+      "En": "Shanziding(Nanfeng Rd.)"
+    },
+    "GroupStationPosition": {
+      "PositionLon": 121.210245,
+      "PositionLat": 24.900215
+    },
+    "Stations": [
+      "TAO65659",
+      "TAO65660"
+    ]
+  },
   "TAO6566": {
     "GroupStationUID": "TAO6566",
     "GroupStationName": {
@@ -45761,6 +45702,34 @@
       "TAO6567"
     ]
   },
+  "TAO65666": {
+    "GroupStationUID": "TAO65666",
+    "GroupStationName": {
+      "Zh_tw": "圓光佛學研究所",
+      "En": "Yuan Kuang Institute of Buddist Studies"
+    },
+    "GroupStationPosition": {
+      "PositionLon": 121.19009,
+      "PositionLat": 25.00471
+    },
+    "Stations": [
+      "TAO65666"
+    ]
+  },
+  "TAO65673": {
+    "GroupStationUID": "TAO65673",
+    "GroupStationName": {
+      "Zh_tw": "中坑11鄰",
+      "En": "Zhongkeng 11 Neighborhood"
+    },
+    "GroupStationPosition": {
+      "PositionLon": 121.34393,
+      "PositionLat": 25.02796
+    },
+    "Stations": [
+      "TAO65673"
+    ]
+  },
   "TAO6568": {
     "GroupStationUID": "TAO6568",
     "GroupStationName": {
@@ -45774,6 +45743,21 @@
     "Stations": [
       "TAO6568",
       "TAO6569"
+    ]
+  },
+  "TAO65686": {
+    "GroupStationUID": "TAO65686",
+    "GroupStationName": {
+      "Zh_tw": "文化路三段",
+      "En": "Wenhua Road Sec.3"
+    },
+    "GroupStationPosition": {
+      "PositionLon": 121.039695,
+      "PositionLat": 25.00339
+    },
+    "Stations": [
+      "TAO65686",
+      "TAO65687"
     ]
   },
   "TAO6570": {
@@ -46483,8 +46467,8 @@
       "En": "Taoyuan County Veterans Service Office"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.24304,
-      "PositionLat": 24.949085
+      "PositionLon": 121.243125,
+      "PositionLat": 24.949025
     },
     "Stations": [
       "TAO666",
@@ -51147,17 +51131,18 @@
       "TAO726"
     ]
   },
-  "TAO728": {
-    "GroupStationUID": "TAO728",
+  "TAO727": {
+    "GroupStationUID": "TAO727",
     "GroupStationName": {
       "Zh_tw": "張厝",
       "En": "Zhangcuo"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.18945,
-      "PositionLat": 25.0089
+      "PositionLon": 121.18944,
+      "PositionLat": 25.008875
     },
     "Stations": [
+      "TAO727",
       "TAO728"
     ]
   },
@@ -51191,18 +51176,34 @@
       "TAO732"
     ]
   },
-  "TAO734": {
-    "GroupStationUID": "TAO734",
+  "TAO733": {
+    "GroupStationUID": "TAO733",
     "GroupStationName": {
       "Zh_tw": "崁頭厝",
       "En": "Kantoucuo"
     },
     "GroupStationPosition": {
       "PositionLon": 121.19216,
-      "PositionLat": 25.00817
+      "PositionLat": 25.008135
     },
     "Stations": [
+      "TAO733",
       "TAO734"
+    ]
+  },
+  "TAO735": {
+    "GroupStationUID": "TAO735",
+    "GroupStationName": {
+      "Zh_tw": "柑仔店",
+      "En": "Orangemarket"
+    },
+    "GroupStationPosition": {
+      "PositionLon": 121.194885,
+      "PositionLat": 25.00709
+    },
+    "Stations": [
+      "TAO735",
+      "TAO736"
     ]
   },
   "TAO7351": {
@@ -51218,20 +51219,6 @@
     "Stations": [
       "TAO7351",
       "TAO9185"
-    ]
-  },
-  "TAO736": {
-    "GroupStationUID": "TAO736",
-    "GroupStationName": {
-      "Zh_tw": "柑仔店",
-      "En": "Orangemarket"
-    },
-    "GroupStationPosition": {
-      "PositionLon": 121.19492,
-      "PositionLat": 25.00711
-    },
-    "Stations": [
-      "TAO736"
     ]
   },
   "TAO739": {
@@ -52660,8 +52647,8 @@
       "En": "Xinnong St. Lane 378"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.15679,
-      "PositionLat": 24.911625
+      "PositionLon": 121.156355,
+      "PositionLat": 24.91146
     },
     "Stations": [
       "TAO860",
@@ -53230,6 +53217,21 @@
     "Stations": [
       "TAO8708",
       "TAO8709"
+    ]
+  },
+  "TAO8711": {
+    "GroupStationUID": "TAO8711",
+    "GroupStationName": {
+      "Zh_tw": "捷運桃園體育園區站(領航北路)",
+      "En": "MRT Taoyuan Sports Park Station(Linghang N. Rd.)"
+    },
+    "GroupStationPosition": {
+      "PositionLon": 121.201675,
+      "PositionLat": 25.00205
+    },
+    "Stations": [
+      "TAO8711",
+      "TAO8712"
     ]
   },
   "TAO8717": {
@@ -54133,6 +54135,21 @@
       "TAO9130"
     ]
   },
+  "TAO913": {
+    "GroupStationUID": "TAO913",
+    "GroupStationName": {
+      "Zh_tw": "民生路",
+      "En": "MinSheng Road"
+    },
+    "GroupStationPosition": {
+      "PositionLon": 121.2213,
+      "PositionLat": 24.84437
+    },
+    "Stations": [
+      "TAO913",
+      "TAO914"
+    ]
+  },
   "TAO9131": {
     "GroupStationUID": "TAO9131",
     "GroupStationName": {
@@ -54160,6 +54177,21 @@
     "Stations": [
       "TAO9142",
       "TAO9143"
+    ]
+  },
+  "TAO915": {
+    "GroupStationUID": "TAO915",
+    "GroupStationName": {
+      "Zh_tw": "富華街口",
+      "En": "Fuhua St. Intersection"
+    },
+    "GroupStationPosition": {
+      "PositionLon": 121.22413,
+      "PositionLat": 24.84631
+    },
+    "Stations": [
+      "TAO915",
+      "TAO916"
     ]
   },
   "TAO9157": {
@@ -54373,12 +54405,12 @@
   "TAO939": {
     "GroupStationUID": "TAO939",
     "GroupStationName": {
-      "Zh_tw": "過嶺加油站",
-      "En": "Guoling Gas Station"
+      "Zh_tw": "雙榮親子館",
+      "En": "Shuangrong Parent-Child Center"
     },
     "GroupStationPosition": {
-      "PositionLon": 121.175,
-      "PositionLat": 24.95897
+      "PositionLon": 121.17578,
+      "PositionLat": 24.95716
     },
     "Stations": [
       "TAO939"
