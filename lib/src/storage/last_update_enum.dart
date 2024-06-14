@@ -1,0 +1,4 @@
+enum LastUpdateType {
+  estimatedTimeData,
+  realTimeBusesData,
+}

@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import '../bus_data/route_stops.dart';
 import 'app_theme.dart';
+import 'last_update_enum.dart';
 import 'storage.dart';
 
 class LocalStorage {
@@ -10,6 +11,9 @@ class LocalStorage {
     await StorageHelper.init();
     if (StorageHelper.get('favorite_stops') == null) {
       StorageHelper.set('favorite_stops', {});
+    }
+    if (StorageHelper.get('last_update') == null) {
+      StorageHelper.set('last_update', {});
     }
   }
 
@@ -35,4 +39,24 @@ class LocalStorage {
 
   set accentColor(Color? value) =>
       StorageHelper.set<int?>('accent_color', value?.value);
+
+  Map<LastUpdateType, DateTime> get lastUpdate =>
+      StorageHelper.get<Map>('last_update').map((key, value) =>
+          MapEntry(key, DateTime.fromMillisecondsSinceEpoch(value)));
+
+  set lastUpdate(Map<LastUpdateType, DateTime> map) => StorageHelper.set(
+      'last_update',
+      map.map((key, value) => MapEntry(key, value.millisecondsSinceEpoch)));
+
+  String? get estimatedTimeData =>
+      StorageHelper.get<String?>('estimated_time_data');
+
+  set estimatedTimeData(String? json) =>
+      StorageHelper.set('estimated_time_data', json);
+
+  String? get realTimeBusesData =>
+      StorageHelper.get<String?>('real_time_buses_data');
+
+  set realTimeBusesData(String? json) =>
+      StorageHelper.set('real_time_buses_data', json);
 }

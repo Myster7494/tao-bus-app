@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:bus_app/main.dart';
 import 'package:bus_app/src/bus_data/group_station.dart';
 import 'package:bus_app/src/bus_data/real_time_bus.dart';
 import 'package:flutter/services.dart';
@@ -65,6 +66,11 @@ abstract class BusDataLoader {
   }
 
   static Future<void> loadEstimatedTime() async {
+    if (localStorage.estimatedTimeData != null) {
+      allEstimatedTime = AllEstimatedTime.fromJsonList(
+          jsonDecode(localStorage.estimatedTimeData!));
+      return;
+    }
     final jsonString =
         await rootBundle.loadString('assets/estimated_time.json');
     final List jsonObjects = jsonDecode(jsonString);
@@ -149,7 +155,7 @@ abstract class BusDataLoader {
     return Map.of(BusDataLoader.routeStops);
   }
 
-  static List<RealTimeBus> getAllRealTimeBusesList() {
+  static List<RealTimeBus> getDefaultAllRealTimeBusesList() {
     return List.of(BusDataLoader.realTimeBuses);
   }
 }

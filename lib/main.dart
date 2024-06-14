@@ -21,6 +21,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return ThemeProvider(
       builder: (context, themeData) => MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: '桃園公車-自主學習',
         theme: themeData,
         home: const MainPage(),

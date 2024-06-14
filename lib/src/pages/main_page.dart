@@ -1,3 +1,4 @@
+import 'package:bus_app/src/pages/upload_data_page.dart';
 import 'package:flutter/material.dart';
 
 import 'favorite_stops_page.dart';
@@ -26,6 +27,7 @@ class _MainPageState extends State<MainPage> {
         1 => const FavoriteStopsPage(),
         2 => const OsmMapPage(),
         3 => const SettingsPage(),
+        4 => const UploadDataPage(),
         _ => throw UnsupportedError('Invalid index: $selectedIndex'),
       },
       bottomNavigationBar: NavigationBar(
@@ -51,6 +53,11 @@ class _MainPageState extends State<MainPage> {
             icon: Icon(Icons.settings_outlined),
             selectedIcon: Icon(Icons.settings),
             label: '設定',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.upload_file_outlined),
+            selectedIcon: Icon(Icons.upload_file),
+            label: '上傳資料',
           ),
         ],
       ),

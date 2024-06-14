@@ -265,7 +265,8 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
       }
     }
 
-    for (RealTimeBus realTimeBus in BusDataLoader.getAllRealTimeBusesList()) {
+    for (RealTimeBus realTimeBus
+        in BusDataLoader.getDefaultAllRealTimeBusesList()) {
       bool inRegion = region.boundingBox.inBoundingBox(realTimeBus.busPosition);
       bool inDisplayRealTimeBuses =
           displayRealTimeBuses.containsKey(realTimeBus.plateNumb);
