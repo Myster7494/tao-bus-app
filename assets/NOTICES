@@ -4919,7 +4919,6 @@ path_provider_foundation
 path_provider_linux
 path_provider_platform_interface
 path_provider_windows
-platform
 plugin_platform_interface
 pointer_interceptor
 pointer_interceptor_ios
@@ -29785,6 +29784,7 @@ SOFTWARE.
 --------------------------------------------------------------------------------
 json_annotation
 json_serializable
+platform
 
 Copyright 2017, the Dart project authors. All rights reserved.
 Redistribution and use in source and binary forms, with or without
