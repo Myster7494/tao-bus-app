@@ -75,6 +75,7 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
   final ValueNotifier<bool> showAllGroupStations = ValueNotifier(false);
   final ValueNotifier<bool> showAllRealTimeBuses = ValueNotifier(false);
   final ValueNotifier<bool> showRouteRealTimeBuses = ValueNotifier(false);
+  final ValueNotifier<bool> showMyLocation = ValueNotifier(true);
   final ValueNotifier<
           List<Widget> Function(BuildContext, ThemeData, GeoPoint?)?>
       infoBuilder = ValueNotifier(null);
@@ -144,6 +145,7 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
   }
 
   Future<void> drawMyLocation() async {
+    if (!showMyLocation.value) return;
     await mapController.removeMarker(myLocation.value);
     await updateMyLocation();
     if (trackingNotifier.value) {
@@ -221,6 +223,7 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
         markerIcon: extraMarker.markerIcon,
       );
     }
+    await Future.delayed(const Duration(seconds: 1));
     await drawMyLocation();
     Geolocator.getPositionStream()
         .listen((Position position) async => await drawMyLocation());
@@ -713,6 +716,24 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Text("顯示我的位置"),
+                              const SizedBox(width: 5),
+                              ValueListenableBuilder(
+                                valueListenable: showMyLocation,
+                                builder: (BuildContext context, bool value,
+                                        Widget? child) =>
+                                    Switch(
+                                  value: value,
+                                  activeColor: themeData.colorScheme.primary,
+                                  onChanged: (bool value) =>
+                                      showMyLocation.value = value,
+                                ),
+                              ),
+                            ],
+                          ),
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
