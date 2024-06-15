@@ -43,14 +43,14 @@ class OsmMapPage extends StatefulWidget {
   final GeoPoint? initPosition;
   final List<ExtraMarker> extraMarkers;
   final bool showNearGroupStations;
-  final List<GeoPoint> roadPoints;
+  final MapEntry<SubRoute, List<GeoPoint>>? roadPoints;
 
   const OsmMapPage(
       {super.key,
       this.initPosition,
       this.extraMarkers = const [],
       this.showNearGroupStations = true,
-      this.roadPoints = const []});
+      this.roadPoints});
 
   @override
   State<StatefulWidget> createState() => _OsmMapPageState();
@@ -73,7 +73,8 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
       GeoPoint(latitude: 24.99290738364926, longitude: 121.30105867981855));
   final ValueNotifier<bool> trackingNotifier = ValueNotifier(true);
   final ValueNotifier<bool> showAllGroupStations = ValueNotifier(false);
-  final ValueNotifier<bool> showRealTimeBuses = ValueNotifier(false);
+  final ValueNotifier<bool> showAllRealTimeBuses = ValueNotifier(false);
+  final ValueNotifier<bool> showRouteRealTimeBuses = ValueNotifier(false);
   final ValueNotifier<
           List<Widget> Function(BuildContext, ThemeData, GeoPoint?)?>
       infoBuilder = ValueNotifier(null);
@@ -205,9 +206,9 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
   }
 
   Future<void> mapIsReady(bool isReady) async {
-    if (widget.roadPoints.isNotEmpty) {
+    if (widget.roadPoints?.value.isNotEmpty ?? false) {
       await mapController.drawRoadManually(
-        widget.roadPoints,
+        widget.roadPoints!.value,
         const RoadOption(
           roadColor: Colors.blue,
           roadWidth: 5,
@@ -271,7 +272,12 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
       bool inRegion = region.boundingBox.inBoundingBox(realTimeBus.busPosition);
       bool inDisplayRealTimeBuses =
           displayRealTimeBuses.containsKey(realTimeBus.plateNumb);
-      if (inRegion && !inDisplayRealTimeBuses && showRealTimeBuses.value) {
+      if (!inDisplayRealTimeBuses &&
+          ((showAllRealTimeBuses.value && inRegion) ||
+              (showRouteRealTimeBuses.value &&
+                  (widget.roadPoints?.value.isNotEmpty ?? false) &&
+                  realTimeBus.routeUid == widget.roadPoints!.key.routeUid &&
+                  realTimeBus.direction == widget.roadPoints!.key.direction))) {
         displayRealTimeBuses[realTimeBus.plateNumb] = realTimeBus;
         await mapController.addMarker(
           realTimeBus.busPosition,
@@ -283,7 +289,11 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
             ),
           ),
         );
-      } else if ((!showRealTimeBuses.value || !inRegion) &&
+      } else if ((!showAllRealTimeBuses.value || !inRegion) &&
+          !(showRouteRealTimeBuses.value &&
+              (widget.roadPoints?.value.isNotEmpty ?? false) &&
+              realTimeBus.routeUid == widget.roadPoints!.key.routeUid &&
+              realTimeBus.direction == widget.roadPoints!.key.direction) &&
           inDisplayRealTimeBuses) {
         displayRealTimeBuses.remove(realTimeBus.plateNumb);
         await mapController.removeMarker(realTimeBus.busPosition);
@@ -733,19 +743,21 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              const Text("顯示公車位置"),
+                              const Text("顯示所有公車"),
                               const SizedBox(width: 5),
                               ValueListenableBuilder(
-                                valueListenable: showRealTimeBuses,
+                                valueListenable: showAllRealTimeBuses,
                                 builder: (BuildContext context, bool value,
                                         Widget? child) =>
                                     Switch(
                                   value: value,
                                   activeColor: themeData.colorScheme.primary,
                                   onChanged: (bool value) async {
-                                    showRealTimeBuses.value = value;
+                                    showAllRealTimeBuses.value = value;
                                     if (!value) {
                                       await updateMyLocation();
+                                    } else {
+                                      showRouteRealTimeBuses.value = true;
                                     }
                                     await onRegionChanged();
                                   },
@@ -753,6 +765,30 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                               ),
                             ],
                           ),
+                          if (widget.roadPoints?.value.isNotEmpty ?? false)
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text("顯示路線公車"),
+                                const SizedBox(width: 5),
+                                ValueListenableBuilder(
+                                  valueListenable: showRouteRealTimeBuses,
+                                  builder: (BuildContext context, bool value,
+                                          Widget? child) =>
+                                      Switch(
+                                    value: value,
+                                    activeColor: themeData.colorScheme.primary,
+                                    onChanged: (bool value) async {
+                                      showRouteRealTimeBuses.value = value;
+                                      if (!value) {
+                                        await updateMyLocation();
+                                      }
+                                      await onRegionChanged();
+                                    },
+                                  ),
+                                ),
+                              ],
+                            ),
                         ],
                       ),
                     ),

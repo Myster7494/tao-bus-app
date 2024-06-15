@@ -50,12 +50,15 @@ class BusRoute {
 
 @JsonSerializable()
 class SubRoute {
+  @JsonKey(name: "RouteUID")
+  final String routeUid;
   @JsonKey(name: "Direction")
   final int direction;
   @JsonKey(name: "Points")
   final List<GeoPointJson> points;
 
   const SubRoute({
+    required this.routeUid,
     required this.direction,
     required this.points,
   });

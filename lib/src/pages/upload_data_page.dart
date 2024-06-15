@@ -36,20 +36,16 @@ class _UploadDataPageState extends State<UploadDataPage> {
                     await BusDataLoader.loadEstimatedTime(
                         jsonString:
                             utf8.decode(result.files.single.bytes!.toList()));
-                    RecordData.lastUpdateEstimatedTime =
-                        DateTime.now().toLocal();
                     setState(() {});
                   }
                 },
                 child: const Text('上傳預估到站時間'),
               ),
               const SizedBox(height: 10),
-              Text(RecordData.lastUpdateEstimatedTime != null
-                  ? DateFormat.yMd()
-                      .add_Hms()
-                      .format(RecordData.lastUpdateEstimatedTime!)
-                      .toString()
-                  : "尚未上傳"),
+              Text(DateFormat('yyyy-MM-dd')
+                  .add_Hms()
+                  .format(RecordData.allEstimatedTime.lastUpdateTime.toLocal())
+                  .toString()),
             ],
           ),
           const SizedBox(width: 30),
@@ -66,20 +62,30 @@ class _UploadDataPageState extends State<UploadDataPage> {
                     await BusDataLoader.loadRealTimeBuses(
                         jsonString:
                             utf8.decode(result.files.single.bytes!.toList()));
-                    RecordData.lastUpdateRealTimeBuses =
-                        DateTime.now().toLocal();
                     setState(() {});
                   }
                 },
                 child: const Text('上傳公車定時位置'),
               ),
               const SizedBox(height: 10),
-              Text(RecordData.lastUpdateRealTimeBuses != null
-                  ? DateFormat.yMd()
-                      .add_Hms()
-                      .format(RecordData.lastUpdateRealTimeBuses!)
-                      .toString()
-                  : "尚未上傳"),
+              FilledButton(
+                onPressed: () async {
+                  FilePickerResult? result =
+                      await FilePicker.platform.pickFiles();
+                  if (result != null) {
+                    await BusDataLoader.loadRealTimeBuses(
+                        jsonString:
+                            utf8.decode(result.files.single.bytes!.toList()));
+                    setState(() {});
+                  }
+                },
+                child: const Text('上傳公車定時位置'),
+              ),
+              const SizedBox(height: 10),
+              Text(DateFormat('yyyy-MM-dd')
+                  .add_Hms()
+                  .format(RecordData.realTimeBuses.lastUpdateTime.toLocal())
+                  .toString()),
             ],
           ),
         ],

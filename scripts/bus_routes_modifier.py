@@ -31,7 +31,7 @@ for route in routes:
             if route_shape['RouteUID'] == route['RouteUID'] and route_shape['Direction'] == sub_route['Direction']:
                 points = [{"PositionLon": float(pos.split()[0]), "PositionLat": float(pos.split()[1])} for pos in
                           route_shape['Geometry'].replace('LINESTRING(', '').replace(')', '').split(',')]
-        new_sub_route = {"Direction": sub_route['Direction'], "Points": points}
+        new_sub_route = {"RouteUID": route["RouteUID"], "Direction": sub_route['Direction'], "Points": points}
         new_route['SubRoutes'].append(new_sub_route)
     new_routes[route['RouteUID']] = new_route
 json.dump(new_routes, open('out/bus_routes.json', 'w', encoding='utf-8'), ensure_ascii=False, indent=2)

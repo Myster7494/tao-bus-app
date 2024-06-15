@@ -53,6 +53,7 @@ const _$OperatorNoEnumMap = {
 };
 
 SubRoute _$SubRouteFromJson(Map<String, dynamic> json) => SubRoute(
+      routeUid: json['RouteUID'] as String,
       direction: (json['Direction'] as num).toInt(),
       points: (json['Points'] as List<dynamic>)
           .map((e) => GeoPointJson.fromJson(e as Map<String, dynamic>))
@@ -60,6 +61,7 @@ SubRoute _$SubRouteFromJson(Map<String, dynamic> json) => SubRoute(
     );
 
 Map<String, dynamic> _$SubRouteToJson(SubRoute instance) => <String, dynamic>{
+      'RouteUID': instance.routeUid,
       'Direction': instance.direction,
       'Points': instance.points,
     };

@@ -51,3 +51,11 @@ class RealTimeBus {
 
   Map<String, dynamic> toJson() => _$RealTimeBusToJson(this);
 }
+
+class AllRealTimeBus {
+  final List<RealTimeBus> data;
+
+  DateTime get lastUpdateTime => data.first.updateTime;
+
+  AllRealTimeBus({required this.data});
+}

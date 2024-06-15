@@ -131,7 +131,8 @@ class _BusStatePageState extends State<BusStatePage> {
                     );
                   }).toList(),
                   initPosition: busRoute.subRoutes[direction].points.first,
-                  roadPoints: busRoute.subRoutes[direction].points,
+                  roadPoints: MapEntry(busRoute.subRoutes[direction],
+                      busRoute.subRoutes[direction].points),
                   showNearGroupStations: false,
                 )
               : Column(

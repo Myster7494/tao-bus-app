@@ -2,9 +2,11 @@ import 'package:bus_app/src/bus_data/bus_data_loader.dart';
 import 'package:bus_app/src/pages/main_page.dart';
 import 'package:bus_app/src/storage/local_storage.dart';
 import 'package:bus_app/src/widgets/theme_provider.dart';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 
 final LocalStorage localStorage = LocalStorage();
+final Dio dio = Dio();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

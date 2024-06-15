@@ -32,9 +32,7 @@ abstract class RecordData {
   static late final GroupStationsType groupStations;
   static late final CarDataType carData;
   static late AllEstimatedTime allEstimatedTime;
-  static late List<RealTimeBus> realTimeBuses;
-  static DateTime? lastUpdateEstimatedTime;
-  static DateTime? lastUpdateRealTimeBuses;
+  static late AllRealTimeBus realTimeBuses;
 }
 
 abstract class Util {

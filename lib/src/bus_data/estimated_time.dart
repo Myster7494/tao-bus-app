@@ -92,6 +92,9 @@ class OtherEstimatedData {
 class AllEstimatedTime {
   final Map<String, Map<int, Map<String, EstimatedTimeData>>> data;
 
+  DateTime get lastUpdateTime =>
+      data.values.first.values.first.values.first.updateTime;
+
   AllEstimatedTime({required this.data});
 
   factory AllEstimatedTime.fromJsonList(List<EstimatedTimeJson> json) {

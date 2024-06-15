@@ -3,8 +3,11 @@ import 'dart:convert';
 import 'package:bus_app/src/bus_data/group_station.dart';
 import 'package:bus_app/src/bus_data/real_time_bus.dart';
 import 'package:bus_app/src/util.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 
+import '../../main.dart';
 import 'bus_route.dart';
 import 'bus_station.dart';
 import 'bus_stop.dart';
@@ -53,6 +56,17 @@ abstract class BusDataLoader {
   }
 
   static Future<void> loadEstimatedTime({String? jsonString}) async {
+    try {
+      final Response response = await dio.get(
+        'https://raw.githubusercontent.com/Myster7494/tao-bus-app/data/data/estimated_time.json',
+        options: Options(responseType: ResponseType.bytes),
+      );
+      if (response.statusCode == 200) {
+        jsonString = utf8.decode(response.data);
+      }
+    } catch (e) {
+      debugPrint('Cannot download estimated_time_data from Github: $e');
+    }
     jsonString ??= await rootBundle.loadString('assets/estimated_time.json');
     final List jsonObjects = jsonDecode(jsonString);
     RecordData.allEstimatedTime = AllEstimatedTime.fromJsonList(jsonObjects
@@ -61,11 +75,23 @@ abstract class BusDataLoader {
   }
 
   static Future<void> loadRealTimeBuses({String? jsonString}) async {
+    try {
+      final Response response = await dio.get(
+        'https://raw.githubusercontent.com/Myster7494/tao-bus-app/data/data/real_time_bus.json',
+        options: Options(responseType: ResponseType.bytes),
+      );
+      if (response.statusCode == 200) {
+        jsonString = utf8.decode(response.data);
+      }
+    } catch (e) {
+      debugPrint('Cannot download real_time_buses from Github: $e');
+    }
     jsonString ??= await rootBundle.loadString('assets/real_time_bus.json');
     final List jsonObjects = jsonDecode(jsonString);
-    RecordData.realTimeBuses = jsonObjects
-        .map((jsonObject) => RealTimeBus.fromJson(jsonObject))
-        .toList();
+    RecordData.realTimeBuses = AllRealTimeBus(
+        data: jsonObjects
+            .map((jsonObject) => RealTimeBus.fromJson(jsonObject))
+            .toList());
   }
 
   static Future<void> loadCarData() async {
@@ -145,6 +171,6 @@ abstract class BusDataLoader {
   }
 
   static List<RealTimeBus> getDefaultAllRealTimeBusesList() {
-    return List.of(RecordData.realTimeBuses);
+    return List.of(RecordData.realTimeBuses.data);
   }
 }
