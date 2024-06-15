@@ -45,7 +45,7 @@ class EstimatedTimeText extends StatelessWidget {
             1 => estimatedTimeData.nextBusTime != null
                 ? DateFormat.Hm()
                     .format(estimatedTimeData.nextBusTime!.toLocal())
-                : '今日未營運',
+                : '末班車已過/今日未營運',
             2 => '交管不停靠',
             3 => '末班車已過',
             4 => '今日未營運',

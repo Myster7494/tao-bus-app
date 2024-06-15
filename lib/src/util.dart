@@ -39,6 +39,12 @@ abstract class Util {
   static const rad = pi / 180;
   static const halfRad = pi / 360;
 
+  static const String tdxRealTimeBusUrl =
+      'https://tdx.transportdata.tw/api/basic/v2/Bus/RealTimeByFrequency/City/Taoyuan?%24select=BusPosition%2COperatorNo%2CDirection%2CRouteUID%2CPlateNumb&%24format=JSON';
+
+  static const String tdxEstimatedTimeUrl =
+      'https://tdx.transportdata.tw/api/basic/v2/Bus/EstimatedTimeOfArrival/City/Taoyuan?%24select=PlateNumb%2CStopUID%2CRouteUID%2CDirection%2CEstimateTime%2CStopSequence%2CStopStatus%2CNextBusTime%2CSrcUpdateTime&%24orderby=RouteUID%20asc%2CDirection%20asc%2CStopSequence%20asc&%24format=JSON';
+
   static void showSnackBar(BuildContext context, String message,
       {Duration? duration, SnackBarAction? action}) {
     ScaffoldMessenger.of(context).clearSnackBars();

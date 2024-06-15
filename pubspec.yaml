@@ -52,7 +52,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.4.10
+  build_runner: ^2.4.11
   json_serializable: ^6.8.0
 
 
@@ -92,6 +92,7 @@ flutter:
     - assets/real_time_bus.json
   #https://tdx.transportdata.tw/api/basic/v2/Bus/EstimatedTimeOfArrival/City/Taoyuan?%24select=PlateNumb%2CStopUID%2CRouteUID%2CDirection%2CEstimateTime%2CStopSequence%2CStopStatus%2CNextBusTime%2CSrcUpdateTime&%24orderby=RouteUID%20asc%2CDirection%20asc%2CStopSequence%20asc&%24format=JSON
   #https://tdx.transportdata.tw/api/basic/v2/Bus/RealTimeByFrequency/City/Taoyuan?%24select=BusPosition%2COperatorNo%2CDirection%2CRouteUID%2CPlateNumb&%24format=JSON
+
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware
 

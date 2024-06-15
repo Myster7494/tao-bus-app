@@ -15,6 +15,13 @@ import 'car_data.dart';
 import 'estimated_time.dart';
 import 'route_stops.dart';
 
+enum LoadDataSourceType {
+  tdx,
+  github,
+  assets,
+  string,
+}
+
 abstract class BusDataLoader {
   static Future<void> loadBusRoutes() async {
     final jsonString = await rootBundle.loadString('assets/bus_routes.json');
@@ -55,43 +62,81 @@ abstract class BusDataLoader {
         .map((key, value) => MapEntry(key, GroupStation.fromJson(value)));
   }
 
-  static Future<void> loadEstimatedTime({String? jsonString}) async {
-    try {
-      final Response response = await dio.get(
-        'https://raw.githubusercontent.com/Myster7494/tao-bus-app/data/data/estimated_time.json',
-        options: Options(responseType: ResponseType.bytes),
-      );
-      if (response.statusCode == 200) {
-        jsonString = utf8.decode(response.data);
+  static Future<bool> loadEstimatedTime(LoadDataSourceType type,
+      {String? jsonString}) async {
+    if (type == LoadDataSourceType.tdx) {
+      try {
+        final Response response = await dio.get(
+          Util.tdxEstimatedTimeUrl,
+          options: Options(responseType: ResponseType.bytes),
+        );
+        if (response.statusCode == 200) {
+          jsonString = utf8.decode(response.data);
+        }
+      } catch (e) {
+        debugPrint('Cannot download estimated_time_data from Tdx: $e');
+        return false;
       }
-    } catch (e) {
-      debugPrint('Cannot download estimated_time_data from Github: $e');
+    } else if (type == LoadDataSourceType.github) {
+      try {
+        final Response response = await dio.get(
+          'https://raw.githubusercontent.com/Myster7494/tao-bus-app/data/data/estimated_time.json',
+          options: Options(responseType: ResponseType.bytes),
+        );
+        if (response.statusCode == 200) {
+          jsonString = utf8.decode(response.data);
+        }
+      } catch (e) {
+        debugPrint('Cannot download estimated_time_data from Github: $e');
+        return false;
+      }
+    } else if (type == LoadDataSourceType.assets) {
+      jsonString = await rootBundle.loadString('assets/estimated_time.json');
     }
-    jsonString ??= await rootBundle.loadString('assets/estimated_time.json');
-    final List jsonObjects = jsonDecode(jsonString);
+    final List jsonObjects = jsonDecode(jsonString!);
     RecordData.allEstimatedTime = AllEstimatedTime.fromJsonList(jsonObjects
         .map((jsonObject) => EstimatedTimeJson.fromJson(jsonObject))
         .toList());
+    return true;
   }
 
-  static Future<void> loadRealTimeBuses({String? jsonString}) async {
-    try {
-      final Response response = await dio.get(
-        'https://raw.githubusercontent.com/Myster7494/tao-bus-app/data/data/real_time_bus.json',
-        options: Options(responseType: ResponseType.bytes),
-      );
-      if (response.statusCode == 200) {
-        jsonString = utf8.decode(response.data);
+  static Future<bool> loadRealTimeBuses(LoadDataSourceType type,
+      {String? jsonString}) async {
+    if (type == LoadDataSourceType.tdx) {
+      try {
+        final Response response = await dio.get(
+          Util.tdxEstimatedTimeUrl,
+          options: Options(responseType: ResponseType.bytes),
+        );
+        if (response.statusCode == 200) {
+          jsonString = utf8.decode(response.data);
+        }
+      } catch (e) {
+        debugPrint('Cannot download real_time_bus from Tdx: $e');
+        return false;
       }
-    } catch (e) {
-      debugPrint('Cannot download real_time_buses from Github: $e');
+    } else if (type == LoadDataSourceType.github) {
+      try {
+        final Response response = await dio.get(
+          'https://raw.githubusercontent.com/Myster7494/tao-bus-app/data/data/real_time_bus.json',
+          options: Options(responseType: ResponseType.bytes),
+        );
+        if (response.statusCode == 200) {
+          jsonString = utf8.decode(response.data);
+        }
+      } catch (e) {
+        debugPrint('Cannot download real_time_bus from Github: $e');
+        return false;
+      }
+    } else if (type == LoadDataSourceType.assets) {
+      jsonString = await rootBundle.loadString('assets/real_time_bus.json');
     }
-    jsonString ??= await rootBundle.loadString('assets/real_time_bus.json');
-    final List jsonObjects = jsonDecode(jsonString);
+    final List jsonObjects = jsonDecode(jsonString!);
     RecordData.realTimeBuses = AllRealTimeBus(
         data: jsonObjects
             .map((jsonObject) => RealTimeBus.fromJson(jsonObject))
             .toList());
+    return true;
   }
 
   static Future<void> loadCarData() async {
@@ -108,8 +153,8 @@ abstract class BusDataLoader {
     await loadBusStations();
     await loadGroupStations();
     await loadCarData();
-    await loadEstimatedTime();
-    await loadRealTimeBuses();
+    await loadEstimatedTime(LoadDataSourceType.assets);
+    await loadRealTimeBuses(LoadDataSourceType.assets);
   }
 
   static List<BusRoute> getAllBusRoutesList([BusRoutesType? busRoutesMap]) {
