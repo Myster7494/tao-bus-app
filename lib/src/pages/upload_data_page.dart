@@ -31,6 +31,9 @@ class _UploadDataPageState extends State<UploadDataPage> {
                 onPressed: () async {
                   if (await BusDataLoader.loadEstimatedTime(
                       LoadDataSourceType.tdx)) {
+                    if (context.mounted) {
+                      Util.showSnackBar(context, "已從TDX更新預估到站時間資料");
+                    }
                     setState(() {});
                   } else if (context.mounted) {
                     Util.showSnackBar(context, "無法從TDX更新預估到站時間資料");
@@ -44,6 +47,9 @@ class _UploadDataPageState extends State<UploadDataPage> {
                 onPressed: () async {
                   if (await BusDataLoader.loadEstimatedTime(
                       LoadDataSourceType.github)) {
+                    if (context.mounted) {
+                      Util.showSnackBar(context, "已從Github更新預估到站時間資料");
+                    }
                     setState(() {});
                   } else if (context.mounted) {
                     Util.showSnackBar(context, "無法從Github更新預估到站時間資料");
@@ -62,6 +68,9 @@ class _UploadDataPageState extends State<UploadDataPage> {
                         LoadDataSourceType.string,
                         jsonString:
                             utf8.decode(result.files.single.bytes!.toList()));
+                    if (context.mounted) {
+                      Util.showSnackBar(context, "已從上傳更新預估到站時間資料");
+                    }
                     setState(() {});
                   }
                 },
@@ -97,6 +106,9 @@ class _UploadDataPageState extends State<UploadDataPage> {
                 onPressed: () async {
                   if (await BusDataLoader.loadRealTimeBuses(
                       LoadDataSourceType.tdx)) {
+                    if (context.mounted) {
+                      Util.showSnackBar(context, "已從TDX更新公車定時位置資料");
+                    }
                     setState(() {});
                   } else if (context.mounted) {
                     Util.showSnackBar(context, "無法從TDX更新公車定時位置資料");
@@ -110,6 +122,9 @@ class _UploadDataPageState extends State<UploadDataPage> {
                 onPressed: () async {
                   if (await BusDataLoader.loadRealTimeBuses(
                       LoadDataSourceType.github)) {
+                    if (context.mounted) {
+                      Util.showSnackBar(context, "已從Github更新公車定時位置資料");
+                    }
                     setState(() {});
                   } else if (context.mounted) {
                     Util.showSnackBar(context, "無法從Github更新公車定時位置資料");
@@ -128,6 +143,9 @@ class _UploadDataPageState extends State<UploadDataPage> {
                         LoadDataSourceType.string,
                         jsonString:
                             utf8.decode(result.files.single.bytes!.toList()));
+                    if (context.mounted) {
+                      Util.showSnackBar(context, "已從上傳更新公車定時位置資料");
+                    }
                     setState(() {});
                   }
                 },
