@@ -116,7 +116,7 @@ class _StationDetailPageState extends State<StationDetailPage> {
                           },
                         ),
                   ],
-                  showNearGroupStations: false,
+                  showMyLocation: false,
                 )
               : Column(
                   children: [

@@ -9,7 +9,6 @@ import 'package:bus_app/src/bus_data/real_time_bus.dart';
 import 'package:bus_app/src/pages/bus_state_page.dart';
 import 'package:bus_app/src/pages/station_detail_page.dart';
 import 'package:bus_app/src/widgets/theme_provider.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:geolocator/geolocator.dart';
@@ -42,14 +41,14 @@ class ExtraMarker {
 class OsmMapPage extends StatefulWidget {
   final GeoPoint? initPosition;
   final List<ExtraMarker> extraMarkers;
-  final bool showNearGroupStations;
+  final bool showMyLocation;
   final MapEntry<SubRoute, List<GeoPoint>>? roadPoints;
 
   const OsmMapPage(
       {super.key,
       this.initPosition,
       this.extraMarkers = const [],
-      this.showNearGroupStations = true,
+      this.showMyLocation = true,
       this.roadPoints});
 
   @override
@@ -71,11 +70,12 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
   final Map<String, RealTimeBus> displayRealTimeBuses = {};
   final ValueNotifier<GeoPoint> myLocation = ValueNotifier(
       GeoPoint(latitude: 24.99290738364926, longitude: 121.30105867981855));
-  final ValueNotifier<bool> trackingNotifier = ValueNotifier(true);
+  final ValueNotifier<bool> trackingNotifier = ValueNotifier(false);
   final ValueNotifier<bool> showAllGroupStations = ValueNotifier(false);
   final ValueNotifier<bool> showAllRealTimeBuses = ValueNotifier(false);
   final ValueNotifier<bool> showRouteRealTimeBuses = ValueNotifier(false);
-  final ValueNotifier<bool> showMyLocation = ValueNotifier(true);
+  final ValueNotifier<bool> showMoreActions = ValueNotifier(false);
+  late final ValueNotifier<bool> showMyLocation;
   final ValueNotifier<
           List<Widget> Function(BuildContext, ThemeData, GeoPoint?)?>
       infoBuilder = ValueNotifier(null);
@@ -164,18 +164,13 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
   }
 
   Future<void> updateMyLocation() async {
-    if (await Util.hasGps()) {
-      if (!kIsWeb) {
-        myLocation.value =
-            Util.positionToGeoPoint((await Geolocator.getLastKnownPosition())!);
-      } else {
-        try {
-          myLocation.value = Util.positionToGeoPoint(
-              await Geolocator.getCurrentPosition(
-                  timeLimit: const Duration(seconds: 5)));
-        } on TimeoutException {
-          debugPrint("Get gps time out.");
-        }
+    if (RecordData.enableGps.value!) {
+      try {
+        myLocation.value = Util.positionToGeoPoint(
+            await Geolocator.getCurrentPosition(
+                timeLimit: const Duration(seconds: 3)));
+      } on TimeoutException {
+        debugPrint("Get gps time out.");
       }
     }
     if (trackingNotifier.value) {
@@ -183,7 +178,10 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
     } else {
       await mapController.removeLimitAreaMap();
     }
-    if (!showAllGroupStations.value) await _drawNearGroupStations();
+    if (!showAllGroupStations.value) {
+      calculateBoard();
+      await _drawNearGroupStations();
+    }
   }
 
   @override
@@ -193,9 +191,9 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
       initPosition = myLocation.value;
     } else {
       initPosition = widget.initPosition!;
-      trackingNotifier.value = false;
       showAllGroupStations.value = false;
     }
+    showMyLocation = ValueNotifier(widget.showMyLocation);
     mapController = MapController.withPosition(
       initPosition: initPosition,
     );
@@ -208,6 +206,23 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
   }
 
   Future<void> mapIsReady(bool isReady) async {
+    if (widget.initPosition == null) {
+      if (RecordData.enableGps.value!) {
+        try {
+          myLocation.value = Util.positionToGeoPoint(
+              await Geolocator.getCurrentPosition(
+                  timeLimit: const Duration(seconds: 3)));
+        } on TimeoutException {
+          debugPrint("Get gps time out.");
+        }
+      }
+      await mapController.moveTo(myLocation.value);
+    }
+
+    await Future.delayed(const Duration(seconds: 1));
+
+    await mapController.clearAllRoads();
+
     if (widget.roadPoints?.value.isNotEmpty ?? false) {
       await mapController.drawRoadManually(
         widget.roadPoints!.value,
@@ -224,10 +239,10 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
       );
     }
     await Future.delayed(const Duration(seconds: 1));
+    await onRegionChanged();
     await drawMyLocation();
     Geolocator.getPositionStream()
         .listen((Position position) async => await drawMyLocation());
-    await onRegionChanged();
   }
 
   // Future<void> onLocationChanged(GeoPoint userLocation) async {
@@ -250,7 +265,7 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
           displayGroupStations.containsKey(groupStation.groupStationUid);
       if ((showAllGroupStations.value ||
               (inOneKm(groupStation.groupStationPosition) &&
-                  widget.showNearGroupStations)) &&
+                  showMyLocation.value)) &&
           inRegion &&
           !inDisplayGroupStations) {
         displayGroupStations[groupStation.groupStationUid] =
@@ -260,7 +275,8 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
           markerIcon: groupStationMarkerIcon,
         );
       } else if ((!showAllGroupStations.value || !inRegion) &&
-          !inOneKm(groupStation.groupStationPosition) &&
+          (!inOneKm(groupStation.groupStationPosition) ||
+              !showMyLocation.value) &&
           inDisplayGroupStations &&
           !widget.extraMarkers.map((extraMarker) => extraMarker.geoPoint).any(
               (element) =>
@@ -313,7 +329,7 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
   }
 
   Future<void> _drawNearGroupStations() async {
-    if (!widget.showNearGroupStations) return;
+    if (!showMyLocation.value) return;
     try {
       await mapController.removeCircle("nearCircle");
     } catch (e) {
@@ -353,9 +369,12 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
 
   void onGeoPointClicked(BuildContext context, GeoPoint geoPoint) async {
     if (geoPoint == myLocation.value) {
-      infoBuilder.value = (BuildContext context, _, __) =>
-          [const Text('我的位置', style: TextStyle(fontSize: 20))];
-      return;
+      if (showMyLocation.value) {
+        infoBuilder.value = (BuildContext context, _, __) =>
+            [const Text('我的位置', style: TextStyle(fontSize: 20))];
+        return;
+      }
+      await mapController.removeMarker(geoPoint);
     }
     bool isExtraMarker = widget.extraMarkers
         .map((extraMarker) => extraMarker.geoPoint)
@@ -515,321 +534,133 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
   Widget build(BuildContext context) {
     return ThemeProvider(
       builder: (BuildContext context, ThemeData themeData) {
-        Widget widgetBuilder(BuildContext context, bool enableGps) {
-          if (!enableGps) {
-            trackingNotifier.value = false;
+        Widget widgetBuilder(BuildContext context) {
+          if (!RecordData.enableGps.value!) {
             showAllGroupStations.value = widget.extraMarkers.isEmpty;
           }
           return LayoutBuilder(
             builder: (BuildContext context, BoxConstraints constraints) =>
-                Stack(
-              alignment: Alignment.center,
-              children: [
-                OSMFlutter(
-                  controller: mapController,
-                  mapIsLoading: const Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  osmOption: const OSMOption(
-                    enableRotationByGesture: true,
-                    zoomOption: ZoomOption(
-                      initZoom: 16,
-                      minZoomLevel: 3,
-                      maxZoomLevel: 19,
-                      stepZoom: 1.0,
+                ValueListenableBuilder(
+              valueListenable: showMoreActions,
+              builder: (BuildContext context, bool showMoreActionsValue,
+                      Widget? child) =>
+                  Stack(
+                alignment: Alignment.center,
+                children: [
+                  OSMFlutter(
+                    controller: mapController,
+                    mapIsLoading: const Center(
+                      child: CircularProgressIndicator(),
                     ),
-                    // userLocationMarker: UserLocationMaker(
-                    //   personMarker: const MarkerIcon(
-                    //     icon: Icon(
-                    //       Icons.my_location,
-                    //       size: 36,
-                    //       color: Colors.blue,
-                    //     ),
-                    //   ),
-                    //   directionArrowMarker: const MarkerIcon(
-                    //     icon: Icon(
-                    //       Icons.my_location,
-                    //       size: 36,
-                    //       color: Colors.blue,
-                    //     ),
-                    //   ),
-                    // ),
-                  ),
-                  onGeoPointClicked: (geoPoint) =>
-                      onGeoPointClicked(context, geoPoint),
-                  onMapIsReady: mapIsReady,
-                  onMapMoved: (Region region) async {
-                    await onRegionChanged(region);
-                  },
-                ),
-                Positioned(
-                  top: 16,
-                  right: 16,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      PointerInterceptor(
-                        child: FilledButton(
-                          style: FilledButton.styleFrom(
-                              padding: const EdgeInsets.all(10)),
-                          onPressed: () async =>
-                              await Util.requestGpsPermission(),
-                          child: const Text('更新GPS狀態'),
-                        ),
+                    osmOption: const OSMOption(
+                      enableRotationByGesture: true,
+                      zoomOption: ZoomOption(
+                        initZoom: 16,
+                        minZoomLevel: 3,
+                        maxZoomLevel: 19,
+                        stepZoom: 1.0,
                       ),
-                      const SizedBox(height: 5),
-                      PointerInterceptor(
-                        child: FilledButton(
-                          style: FilledButton.styleFrom(
-                              padding: const EdgeInsets.all(10)),
-                          onPressed: () async {
-                            try {
-                              await mapController.removeCircle("nearCircle");
-                            } catch (e) {
-                              debugPrint(e.toString());
-                            }
-                            for (ExtraMarker extraMarker
-                                in widget.extraMarkers) {
-                              await mapController
-                                  .removeMarker(extraMarker.geoPoint);
-                            }
-                            for (GeoPoint geoPoint
-                                in displayGroupStations.values) {
-                              await mapController.removeMarker(geoPoint);
-                            }
-                            displayGroupStations.clear();
-                            for (RealTimeBus realTimeBus
-                                in displayRealTimeBuses.values) {
-                              await mapController
-                                  .removeMarker(realTimeBus.busPosition);
-                            }
-                            displayRealTimeBuses.clear();
-                            await Future.delayed(const Duration(seconds: 1));
-                            for (ExtraMarker extraMarker
-                                in widget.extraMarkers) {
-                              await mapController.addMarker(
-                                extraMarker.geoPoint,
-                                markerIcon: extraMarker.markerIcon,
-                              );
-                            }
-                            await drawMyLocation();
-                          },
-                          child: const Text('清除圖標'),
-                        ),
-                      ),
-                      if (widget.initPosition != null) ...[
-                        const SizedBox(height: 5),
-                        PointerInterceptor(
-                          child: FilledButton(
-                            style: FilledButton.styleFrom(
-                                padding: const EdgeInsets.all(10)),
-                            onPressed: () async => await mapController
-                                .moveTo(widget.initPosition!),
-                            child: const Text('返回標記定位點'),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
-                ),
-                Positioned(
-                  bottom: 80,
-                  right: 16,
-                  child: PointerInterceptor(
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            color: themeData.colorScheme.secondaryContainer,
-                            borderRadius:
-                                const BorderRadius.all(Radius.circular(25)),
-                            border: Border.all(
-                                width: 3, color: themeData.colorScheme.primary),
-                          ),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                onPressed: () async =>
-                                    await mapController.zoomIn(),
-                                icon: const Icon(Icons.zoom_in),
-                              ),
-                              const SizedBox(height: 5),
-                              IconButton(
-                                onPressed: () async =>
-                                    await mapController.setZoom(zoomLevel: 16),
-                                icon: const Icon(Icons.zoom_out_map),
-                              ),
-                              const SizedBox(height: 5),
-                              IconButton(
-                                onPressed: () async =>
-                                    await mapController.zoomOut(),
-                                icon: const Icon(Icons.zoom_out),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                        FloatingActionButton(
-                          onPressed: () async {
-                            trackingNotifier.value = !trackingNotifier.value;
-                            await mapController.removeLimitAreaMap();
-                            if (trackingNotifier.value) {
-                              await mapController.moveTo(myLocation.value);
-                              if (enableGps) await limitArea();
-                            } else {
-                              await mapController.removeLimitAreaMap();
-                            }
-                          },
-                          child: Builder(builder: (BuildContext context) {
-                            if (!enableGps) {
-                              return const Icon(Icons.gps_off);
-                            }
-                            return ValueListenableBuilder<bool>(
-                              valueListenable: trackingNotifier,
-                              builder: (BuildContext context, bool value,
-                                      Widget? child) =>
-                                  value
-                                      ? const Icon(Icons.my_location)
-                                      : const Icon(Icons.gps_not_fixed),
-                            );
-                          }),
-                        ),
-                      ],
                     ),
+                    onGeoPointClicked: (geoPoint) =>
+                        onGeoPointClicked(context, geoPoint),
+                    onMapIsReady: mapIsReady,
+                    onMapMoved: (Region region) async {
+                      await onRegionChanged(region);
+                    },
                   ),
-                ),
-                Positioned(
-                  top: 16,
-                  left: 16,
-                  child: PointerInterceptor(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: themeData.colorScheme.secondaryContainer,
-                        borderRadius:
-                            const BorderRadius.all(Radius.circular(25)),
-                        border: Border.all(
-                            width: 3, color: themeData.colorScheme.primary),
-                      ),
-                      padding: const EdgeInsets.all(5),
+                  if (showMoreActionsValue) ...[
+                    Positioned(
+                      top: 16,
+                      right: 16,
                       child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text("顯示我的位置"),
-                              const SizedBox(width: 5),
-                              ValueListenableBuilder(
-                                valueListenable: showMyLocation,
-                                builder: (BuildContext context, bool value,
-                                        Widget? child) =>
-                                    Switch(
-                                  value: value,
-                                  activeColor: themeData.colorScheme.primary,
-                                  onChanged: (bool value) =>
-                                      showMyLocation.value = value,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text("顯示所有組站位"),
-                              const SizedBox(width: 5),
-                              ValueListenableBuilder(
-                                valueListenable: showAllGroupStations,
-                                builder: (BuildContext context, bool value,
-                                        Widget? child) =>
-                                    Switch(
-                                  value: value,
-                                  activeColor: themeData.colorScheme.primary,
-                                  onChanged: (bool value) async {
-                                    if (!enableGps &&
-                                        widget.extraMarkers.isEmpty) {
-                                      return;
-                                    }
-                                    showAllGroupStations.value = value;
-                                    if (!value) {
-                                      await updateMyLocation();
-                                    }
-                                    await onRegionChanged();
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              const Text("顯示所有公車"),
-                              const SizedBox(width: 5),
-                              ValueListenableBuilder(
-                                valueListenable: showAllRealTimeBuses,
-                                builder: (BuildContext context, bool value,
-                                        Widget? child) =>
-                                    Switch(
-                                  value: value,
-                                  activeColor: themeData.colorScheme.primary,
-                                  onChanged: (bool value) async {
-                                    showAllRealTimeBuses.value = value;
-                                    if (!value) {
-                                      await updateMyLocation();
-                                    } else {
-                                      showRouteRealTimeBuses.value = true;
-                                    }
-                                    await onRegionChanged();
-                                  },
-                                ),
-                              ),
-                            ],
-                          ),
-                          if (widget.roadPoints?.value.isNotEmpty ?? false)
-                            Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Text("顯示路線公車"),
-                                const SizedBox(width: 5),
-                                ValueListenableBuilder(
-                                  valueListenable: showRouteRealTimeBuses,
-                                  builder: (BuildContext context, bool value,
-                                          Widget? child) =>
-                                      Switch(
-                                    value: value,
-                                    activeColor: themeData.colorScheme.primary,
-                                    onChanged: (bool value) async {
-                                      showRouteRealTimeBuses.value = value;
-                                      if (!value) {
-                                        await updateMyLocation();
-                                      }
-                                      await onRegionChanged();
-                                    },
-                                  ),
-                                ),
-                              ],
+                          PointerInterceptor(
+                            child: FilledButton(
+                              style: FilledButton.styleFrom(
+                                  padding: const EdgeInsets.all(10)),
+                              onPressed: () async =>
+                                  await Util.requestGpsPermission(),
+                              child: const Text('更新GPS狀態'),
                             ),
+                          ),
+                          const SizedBox(height: 5),
+                          PointerInterceptor(
+                            child: FilledButton(
+                              style: FilledButton.styleFrom(
+                                  padding: const EdgeInsets.all(10)),
+                              onPressed: () async {
+                                await mapController.clearAllRoads();
+                                if (widget.roadPoints?.value.isNotEmpty ??
+                                    false) {
+                                  await mapController.drawRoadManually(
+                                    widget.roadPoints!.value,
+                                    const RoadOption(
+                                      roadColor: Colors.blue,
+                                      roadWidth: 5,
+                                    ),
+                                  );
+                                }
+                                try {
+                                  await mapController
+                                      .removeCircle("nearCircle");
+                                } catch (e) {
+                                  debugPrint(e.toString());
+                                }
+                                for (ExtraMarker extraMarker
+                                    in widget.extraMarkers) {
+                                  await mapController
+                                      .removeMarker(extraMarker.geoPoint);
+                                }
+                                for (GeoPoint geoPoint
+                                    in displayGroupStations.values) {
+                                  await mapController.removeMarker(geoPoint);
+                                }
+                                displayGroupStations.clear();
+                                for (RealTimeBus realTimeBus
+                                    in displayRealTimeBuses.values) {
+                                  await mapController
+                                      .removeMarker(realTimeBus.busPosition);
+                                }
+                                displayRealTimeBuses.clear();
+                                await Future.delayed(
+                                    const Duration(seconds: 1));
+                                for (ExtraMarker extraMarker
+                                    in widget.extraMarkers) {
+                                  await mapController.addMarker(
+                                    extraMarker.geoPoint,
+                                    markerIcon: extraMarker.markerIcon,
+                                  );
+                                }
+                                await onRegionChanged();
+                                await drawMyLocation();
+                              },
+                              child: const Text('清除圖標'),
+                            ),
+                          ),
+                          if (widget.initPosition != null) ...[
+                            const SizedBox(height: 5),
+                            PointerInterceptor(
+                              child: FilledButton(
+                                style: FilledButton.styleFrom(
+                                    padding: const EdgeInsets.all(10)),
+                                onPressed: () async => await mapController
+                                    .moveTo(widget.initPosition!),
+                                child: const Text('返回標記定位點'),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),
-                  ),
-                ),
-                ValueListenableBuilder(
-                  valueListenable: infoBuilder,
-                  builder: (context,
-                      List<Widget> Function(BuildContext, ThemeData, GeoPoint?)?
-                          builder,
-                      _) {
-                    if (builder == null) return const SizedBox.shrink();
-                    return Positioned(
-                      bottom: 16,
-                      child: SizedBox(
-                        width: constraints.maxWidth,
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: PointerInterceptor(
-                            child: Container(
+                    Positioned(
+                      bottom: 80,
+                      right: 16,
+                      child: PointerInterceptor(
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Container(
                               decoration: BoxDecoration(
                                 color: themeData.colorScheme.secondaryContainer,
                                 borderRadius:
@@ -838,37 +669,276 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                                     width: 3,
                                     color: themeData.colorScheme.primary),
                               ),
-                              padding: const EdgeInsets.all(5),
-                              child: Row(
+                              child: Column(
                                 mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: builder(
-                                    context,
-                                    themeData,
-                                    RecordData.enableGps!
-                                        ? myLocation.value
-                                        : null)
-                                  ..add(IconButton(
-                                    padding: const EdgeInsets.all(5),
-                                    onPressed: () => infoBuilder.value = null,
-                                    icon: const Icon(Icons.close),
-                                  )),
+                                children: [
+                                  IconButton(
+                                    onPressed: () async =>
+                                        await mapController.zoomIn(),
+                                    icon: const Icon(Icons.zoom_in),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  IconButton(
+                                    onPressed: () async => await mapController
+                                        .setZoom(zoomLevel: 16),
+                                    icon: const Icon(Icons.zoom_out_map),
+                                  ),
+                                  const SizedBox(height: 5),
+                                  IconButton(
+                                    onPressed: () async =>
+                                        await mapController.zoomOut(),
+                                    icon: const Icon(Icons.zoom_out),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            FloatingActionButton(
+                              onPressed: () async {
+                                trackingNotifier.value =
+                                    !trackingNotifier.value;
+                                await mapController.removeLimitAreaMap();
+                                if (trackingNotifier.value) {
+                                  await mapController.moveTo(myLocation.value);
+                                  if (RecordData.enableGps.value!) {
+                                    await limitArea();
+                                  }
+                                } else {
+                                  await mapController.removeLimitAreaMap();
+                                }
+                              },
+                              child: ValueListenableBuilder(
+                                valueListenable: RecordData.enableGps,
+                                builder: (BuildContext context, bool? enableGps,
+                                    Widget? child) {
+                                  if (!enableGps!) {
+                                    return const Icon(Icons.gps_off);
+                                  }
+                                  return ValueListenableBuilder<bool>(
+                                    valueListenable: trackingNotifier,
+                                    builder: (BuildContext context, bool value,
+                                            Widget? child) =>
+                                        value
+                                            ? const Icon(Icons.my_location)
+                                            : const Icon(Icons.gps_not_fixed),
+                                  );
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                  Positioned(
+                    top: 16,
+                    left: 16,
+                    child: PointerInterceptor(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: themeData.colorScheme.secondaryContainer,
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(25)),
+                          border: Border.all(
+                              width: 3, color: themeData.colorScheme.primary),
+                        ),
+                        padding: const EdgeInsets.all(5),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                const Text("顯示更多功能"),
+                                const SizedBox(width: 5),
+                                ValueListenableBuilder(
+                                  valueListenable: showMoreActions,
+                                  builder: (BuildContext context, bool value,
+                                          Widget? child) =>
+                                      Switch(
+                                    value: value,
+                                    activeColor: themeData.colorScheme.primary,
+                                    onChanged: (bool value) =>
+                                        showMoreActions.value = value,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (showMoreActionsValue) ...[
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text("顯示我的位置"),
+                                  const SizedBox(width: 5),
+                                  ValueListenableBuilder(
+                                    valueListenable: showMyLocation,
+                                    builder: (BuildContext context, bool value,
+                                            Widget? child) =>
+                                        Switch(
+                                      value: value,
+                                      activeColor:
+                                          themeData.colorScheme.primary,
+                                      onChanged: (bool value) async {
+                                        showMyLocation.value = value;
+                                        if (!value) {
+                                          await mapController
+                                              .removeMarker(myLocation.value);
+                                          try {
+                                            await mapController
+                                                .removeCircle("nearCircle");
+                                          } catch (e) {
+                                            debugPrint(e.toString());
+                                          }
+                                          onRegionChanged();
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text("顯示所有組站位"),
+                                  const SizedBox(width: 5),
+                                  ValueListenableBuilder(
+                                    valueListenable: showAllGroupStations,
+                                    builder: (BuildContext context, bool value,
+                                            Widget? child) =>
+                                        Switch(
+                                      value: value,
+                                      activeColor:
+                                          themeData.colorScheme.primary,
+                                      onChanged: (bool value) async {
+                                        if (!RecordData.enableGps.value! &&
+                                            widget.extraMarkers.isEmpty) {
+                                          return;
+                                        }
+                                        showAllGroupStations.value = value;
+                                        if (!value) {
+                                          await updateMyLocation();
+                                        }
+                                        await onRegionChanged();
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  const Text("顯示所有公車"),
+                                  const SizedBox(width: 5),
+                                  ValueListenableBuilder(
+                                    valueListenable: showAllRealTimeBuses,
+                                    builder: (BuildContext context, bool value,
+                                            Widget? child) =>
+                                        Switch(
+                                      value: value,
+                                      activeColor:
+                                          themeData.colorScheme.primary,
+                                      onChanged: (bool value) async {
+                                        showAllRealTimeBuses.value = value;
+                                        if (!value) {
+                                          await updateMyLocation();
+                                        } else {
+                                          showRouteRealTimeBuses.value = true;
+                                        }
+                                        await onRegionChanged();
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              if (widget.roadPoints?.value.isNotEmpty ?? false)
+                                Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    const Text("顯示路線公車"),
+                                    const SizedBox(width: 5),
+                                    ValueListenableBuilder(
+                                      valueListenable: showRouteRealTimeBuses,
+                                      builder: (BuildContext context,
+                                              bool value, Widget? child) =>
+                                          Switch(
+                                        value: value,
+                                        activeColor:
+                                            themeData.colorScheme.primary,
+                                        onChanged: (bool value) async {
+                                          showRouteRealTimeBuses.value = value;
+                                          if (!value) {
+                                            await updateMyLocation();
+                                          }
+                                          await onRegionChanged();
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                            ],
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                  ValueListenableBuilder(
+                    valueListenable: infoBuilder,
+                    builder: (context,
+                        List<Widget> Function(
+                                BuildContext, ThemeData, GeoPoint?)?
+                            builder,
+                        _) {
+                      if (builder == null) return const SizedBox.shrink();
+                      return Positioned(
+                        bottom: 16,
+                        child: SizedBox(
+                          width: constraints.maxWidth,
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: PointerInterceptor(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color:
+                                      themeData.colorScheme.secondaryContainer,
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(25)),
+                                  border: Border.all(
+                                      width: 3,
+                                      color: themeData.colorScheme.primary),
+                                ),
+                                padding: const EdgeInsets.all(5),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: builder(
+                                      context,
+                                      themeData,
+                                      RecordData.enableGps.value!
+                                          ? myLocation.value
+                                          : null)
+                                    ..add(IconButton(
+                                      padding: const EdgeInsets.all(5),
+                                      onPressed: () => infoBuilder.value = null,
+                                      icon: const Icon(Icons.close),
+                                    )),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                    );
-                  },
-                ),
-              ],
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           );
         }
 
-        if (RecordData.enableGps != null) {
-          return widgetBuilder(context, RecordData.enableGps!);
+        if (RecordData.enableGps.value != null) {
+          return widgetBuilder(context);
         }
+
         return FutureBuilder(
           future: Util.hasGps(),
           builder: (BuildContext context, AsyncSnapshot<bool> myPosSnapshot) {
@@ -885,7 +955,7 @@ class _OsmMapPageState extends State<OsmMapPage> with TickerProviderStateMixin {
                 ),
               );
             }
-            return widgetBuilder(context, myPosSnapshot.data!);
+            return widgetBuilder(context);
           },
         );
       },

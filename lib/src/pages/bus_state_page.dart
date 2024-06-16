@@ -133,7 +133,7 @@ class _BusStatePageState extends State<BusStatePage> {
                   initPosition: busRoute.subRoutes[direction].points.first,
                   roadPoints: MapEntry(busRoute.subRoutes[direction],
                       busRoute.subRoutes[direction].points),
-                  showNearGroupStations: false,
+                  showMyLocation: false,
                 )
               : Column(
                   children: [

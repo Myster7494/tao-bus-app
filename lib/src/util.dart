@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:math';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_osm_plugin/flutter_osm_plugin.dart';
 import 'package:geolocator/geolocator.dart';
 
+import '../main.dart';
 import 'bus_data/bus_data_loader.dart';
 import 'bus_data/bus_route.dart';
 import 'bus_data/bus_station.dart';
@@ -24,7 +26,7 @@ typedef GroupStationsType = Map<String, GroupStation>;
 typedef CarDataType = Map<String, CarData>;
 
 abstract class RecordData {
-  static bool? enableGps;
+  static ValueNotifier<bool?> enableGps = ValueNotifier(null);
   static late final BusRoutesType busRoutes;
   static late final BusStopsType busStops;
   static late final RouteStopsType routeStops;
@@ -33,17 +35,20 @@ abstract class RecordData {
   static late final CarDataType carData;
   static late AllEstimatedTime allEstimatedTime;
   static late AllRealTimeBus realTimeBuses;
+  static String tdxApiKeyId = '';
+  static String tdxApiKeySecret = '';
+  static String? tdxApiToken;
 }
 
 abstract class Util {
   static const rad = pi / 180;
   static const halfRad = pi / 360;
 
-  static const String tdxRealTimeBusUrl =
-      'https://tdx.transportdata.tw/api/basic/v2/Bus/RealTimeByFrequency/City/Taoyuan?%24select=BusPosition%2COperatorNo%2CDirection%2CRouteUID%2CPlateNumb&%24format=JSON';
+  static final Uri tdxRealTimeBusUrl = Uri.parse(
+      'https://tdx.transportdata.tw/api/basic/v2/Bus/RealTimeByFrequency/City/Taoyuan?%24select=BusPosition%2COperatorNo%2CDirection%2CRouteUID%2CPlateNumb&%24format=JSON');
 
-  static const String tdxEstimatedTimeUrl =
-      'https://tdx.transportdata.tw/api/basic/v2/Bus/EstimatedTimeOfArrival/City/Taoyuan?%24select=PlateNumb%2CStopUID%2CRouteUID%2CDirection%2CEstimateTime%2CStopSequence%2CStopStatus%2CNextBusTime%2CSrcUpdateTime&%24orderby=RouteUID%20asc%2CDirection%20asc%2CStopSequence%20asc&%24format=JSON';
+  static final Uri tdxEstimatedTimeUrl = Uri.parse(
+      'https://tdx.transportdata.tw/api/basic/v2/Bus/EstimatedTimeOfArrival/City/Taoyuan?%24select=PlateNumb%2CStopUID%2CRouteUID%2CDirection%2CEstimateTime%2CStopSequence%2CStopStatus%2CNextBusTime%2CSrcUpdateTime&%24orderby=RouteUID%20asc%2CDirection%20asc%2CStopSequence%20asc&%24format=JSON');
 
   static void showSnackBar(BuildContext context, String message,
       {Duration? duration, SnackBarAction? action}) {
@@ -73,15 +78,15 @@ abstract class Util {
   }
 
   static Future<bool> hasGps() async {
-    if (RecordData.enableGps != null) return RecordData.enableGps!;
+    if (RecordData.enableGps.value != null) return RecordData.enableGps.value!;
 
-    RecordData.enableGps = false;
+    RecordData.enableGps.value = false;
     if (await requestGpsPermission() == false) return false;
     if (!kIsWeb) return (await Geolocator.getLastKnownPosition() != null);
     try {
       await Geolocator.getCurrentPosition(
           timeLimit: const Duration(seconds: 5));
-      RecordData.enableGps = true;
+      RecordData.enableGps.value = true;
       return true;
     } on TimeoutException {
       return false;
@@ -89,7 +94,7 @@ abstract class Util {
   }
 
   static Future<bool> requestGpsPermission() async {
-    RecordData.enableGps = false;
+    RecordData.enableGps.value = false;
     if (!await Geolocator.isLocationServiceEnabled()) return false;
     LocationPermission permission;
     permission = await Geolocator.checkPermission();
@@ -98,7 +103,7 @@ abstract class Util {
       if (permission == LocationPermission.denied) return false;
     }
     if (permission == LocationPermission.deniedForever) return false;
-    RecordData.enableGps = true;
+    RecordData.enableGps.value = true;
     return true;
   }
 
@@ -155,5 +160,25 @@ abstract class Util {
       return a.routeName.zhTw.compareTo(b.routeName.zhTw);
     }
     return aNum.compareTo(bNum);
+  }
+
+  static Future<String> getTdxApiToken() async {
+    if (RecordData.tdxApiToken != null) return RecordData.tdxApiToken!;
+    if (RecordData.tdxApiKeyId.isEmpty || RecordData.tdxApiKeySecret.isEmpty) {
+      return '';
+    }
+    final response = await dio.post(
+      'https://tdx.transportdata.tw/auth/realms/TDXConnect/protocol/openid-connect/token',
+      data: {
+        'grant_type': 'client_credentials',
+        'client_id': RecordData.tdxApiKeyId,
+        'client_secret': RecordData.tdxApiKeySecret,
+      },
+      options: Options(
+        headers: {'content-type': 'application/x-www-form-urlencoded'},
+      ),
+    );
+    RecordData.tdxApiToken = response.data['access_token'];
+    return RecordData.tdxApiToken!;
   }
 }

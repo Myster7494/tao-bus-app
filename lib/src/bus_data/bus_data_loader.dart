@@ -16,7 +16,8 @@ import 'estimated_time.dart';
 import 'route_stops.dart';
 
 enum LoadDataSourceType {
-  tdx,
+  tdxWithoutKey,
+  tdxWithKey,
   github,
   assets,
   string,
@@ -64,34 +65,61 @@ abstract class BusDataLoader {
 
   static Future<bool> loadEstimatedTime(LoadDataSourceType type,
       {String? jsonString}) async {
-    if (type == LoadDataSourceType.tdx) {
-      try {
-        final Response response = await dio.get(
-          Util.tdxEstimatedTimeUrl,
-          options: Options(responseType: ResponseType.bytes),
-        );
-        if (response.statusCode == 200) {
-          jsonString = utf8.decode(response.data);
+    switch (type) {
+      case LoadDataSourceType.tdxWithKey:
+        try {
+          final Response response = await dio.getUri(
+            Util.tdxEstimatedTimeUrl,
+            options: Options(
+              responseType: ResponseType.bytes,
+              headers: {
+                'authorization': 'Bearer ${await Util.getTdxApiToken()}'
+              },
+            ),
+          );
+          if (response.statusCode == 200) {
+            jsonString = utf8.decode(response.data);
+          }
+        } catch (e) {
+          debugPrint(
+              'Cannot download estimated_time_data from Tdx with api key: $e');
+          return false;
         }
-      } catch (e) {
-        debugPrint('Cannot download estimated_time_data from Tdx: $e');
-        return false;
-      }
-    } else if (type == LoadDataSourceType.github) {
-      try {
-        final Response response = await dio.get(
-          'https://raw.githubusercontent.com/Myster7494/tao-bus-app/data/data/estimated_time.json',
-          options: Options(responseType: ResponseType.bytes),
-        );
-        if (response.statusCode == 200) {
-          jsonString = utf8.decode(response.data);
+        break;
+      case LoadDataSourceType.tdxWithoutKey:
+        try {
+          final Response response = await dio.getUri(
+            Util.tdxEstimatedTimeUrl,
+            options: Options(responseType: ResponseType.bytes),
+          );
+          if (response.statusCode == 200) {
+            jsonString = utf8.decode(response.data);
+          }
+        } catch (e) {
+          debugPrint(
+              'Cannot download estimated_time_data from Tdx without api key: $e');
+          return false;
         }
-      } catch (e) {
-        debugPrint('Cannot download estimated_time_data from Github: $e');
-        return false;
-      }
-    } else if (type == LoadDataSourceType.assets) {
-      jsonString = await rootBundle.loadString('assets/estimated_time.json');
+        break;
+      case LoadDataSourceType.github:
+        try {
+          final Response response = await dio.get(
+            'https://raw.githubusercontent.com/Myster7494/tao-bus-app/data/data/estimated_time.json',
+            options: Options(responseType: ResponseType.bytes),
+          );
+          if (response.statusCode == 200) {
+            jsonString = utf8.decode(response.data);
+          }
+        } catch (e) {
+          debugPrint('Cannot download estimated_time_data from Github: $e');
+          return false;
+        }
+        break;
+      case LoadDataSourceType.assets:
+        jsonString = await rootBundle.loadString('assets/estimated_time.json');
+        break;
+      case _:
+        throw ArgumentError('Invalid LoadDataSourceType');
     }
     final List jsonObjects = jsonDecode(jsonString!);
     RecordData.allEstimatedTime = AllEstimatedTime.fromJsonList(jsonObjects
@@ -102,34 +130,60 @@ abstract class BusDataLoader {
 
   static Future<bool> loadRealTimeBuses(LoadDataSourceType type,
       {String? jsonString}) async {
-    if (type == LoadDataSourceType.tdx) {
-      try {
-        final Response response = await dio.get(
-          Util.tdxEstimatedTimeUrl,
-          options: Options(responseType: ResponseType.bytes),
-        );
-        if (response.statusCode == 200) {
-          jsonString = utf8.decode(response.data);
+    switch (type) {
+      case LoadDataSourceType.tdxWithKey:
+        try {
+          final Response response = await dio.getUri(
+            Util.tdxRealTimeBusUrl,
+            options: Options(
+              responseType: ResponseType.bytes,
+              headers: {
+                'authorization': 'Bearer ${await Util.getTdxApiToken()}'
+              },
+            ),
+          );
+          if (response.statusCode == 200) {
+            jsonString = utf8.decode(response.data);
+          }
+        } catch (e) {
+          debugPrint('Cannot download real_time_bus from Tdx with api key: $e');
+          return false;
         }
-      } catch (e) {
-        debugPrint('Cannot download real_time_bus from Tdx: $e');
-        return false;
-      }
-    } else if (type == LoadDataSourceType.github) {
-      try {
-        final Response response = await dio.get(
-          'https://raw.githubusercontent.com/Myster7494/tao-bus-app/data/data/real_time_bus.json',
-          options: Options(responseType: ResponseType.bytes),
-        );
-        if (response.statusCode == 200) {
-          jsonString = utf8.decode(response.data);
+        break;
+      case LoadDataSourceType.tdxWithoutKey:
+        try {
+          final Response response = await dio.getUri(
+            Util.tdxRealTimeBusUrl,
+            options: Options(responseType: ResponseType.bytes),
+          );
+          if (response.statusCode == 200) {
+            jsonString = utf8.decode(response.data);
+          }
+        } catch (e) {
+          debugPrint(
+              'Cannot download real_time_bus from Tdx without api key: $e');
+          return false;
         }
-      } catch (e) {
-        debugPrint('Cannot download real_time_bus from Github: $e');
-        return false;
-      }
-    } else if (type == LoadDataSourceType.assets) {
-      jsonString = await rootBundle.loadString('assets/real_time_bus.json');
+        break;
+      case LoadDataSourceType.github:
+        try {
+          final Response response = await dio.get(
+            'https://raw.githubusercontent.com/Myster7494/tao-bus-app/data/data/real_time_bus.json',
+            options: Options(responseType: ResponseType.bytes),
+          );
+          if (response.statusCode == 200) {
+            jsonString = utf8.decode(response.data);
+          }
+        } catch (e) {
+          debugPrint('Cannot download real_time_bus from Github: $e');
+          return false;
+        }
+        break;
+      case LoadDataSourceType.assets:
+        jsonString = await rootBundle.loadString('assets/real_time_bus.json');
+        break;
+      case _:
+        throw ArgumentError('Invalid LoadDataSourceType');
     }
     final List jsonObjects = jsonDecode(jsonString!);
     RecordData.realTimeBuses = AllRealTimeBus(

@@ -22,22 +22,73 @@ class _UploadDataPageState extends State<UploadDataPage> {
     return ListView(
       children: [
         ExpansionTile(
+          initiallyExpanded: true,
           childrenPadding: const EdgeInsets.all(20),
           leading: const Icon(CupertinoIcons.clock),
           title: const Text('預估到站時間資料'),
           children: [
             ListTile(
               title: FilledButton(
-                onPressed: () async {
-                  if (await BusDataLoader.loadEstimatedTime(
-                      LoadDataSourceType.tdx)) {
-                    if (context.mounted) {
-                      Util.showSnackBar(context, "已從TDX更新預估到站時間資料");
-                    }
-                    setState(() {});
-                  } else if (context.mounted) {
-                    Util.showSnackBar(context, "無法從TDX更新預估到站時間資料");
-                  }
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('從TDX更新預估到站時間資料'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextFormField(
+                            initialValue: RecordData.tdxApiKeyId,
+                            decoration: const InputDecoration(
+                                labelText: '輸入TDX API Key Id'),
+                            onChanged: (value) {
+                              RecordData.tdxApiKeyId = value;
+                            },
+                          ),
+                          TextFormField(
+                            initialValue: RecordData.tdxApiKeySecret,
+                            decoration: const InputDecoration(
+                              labelText: '輸入TDX API Key Secret',
+                            ),
+                            onChanged: (value) {
+                              RecordData.tdxApiKeySecret = value;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          FilledButton(
+                            onPressed: () async {
+                              if (RecordData.tdxApiKeyId.isNotEmpty &&
+                                      RecordData.tdxApiKeySecret.isNotEmpty
+                                  ? await BusDataLoader.loadEstimatedTime(
+                                      LoadDataSourceType.tdxWithKey)
+                                  : await BusDataLoader.loadEstimatedTime(
+                                      LoadDataSourceType.tdxWithoutKey)) {
+                                if (context.mounted) {
+                                  Util.showSnackBar(context, "已從TDX更新預估到站時間資料");
+                                }
+                                setState(() {});
+                              } else if (context.mounted) {
+                                Util.showSnackBar(context, "無法從TDX更新預估到站時間資料");
+                              }
+                              if (context.mounted) {
+                                Navigator.of(context).pop();
+                              }
+                            },
+                            child: const Text("發送資料請求",
+                                style: TextStyle(fontSize: 16)),
+                          )
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('取消'),
+                        ),
+                      ],
+                    ),
+                  );
                 },
                 child: const Text('從TDX更新預估到站時間資料'),
               ),
@@ -80,9 +131,9 @@ class _UploadDataPageState extends State<UploadDataPage> {
             ListTile(
               title: FilledButton(
                 onPressed: () async {
-                  Uri url = Uri.parse(Util.tdxEstimatedTimeUrl);
-                  if (await canLaunchUrl(url)) {
-                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  if (await canLaunchUrl(Util.tdxEstimatedTimeUrl)) {
+                    await launchUrl(Util.tdxEstimatedTimeUrl,
+                        mode: LaunchMode.externalApplication);
                   } else if (context.mounted) {
                     Util.showSnackBar(context, "無法開啟預估到站時間資料網頁");
                   }
@@ -97,22 +148,73 @@ class _UploadDataPageState extends State<UploadDataPage> {
           ],
         ),
         ExpansionTile(
+          initiallyExpanded: true,
           childrenPadding: const EdgeInsets.all(20),
           leading: const Icon(CupertinoIcons.bus),
           title: const Text('公車定時位置資料'),
           children: [
             ListTile(
               title: FilledButton(
-                onPressed: () async {
-                  if (await BusDataLoader.loadRealTimeBuses(
-                      LoadDataSourceType.tdx)) {
-                    if (context.mounted) {
-                      Util.showSnackBar(context, "已從TDX更新公車定時位置資料");
-                    }
-                    setState(() {});
-                  } else if (context.mounted) {
-                    Util.showSnackBar(context, "無法從TDX更新公車定時位置資料");
-                  }
+                onPressed: () {
+                  showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                      title: const Text('從TDX更新公車定時位置資料'),
+                      content: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          TextFormField(
+                            initialValue: RecordData.tdxApiKeyId,
+                            decoration: const InputDecoration(
+                                labelText: '輸入TDX API Key Id'),
+                            onChanged: (value) {
+                              RecordData.tdxApiKeyId = value;
+                            },
+                          ),
+                          TextFormField(
+                            initialValue: RecordData.tdxApiKeySecret,
+                            decoration: const InputDecoration(
+                              labelText: '輸入TDX API Key Secret',
+                            ),
+                            onChanged: (value) {
+                              RecordData.tdxApiKeySecret = value;
+                            },
+                          ),
+                          const SizedBox(height: 20),
+                          FilledButton(
+                            onPressed: () async {
+                              if (RecordData.tdxApiKeyId.isNotEmpty &&
+                                      RecordData.tdxApiKeySecret.isNotEmpty
+                                  ? await BusDataLoader.loadRealTimeBuses(
+                                      LoadDataSourceType.tdxWithKey)
+                                  : await BusDataLoader.loadRealTimeBuses(
+                                      LoadDataSourceType.tdxWithoutKey)) {
+                                if (context.mounted) {
+                                  Util.showSnackBar(context, "已從TDX更新公車定時位置資料");
+                                }
+                                setState(() {});
+                              } else if (context.mounted) {
+                                Util.showSnackBar(context, "無法從TDX更新公車定時位置資料");
+                              }
+                              if (context.mounted) {
+                                Navigator.of(context).pop();
+                              }
+                            },
+                            child: const Text("發送資料請求",
+                                style: TextStyle(fontSize: 16)),
+                          )
+                        ],
+                      ),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('取消'),
+                        ),
+                      ],
+                    ),
+                  );
                 },
                 child: const Text('從TDX更新公車定時位置資料'),
               ),
@@ -155,9 +257,9 @@ class _UploadDataPageState extends State<UploadDataPage> {
             ListTile(
               title: FilledButton(
                 onPressed: () async {
-                  Uri url = Uri.parse(Util.tdxRealTimeBusUrl);
-                  if (await canLaunchUrl(url)) {
-                    await launchUrl(url, mode: LaunchMode.externalApplication);
+                  if (await canLaunchUrl(Util.tdxRealTimeBusUrl)) {
+                    await launchUrl(Util.tdxRealTimeBusUrl,
+                        mode: LaunchMode.externalApplication);
                   } else if (context.mounted) {
                     Util.showSnackBar(context, "無法開啟公車定時位置資料網頁");
                   }
